@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: k2hdkc
+Description: k2hdkc C/C++ library
+Version: @VERSION@
+Libs: -L${libdir} -lk2hdkc
+Cflags: -I${includedir}/k2hdkc

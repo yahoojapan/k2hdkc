@@ -1,0 +1,151 @@
+#
+# K2HDKC
+#
+# .gitignore
+# 
+# Copyright 2016 Yahoo! JAPAN corporation.
+# 
+# K2HDKC is k2hash based distributed KVS cluster.
+# K2HDKC uses K2HASH, CHMPX, FULLOCK libraries. K2HDKC supports
+# distributed KVS cluster server program and client libraries.
+# 
+# For the full copyright and license information, please view
+# the LICENSE file that was distributed with this source code.
+#
+# AUTHOR:   Takeshi Nakatani
+# CREATE:   Thu Mar 31 2016
+# REVISION:
+#
+
+#
+# Compiled Object files
+#
+*.slo
+*.lo
+*.o
+*.Po
+*.Plo
+
+#
+# Precompiled Headers
+#
+*.gch
+*.pch
+
+#
+# Compiled Dynamic libraries
+#
+*.so
+*.so.*
+*.dylib
+*.dll
+
+#
+# Fortran module files
+#
+*.mod
+
+#
+# Compiled Static libraries
+#
+*.lai
+*.la
+*.a
+*.lib
+
+#
+# Executables
+#
+*.exe
+*.out
+*.app
+
+#
+# autotools
+#
+aclocal.m4
+autom4te.cache
+autoscan.log
+config.guess
+config.h
+config.h.in
+config.h.in~
+config.log
+config.status
+config.sub
+configure
+configure.scan
+depcomp
+install-sh
+libtool
+ltmain.sh
+m4
+m4/*
+missing
+stamp-h1
+
+#
+# automakes
+#
+Makefile.in
+*/Makefile.in
+
+
+#
+# archive files and backups
+#
+*.tgz
+*.tar.gz
+*.rpm
+*.swp
+
+#
+# object directories
+#
+.deps
+.libs
+*/.deps
+*/.deps/*
+*/.libs
+*/.libs/*
+
+#
+# other files
+#
+compile
+compile/*
+test-driver
+test-driver/*
+
+#
+# Other built objects
+#
+*.pc
+Makefile
+*/Makefile
+
+#
+# project custom
+#
+RELEASE_VERSION
+*.k2h
+*.desc.long
+*.desc.short
+tests/results.xml
+/k2hdkc.spec
+/k2hdkc.spec.opt
+/k2hdkc.desc.long
+/k2hdkc.desc.short
+/k2hdkc-devel.spec
+/k2hdkc-devel.spec.opt
+lib/k2hdkcversion.cc
+src/k2hdkc
+src/*/k2hdkc
+tests/k2hdkclinetool
+tests/*/k2hdkclinetool
+
+#
+# VIM modelines
+#
+# vim:set ts=4 fenc=utf-8:
+#

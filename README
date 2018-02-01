@@ -1,0 +1,27 @@
+k2hdkc
+------
+
+K2HDKC - K2Hash based Distributed Kvs Cluster by Yahoo! JAPAN
+
+### Overview
+k2hdkc is a high speed automated based on k2hash, chmpx Distributed
+Key Value Store(KVS).  
+
+### Feature
+k2hdkc is a highly available and scalable distributed KVS clustering
+system with the following features and features.
+  - Consistency(Automatic Data Synchronization between Server Nodes)  
+  - Automatic Scaling
+  - Nested key structure
+  - Queue(FIFO/LIFO)
+  - Transaction Plugins
+  - Encryption
+  - Expiration
+
+### Doccuments
+  - https://github.com/yahoojapan/k2hdkc/wiki
+
+### License
+This software is released under the MIT License, see the LICENSE file.
+
+Copyright 2018 Yahoo! JAPAN corporation.

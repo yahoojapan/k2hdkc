@@ -1,0 +1,240 @@
+.TH k2hdkc "1" "September 2016" "k2hdkc" "K2HDKC"
+.SH NAME
+k2hdkc \- k2hash based distributed KVS cluster.
+.SS executable
+.TP
+\fBk2hdkc [options]
+.SS library
+.TP
+\fBlibk2hdkc.so
+.SH DESCRIPTION
+.TP 0
+k2hdkc is k2hash based distributed KVS cluster server program and client libraries.
+k2hdkc is build with k2hash and chmpx libraries. k2hdkc creates cluster which includes many server nodes, and is accessed from slave node. The k2hdkc cluster is dispersed by consistent hashing and are automatically layouted. As a result, it provides a high performance, a high scalability KVS.
+.TP 2
+k2hdkc is following specifications:
+.br
+\- Distributed KVS based by k2hash and chmpx
+.br
+\- Three type data type(on memory/full mapped file/mapped index in file)
+.br
+\- Keys have subkeys
+.br
+\- Supports Queue(and Keyed Queue)
+.br
+\- Supports compare and swap function
+.br
+\- Auto scaled in cluser
+.br
+\- Data merging automatically
+.br
+\- Programable addin(transuction plugin)
+.br
+\- Build up multi clauster
+.br
+.SH OPTIONS
+.IP \fB\-h\fR 15
+display help
+.IP \fB\-v\fR 15
+display version.
+.IP \fB\-conf\ [file\ path]\fR 15
+specify configration file(.ini .yaml .json).
+.IP \fB\-json\ [json\ string]\fR 15
+specify configration by json string.
+.IP \fB\-ctlport\ [control\ port\ number]\fR 15
+specify the self contrl port. if ctlport option is specified, chmpx searches same ctlport in configuration and ignores "CTLPORT" directive in "GLOBAL" section. and chmpx will start in the mode indicated by the server entry that has beed detected.
+.IP \fB\-no_giveup_rejoin\fR 15
+not gitve up rejoining chmpx when disconnecting.
+.IP \fB\-comlog\fR 15
+enable logging communication command.
+.IP \fB\-d\fR\ [SILENT\ |\ ERR\ |\ WAN\ |\ INFO\ |\ DUMP]\fR 15
+specify debugging level, k2hdkc displaies debugging message for itself.
+.IP \fB\-dl\ [file\ path]\fR 15
+specify sending message data length by byte. default value and minimum value are 64 bytes.
+.br
+.SH LIBRARY
+.TP 0
+k2hdkc has library for programing client program.
+.TP 2
+k2hdkc C Language interface function:
+.br
+k2hdkc_bump_debug_level(...)
+.br
+k2hdkc_set_debug_file(...)
+.br
+k2hdkc_load_debug_env(...)
+.br
+2hdkc_enable_comlog(...)
+.br
+2hdkc_disable_comlog(...)
+.br
+k2hdkc_get_lastres_code(...)
+.br
+k2hdkc_get_lastres_subcode(...)
+.br
+k2hdkc_open_chmpx(...)
+.br
+k2hdkc_close_chmpx(...)
+.br
+k2hdkc_get_state(...)
+.br
+k2hdkc_get_value(...)
+.br
+k2hdkc_da_get_value(...)
+.br
+k2hdkc_get_subkeys(...)
+.br
+k2hdkc_get_attrs(...)
+.br
+k2hdkc_set_value(...)
+.br
+k2hdkc_da_set_value(...)
+.br
+k2hdkc_set_subkeys(...)
+.br
+k2hdkc_clear_subkeys(...)
+.br
+k2hdkc_set_subkey(...)
+.br
+k2hdkc_set_all(...)
+.br
+k2hdkc_remove_all(...)
+.br
+k2hdkc_remove(...)
+.br
+k2hdkc_remove_str(...)
+.br
+k2hdkc_remove_subkey(...)
+.br
+k2hdkc_rename(...)
+.br
+k2hdkc_rename_str(...)
+.br
+k2hdkc_rename_with_parent(...)
+.br
+k2hdkc_rename_with_parent_str(...)
+.br
+k2hdkc_q_push(...)
+.br
+k2hdkc_keyq_push(...)
+.br
+k2hdkc_q_pop(...)
+.br
+k2hdkc_keyq_pop(...)
+.br
+k2hdkc_q_remove(...)
+.br
+k2hdkc_keyq_remove(...)
+.br
+k2hdkc_cas64_init(...)
+.br
+k2hdkc_cas32_init(...)
+.br
+k2hdkc_cas16_init(...)
+.br
+k2hdkc_cas8_init(...)
+.br
+k2hdkc_cas64_get(...)
+.br
+k2hdkc_cas32_get(...)
+.br
+k2hdkc_cas16_get(...)
+.br
+k2hdkc_cas8_get(...)
+.br
+k2hdkc_cas64_set(...)
+.br
+k2hdkc_cas32_set(...)
+.br
+k2hdkc_cas16_set(...)
+.br
+k2hdkc_cas8_set(...)
+.br
+k2hdkc_cas_increment(...)
+.br
+k2hdkc_cas_decrement(...)
+.PP
+You can see these function prototypes in k2hdkc.h
+.TP
+k2hdkc C++ Language interface is implemented almost in k2hdkcslave.h. You can see detail from k2hdkcslave.h.
+.br
+
+.SH CONFIGRATION
+.TP 0
+The k2hdkc program loads configuration from file or command line or environment.
+.TP 2
+The configuration for k2hdkc has following keywards.
+.IP [K2HDKC] 20
+k2hdkc loads this section.
+.br
+.BR
+.br
+.IP RCVTIMEOUT 20
+receive timeout ms, default 1000ms.
+.IP SVRNODEINI 20
+server node configuration file or json string is specified here. if this value is not specified, k2hdkc uses own configuration.
+.IP REPLCLUSTERINI 20
+k2htpdtor configuarion because transaction chmpx is different from this file everything about k2htpdtor setting is specified in this. If needs, you can set that k2htpdtor runs with plugin and putting file(transaction).
+.IP DTORTHREADCNT 20
+k2htpdtor thread count, you must set as same as value which is specifyed for k2htpdtor.
+.IP DTORCTP 20
+custom transaction plugin path, default is k2htpdtor.so
+.IP K2HTYPE 20
+k2hash type is specified, the value can be set M/MEM/MEMORY / F/FILE / T/TEMP/TEMPORARY.
+.IP K2HFILE 20
+k2hash file path if k2hash type is file.
+.IP K2HFULLMAP 20
+k2hash full mapping mode, default is no.
+.IP K2HINIT 20
+which k2hash initialize or not.
+.IP K2HMASKBIT 20
+k2hash mask bit count
+.IP K2HCMASKBIT 20
+k2hash cmask bit count
+.IP K2HMAXELE 20
+k2hash element count
+.IP K2HPAGESIZE 20
+k2hash page size
+.IP PASSPHRASES 20
+If using passphrase for k2hash data, specify passphrases. Many entry is allowed. set either the PASSPHRASES or PASSFILE
+.IP PASSFILE 20
+If using passphrase for k2hash data, specify passphrases. set either the PASSPHRASES or PASSFILE
+.IP HISTORY 20
+k2hash data modifying history keeping, default no.
+.IP EXPIRE 20
+k2hash data expire time, default is not set this.
+.IP ATTRPLUGIN 20
+specify k2hash attribute plugin shared library path. Many antry is allowed, and calling sequence is same keywords in this file.
+.IP MINTHREAD 20
+minimum processing thread count, default is 1.
+.IP MAXTHREAD 20
+maximum processing thread count, default is 100.
+.IP REDUCETIME 20
+time(second) for reducing processing thread to minimum thread count, deafult is 30s.
+.TP
+You can see the sample of configration file in tests directory.
+.PP
+.SH ENVIRONMENT
+.TP 2
+k2hdkc use some environments automatically, plese take care these environments.
+.IP K2HDKCCONFFILE 20
+specify the configration file(.ini .yaml .json) path
+.IP K2HDKCJSONCONF 20
+specify the configration json string
+.IP DKCDBGMODE 20
+specifies debugging level: DUMP/INFO/WAN/ERR/SILENT
+.IP DKCDBGFILE 20
+output file path for message(default: stderr)
+.SH NOTES
+.TP
+(nothing)
+.TP
+k2hdkc is k2hash based distributed KVS cluster server program and client libraries by Yahoo! JAPAN.
+.SH SEE ALSO
+.TP
+k2hdkclinetool(1) k2hash(1) chmpx(1)
+.SH BUGS
+.TP
+Please report owner and comitter.
+.SH AUTHOR
+k2hdkc has been written by Takeshi Nakatani <ggtakec@gmail.com>.

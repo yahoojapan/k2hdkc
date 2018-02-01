@@ -1,0 +1,1708 @@
+==========================================================================
+======= CAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP
+==========================================================================
+> echo ######################################################
+######################################################
+> echo ### TEST FOR TEST.SH
+### TEST FOR TEST.SH
+> echo ######################################################
+######################################################
+> echo ### SET & PRINT
+### SET & PRINT
+> echo ###
+###
+> set test-key test-value
+> print test-key
+"test-key" => "test-value"
+> setsub test-key test-subkey test-sub-value
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> set test-key test-value2 rmsublist
+> print test-key
+"test-key" => "test-value2"
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> setsub test-key test-subkey test-sub-value
+> print test-key
+"test-key" => "test-value2"
+    subkey: "test-subkey"
+> set test-key test-value2 rmsub
+> print test-key
+"test-key" => "test-value2"
+> print test-subkey
+"test-subkey" => value is not found
+> rm test-key
+> rm test-subkey
+> echo ######################################################
+######################################################
+> echo ### SETSUB & PRINT
+### SETSUB & PRINT
+> echo ###
+###
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> rm test-key
+> rm test-subkey
+> set test-key test-value
+> setsub test-key test-subkey test-sub-value
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> rm test-key
+> rm test-subkey
+> echo ######################################################
+######################################################
+> echo ### DIRECTPRINT & DIRECTSET
+### DIRECTPRINT & DIRECTSET
+> echo ###
+###
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey" => "test-sub-value"
+> directprint test-key 3 5
+"test-key (offset:5 byte, request 3 byte)" => "val"
+> directset test-key null 5
+> print test-key
+"test-key" => "test-null "
+    subkey: "test-subkey"
+> rm test-key
+> rm test-subkey
+> echo ######################################################
+######################################################
+> echo ### REMOVE
+### REMOVE
+> echo ###
+###
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey" => "test-sub-value"
+> rm test-key
+> print test-key
+"test-key" => value is not found
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> rm test-subkey
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey" => "test-sub-value"
+> rm test-key all
+> print test-key
+"test-key" => value is not found
+> print test-subkey
+"test-subkey" => value is not found
+> echo ######################################################
+######################################################
+> echo ### REMOVE SUB
+### REMOVE SUB
+> echo ###
+###
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key all
+> print test-key
+"test-key" => "test-value"
+> print test-subkey1
+"test-subkey1" => "test-sub-value"
+> print test-subkey2
+"test-subkey2" => "test-sub-value"
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key all rmsub
+> print test-key
+"test-key" => "test-value"
+> print test-subkey1
+"test-subkey1" => value is not found
+> print test-subkey2
+"test-subkey2" => value is not found
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key test-subkey1
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey2"
+> print test-subkey1
+"test-subkey1" => "test-sub-value"
+> print test-subkey2
+"test-subkey2" => "test-sub-value"
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key test-subkey1 rmsub
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey2"
+> print test-subkey1
+"test-subkey1" => value is not found
+> print test-subkey2
+"test-subkey2" => "test-sub-value"
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> echo ######################################################
+######################################################
+> echo ### FILL
+### FILL
+> echo ###
+###
+> fill fill-key fill-value 5
+> print fill-key-1
+"fill-key-1" => "fill-value"
+> print fill-key-2
+"fill-key-2" => "fill-value"
+> print fill-key-3
+"fill-key-3" => "fill-value"
+> print fill-key-4
+"fill-key-4" => "fill-value"
+> print fill-key-5
+"fill-key-5" => value is not found
+> rm fill-key-1
+> rm fill-key-2
+> rm fill-key-3
+> rm fill-key-4
+> rm fill-key-5
+> fillsub fill-parent fill-key fill-value 5
+> print fill-parent
+"fill-parent" => value is not found
+    subkey: "fill-key-0", "fill-key-1", "fill-key-2", "fill-key-3", "fill-key-4"
+> print fill-key-1
+"fill-key-1" => "fill-value"
+> print fill-key-2
+"fill-key-2" => "fill-value"
+> print fill-key-3
+"fill-key-3" => "fill-value"
+> print fill-key-4
+"fill-key-4" => "fill-value"
+> print fill-key-5
+"fill-key-5" => value is not found
+> rm fill-parent
+> rm fill-key-1
+> rm fill-key-2
+> rm fill-key-3
+> rm fill-key-4
+> rm fill-key-5
+> echo ######################################################
+######################################################
+> echo ### RENAME
+### RENAME
+> echo ###
+###
+> set test-key test-value
+> print test-key
+"test-key" => "test-value"
+> rename test-key test-key-ren
+> print test-key
+"test-key" => value is not found
+> print test-key-ren
+"test-key-ren" => "test-value"
+> echo ######################################################
+######################################################
+> echo ### QUEUE
+### QUEUE
+> echo ###
+###
+> queue queue-key push fifo 000
+> sleep 1
+> queue queue-key push fifo 111
+> sleep 1
+> queue queue-key push fifo 222
+> sleep 1
+> queue queue-key push fifo 333
+> sleep 1
+> queue queue-key push fifo 444
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => "000"
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => "111"
+> sleep 1
+> queue queue-key remove fifo 2
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => "444"
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => could not pop
+> sleep 1
+> queue queue-key push lifo 000
+> sleep 1
+> queue queue-key push lifo 111
+> sleep 1
+> queue queue-key push lifo 222
+> sleep 1
+> queue queue-key push lifo 333
+> sleep 1
+> queue queue-key push lifo 444
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => "444"
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => "333"
+> sleep 1
+> queue queue-key remove lifo 2
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => "000"
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => could not pop
+> sleep 1
+> echo ######################################################
+######################################################
+> echo ### KEY QUEUE
+### KEY QUEUE
+> echo ###
+###
+> keyqueue kqueue-key push fifo kq-stack-key0 stack-value0
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key1 stack-value1
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key2 stack-value2
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key3 stack-value3
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key4 stack-value4
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => "kq-stack-key1" : "stack-value1"
+> sleep 1
+> keyqueue kqueue-key remove fifo 2
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => could not pop
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key0 stack-value0
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key1 stack-value1
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key2 stack-value2
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key3 stack-value3
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key4 stack-value4
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => "kq-stack-key3" : "stack-value3"
+> sleep 1
+> keyqueue kqueue-key remove lifo 2
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => could not pop
+> sleep 1
+> echo ######################################################
+######################################################
+> echo ### CAS
+### CAS
+> echo ###
+###
+> cas8 init cas8-key 10
+> cas8 set cas8-key 10 15
+> cas8 get cas8-key
+"cas8-key" => 15 (0x0F)
+> cas8 set cas8-key 10 20
+> cas8 get cas8-key
+"cas8-key" => 15 (0x0F)
+> cas8 increment cas8-key
+> cas8 get cas8-key
+"cas8-key" => 16 (0x10)
+> cas8 decrement cas8-key
+> cas8 get cas8-key
+"cas8-key" => 15 (0x0F)
+> cas16 init cas16-key 10
+> cas16 set cas16-key 10 15
+> cas16 get cas16-key
+"cas16-key" => 15 (0x000F)
+> cas16 set cas16-key 10 20
+> cas16 get cas16-key
+"cas16-key" => 15 (0x000F)
+> cas16 increment cas16-key
+> cas16 get cas16-key
+"cas16-key" => 16 (0x0010)
+> cas16 decrement cas16-key
+> cas16 get cas16-key
+"cas16-key" => 15 (0x000F)
+> cas32 init cas32-key 10
+> cas32 set cas32-key 10 15
+> cas32 get cas32-key
+"cas32-key" => 15 (0x0000000F)
+> cas32 set cas32-key 10 20
+> cas32 get cas32-key
+"cas32-key" => 15 (0x0000000F)
+> cas32 increment cas32-key
+> cas32 get cas32-key
+"cas32-key" => 16 (0x00000010)
+> cas32 decrement cas32-key
+> cas32 get cas32-key
+"cas32-key" => 15 (0x0000000F)
+> cas64 init cas64-key 10
+> cas64 set cas64-key 10 15
+> cas64 get cas64-key
+"cas64-key" => 15 (0x000000000000000f)
+> cas64 set cas64-key 10 20
+> cas64 get cas64-key
+"cas64-key" => 15 (0x000000000000000f)
+> cas64 increment cas64-key
+> cas64 get cas64-key
+"cas64-key" => 16 (0x0000000000000010)
+> cas64 decrement cas64-key
+> cas64 get cas64-key
+"cas64-key" => 15 (0x000000000000000f)
+> echo ######################################################
+######################################################
+> echo ### END OF TEST
+### END OF TEST
+> echo ######################################################
+######################################################
+> exit
+Quit.
+SUCCEED
+==========================================================================
+======= CPPAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP
+==========================================================================
+> echo ######################################################
+######################################################
+> echo ### TEST FOR TEST.SH
+### TEST FOR TEST.SH
+> echo ######################################################
+######################################################
+> echo ### SET & PRINT
+### SET & PRINT
+> echo ###
+###
+> set test-key test-value
+> print test-key
+"test-key" => "test-value"
+> setsub test-key test-subkey test-sub-value
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> set test-key test-value2 rmsublist
+> print test-key
+"test-key" => "test-value2"
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> setsub test-key test-subkey test-sub-value
+> print test-key
+"test-key" => "test-value2"
+    subkey: "test-subkey"
+> set test-key test-value2 rmsub
+> print test-key
+"test-key" => "test-value2"
+> print test-subkey
+"test-subkey" => value is not found
+> rm test-key
+> rm test-subkey
+> echo ######################################################
+######################################################
+> echo ### SETSUB & PRINT
+### SETSUB & PRINT
+> echo ###
+###
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> rm test-key
+> rm test-subkey
+> set test-key test-value
+> setsub test-key test-subkey test-sub-value
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> rm test-key
+> rm test-subkey
+> echo ######################################################
+######################################################
+> echo ### DIRECTPRINT & DIRECTSET
+### DIRECTPRINT & DIRECTSET
+> echo ###
+###
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey" => "test-sub-value"
+> directprint test-key 3 5
+"test-key (offset:5 byte, request 3 byte)" => "val"
+> directset test-key null 5
+> print test-key
+"test-key" => "test-null "
+    subkey: "test-subkey"
+> rm test-key
+> rm test-subkey
+> echo ######################################################
+######################################################
+> echo ### REMOVE
+### REMOVE
+> echo ###
+###
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey" => "test-sub-value"
+> rm test-key
+> print test-key
+"test-key" => value is not found
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> rm test-subkey
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey" => "test-sub-value"
+> rm test-key all
+> print test-key
+"test-key" => value is not found
+> print test-subkey
+"test-subkey" => value is not found
+> echo ######################################################
+######################################################
+> echo ### REMOVE SUB
+### REMOVE SUB
+> echo ###
+###
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key all
+> print test-key
+"test-key" => "test-value"
+> print test-subkey1
+"test-subkey1" => "test-sub-value"
+> print test-subkey2
+"test-subkey2" => "test-sub-value"
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key all rmsub
+> print test-key
+"test-key" => "test-value"
+> print test-subkey1
+"test-subkey1" => value is not found
+> print test-subkey2
+"test-subkey2" => value is not found
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key test-subkey1
+> print test-key
+"test-key" => "test-value"
+> print test-subkey1
+"test-subkey1" => "test-sub-value"
+> print test-subkey2
+"test-subkey2" => "test-sub-value"
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key test-subkey1 rmsub
+> print test-key
+"test-key" => "test-value"
+> print test-subkey1
+"test-subkey1" => value is not found
+> print test-subkey2
+"test-subkey2" => "test-sub-value"
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> echo ######################################################
+######################################################
+> echo ### FILL
+### FILL
+> echo ###
+###
+> fill fill-key fill-value 5
+> print fill-key-1
+"fill-key-1" => "fill-value"
+> print fill-key-2
+"fill-key-2" => "fill-value"
+> print fill-key-3
+"fill-key-3" => "fill-value"
+> print fill-key-4
+"fill-key-4" => "fill-value"
+> print fill-key-5
+"fill-key-5" => value is not found
+> rm fill-key-1
+> rm fill-key-2
+> rm fill-key-3
+> rm fill-key-4
+> rm fill-key-5
+> fillsub fill-parent fill-key fill-value 5
+> print fill-parent
+"fill-parent" => value is not found
+    subkey: "fill-key-0", "fill-key-1", "fill-key-2", "fill-key-3", "fill-key-4"
+> print fill-key-1
+"fill-key-1" => "fill-value"
+> print fill-key-2
+"fill-key-2" => "fill-value"
+> print fill-key-3
+"fill-key-3" => "fill-value"
+> print fill-key-4
+"fill-key-4" => "fill-value"
+> print fill-key-5
+"fill-key-5" => value is not found
+> rm fill-parent
+> rm fill-key-1
+> rm fill-key-2
+> rm fill-key-3
+> rm fill-key-4
+> rm fill-key-5
+> echo ######################################################
+######################################################
+> echo ### RENAME
+### RENAME
+> echo ###
+###
+> set test-key test-value
+> print test-key
+"test-key" => "test-value"
+> rename test-key test-key-ren
+> print test-key
+"test-key" => value is not found
+> print test-key-ren
+"test-key-ren" => "test-value"
+> echo ######################################################
+######################################################
+> echo ### QUEUE
+### QUEUE
+> echo ###
+###
+> queue queue-key push fifo 000
+> sleep 1
+> queue queue-key push fifo 111
+> sleep 1
+> queue queue-key push fifo 222
+> sleep 1
+> queue queue-key push fifo 333
+> sleep 1
+> queue queue-key push fifo 444
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => "000"
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => "111"
+> sleep 1
+> queue queue-key remove fifo 2
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => "444"
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => could not pop
+> sleep 1
+> queue queue-key push lifo 000
+> sleep 1
+> queue queue-key push lifo 111
+> sleep 1
+> queue queue-key push lifo 222
+> sleep 1
+> queue queue-key push lifo 333
+> sleep 1
+> queue queue-key push lifo 444
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => "444"
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => "333"
+> sleep 1
+> queue queue-key remove lifo 2
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => "000"
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => could not pop
+> sleep 1
+> echo ######################################################
+######################################################
+> echo ### KEY QUEUE
+### KEY QUEUE
+> echo ###
+###
+> keyqueue kqueue-key push fifo kq-stack-key0 stack-value0
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key1 stack-value1
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key2 stack-value2
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key3 stack-value3
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key4 stack-value4
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => "kq-stack-key1" : "stack-value1"
+> sleep 1
+> keyqueue kqueue-key remove fifo 2
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => could not pop
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key0 stack-value0
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key1 stack-value1
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key2 stack-value2
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key3 stack-value3
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key4 stack-value4
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => "kq-stack-key3" : "stack-value3"
+> sleep 1
+> keyqueue kqueue-key remove lifo 2
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => could not pop
+> sleep 1
+> echo ######################################################
+######################################################
+> echo ### CAS
+### CAS
+> echo ###
+###
+> cas8 init cas8-key 10
+> cas8 set cas8-key 10 15
+> cas8 get cas8-key
+"cas8-key" => 15 (0x0F)
+> cas8 set cas8-key 10 20
+> cas8 get cas8-key
+"cas8-key" => 15 (0x0F)
+> cas8 increment cas8-key
+> cas8 get cas8-key
+"cas8-key" => 16 (0x10)
+> cas8 decrement cas8-key
+> cas8 get cas8-key
+"cas8-key" => 15 (0x0F)
+> cas16 init cas16-key 10
+> cas16 set cas16-key 10 15
+> cas16 get cas16-key
+"cas16-key" => 15 (0x000F)
+> cas16 set cas16-key 10 20
+> cas16 get cas16-key
+"cas16-key" => 15 (0x000F)
+> cas16 increment cas16-key
+> cas16 get cas16-key
+"cas16-key" => 16 (0x0010)
+> cas16 decrement cas16-key
+> cas16 get cas16-key
+"cas16-key" => 15 (0x000F)
+> cas32 init cas32-key 10
+> cas32 set cas32-key 10 15
+> cas32 get cas32-key
+"cas32-key" => 15 (0x0000000F)
+> cas32 set cas32-key 10 20
+> cas32 get cas32-key
+"cas32-key" => 15 (0x0000000F)
+> cas32 increment cas32-key
+> cas32 get cas32-key
+"cas32-key" => 16 (0x00000010)
+> cas32 decrement cas32-key
+> cas32 get cas32-key
+"cas32-key" => 15 (0x0000000F)
+> cas64 init cas64-key 10
+> cas64 set cas64-key 10 15
+> cas64 get cas64-key
+"cas64-key" => 15 (0x000000000000000f)
+> cas64 set cas64-key 10 20
+> cas64 get cas64-key
+"cas64-key" => 15 (0x000000000000000f)
+> cas64 increment cas64-key
+> cas64 get cas64-key
+"cas64-key" => 16 (0x0000000000000010)
+> cas64 decrement cas64-key
+> cas64 get cas64-key
+"cas64-key" => 15 (0x000000000000000f)
+> echo ######################################################
+######################################################
+> echo ### END OF TEST
+### END OF TEST
+> echo ######################################################
+######################################################
+> exit
+Quit.
+SUCCEED
+==========================================================================
+======= CAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP
+==========================================================================
+> echo ######################################################
+######################################################
+> echo ### TEST FOR TEST.SH
+### TEST FOR TEST.SH
+> echo ######################################################
+######################################################
+> echo ### SET & PRINT
+### SET & PRINT
+> echo ###
+###
+> set test-key test-value
+> print test-key
+"test-key" => "test-value"
+> setsub test-key test-subkey test-sub-value
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> set test-key test-value2 rmsublist
+> print test-key
+"test-key" => "test-value2"
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> setsub test-key test-subkey test-sub-value
+> print test-key
+"test-key" => "test-value2"
+    subkey: "test-subkey"
+> set test-key test-value2 rmsub
+> print test-key
+"test-key" => "test-value2"
+> print test-subkey
+"test-subkey" => value is not found
+> rm test-key
+> rm test-subkey
+> echo ######################################################
+######################################################
+> echo ### SETSUB & PRINT
+### SETSUB & PRINT
+> echo ###
+###
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> rm test-key
+> rm test-subkey
+> set test-key test-value
+> setsub test-key test-subkey test-sub-value
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> rm test-key
+> rm test-subkey
+> echo ######################################################
+######################################################
+> echo ### DIRECTPRINT & DIRECTSET
+### DIRECTPRINT & DIRECTSET
+> echo ###
+###
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey" => "test-sub-value"
+> directprint test-key 3 5
+"test-key (offset:5 byte, request 3 byte)" => "val"
+> directset test-key null 5
+> print test-key
+"test-key" => "test-null "
+    subkey: "test-subkey"
+> rm test-key
+> rm test-subkey
+> echo ######################################################
+######################################################
+> echo ### REMOVE
+### REMOVE
+> echo ###
+###
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey" => "test-sub-value"
+> rm test-key
+> print test-key
+"test-key" => value is not found
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> rm test-subkey
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey" => "test-sub-value"
+> rm test-key all
+> print test-key
+"test-key" => value is not found
+> print test-subkey
+"test-subkey" => value is not found
+> echo ######################################################
+######################################################
+> echo ### REMOVE SUB
+### REMOVE SUB
+> echo ###
+###
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key all
+> print test-key
+"test-key" => "test-value"
+> print test-subkey1
+"test-subkey1" => "test-sub-value"
+> print test-subkey2
+"test-subkey2" => "test-sub-value"
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key all rmsub
+> print test-key
+"test-key" => "test-value"
+> print test-subkey1
+"test-subkey1" => value is not found
+> print test-subkey2
+"test-subkey2" => value is not found
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key test-subkey1
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey2"
+> print test-subkey1
+"test-subkey1" => "test-sub-value"
+> print test-subkey2
+"test-subkey2" => "test-sub-value"
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key test-subkey1 rmsub
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey2"
+> print test-subkey1
+"test-subkey1" => value is not found
+> print test-subkey2
+"test-subkey2" => "test-sub-value"
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> echo ######################################################
+######################################################
+> echo ### FILL
+### FILL
+> echo ###
+###
+> fill fill-key fill-value 5
+> print fill-key-1
+"fill-key-1" => "fill-value"
+> print fill-key-2
+"fill-key-2" => "fill-value"
+> print fill-key-3
+"fill-key-3" => "fill-value"
+> print fill-key-4
+"fill-key-4" => "fill-value"
+> print fill-key-5
+"fill-key-5" => value is not found
+> rm fill-key-1
+> rm fill-key-2
+> rm fill-key-3
+> rm fill-key-4
+> rm fill-key-5
+> fillsub fill-parent fill-key fill-value 5
+> print fill-parent
+"fill-parent" => value is not found
+    subkey: "fill-key-0", "fill-key-1", "fill-key-2", "fill-key-3", "fill-key-4"
+> print fill-key-1
+"fill-key-1" => "fill-value"
+> print fill-key-2
+"fill-key-2" => "fill-value"
+> print fill-key-3
+"fill-key-3" => "fill-value"
+> print fill-key-4
+"fill-key-4" => "fill-value"
+> print fill-key-5
+"fill-key-5" => value is not found
+> rm fill-parent
+> rm fill-key-1
+> rm fill-key-2
+> rm fill-key-3
+> rm fill-key-4
+> rm fill-key-5
+> echo ######################################################
+######################################################
+> echo ### RENAME
+### RENAME
+> echo ###
+###
+> set test-key test-value
+> print test-key
+"test-key" => "test-value"
+> rename test-key test-key-ren
+> print test-key
+"test-key" => value is not found
+> print test-key-ren
+"test-key-ren" => "test-value"
+> echo ######################################################
+######################################################
+> echo ### QUEUE
+### QUEUE
+> echo ###
+###
+> queue queue-key push fifo 000
+> sleep 1
+> queue queue-key push fifo 111
+> sleep 1
+> queue queue-key push fifo 222
+> sleep 1
+> queue queue-key push fifo 333
+> sleep 1
+> queue queue-key push fifo 444
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => "000"
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => "111"
+> sleep 1
+> queue queue-key remove fifo 2
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => "444"
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => could not pop
+> sleep 1
+> queue queue-key push lifo 000
+> sleep 1
+> queue queue-key push lifo 111
+> sleep 1
+> queue queue-key push lifo 222
+> sleep 1
+> queue queue-key push lifo 333
+> sleep 1
+> queue queue-key push lifo 444
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => "444"
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => "333"
+> sleep 1
+> queue queue-key remove lifo 2
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => "000"
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => could not pop
+> sleep 1
+> echo ######################################################
+######################################################
+> echo ### KEY QUEUE
+### KEY QUEUE
+> echo ###
+###
+> keyqueue kqueue-key push fifo kq-stack-key0 stack-value0
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key1 stack-value1
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key2 stack-value2
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key3 stack-value3
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key4 stack-value4
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => "kq-stack-key1" : "stack-value1"
+> sleep 1
+> keyqueue kqueue-key remove fifo 2
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => could not pop
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key0 stack-value0
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key1 stack-value1
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key2 stack-value2
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key3 stack-value3
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key4 stack-value4
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => "kq-stack-key3" : "stack-value3"
+> sleep 1
+> keyqueue kqueue-key remove lifo 2
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => could not pop
+> sleep 1
+> echo ######################################################
+######################################################
+> echo ### CAS
+### CAS
+> echo ###
+###
+> cas8 init cas8-key 10
+> cas8 set cas8-key 10 15
+> cas8 get cas8-key
+"cas8-key" => 15 (0x0F)
+> cas8 set cas8-key 10 20
+> cas8 get cas8-key
+"cas8-key" => 15 (0x0F)
+> cas8 increment cas8-key
+> cas8 get cas8-key
+"cas8-key" => 16 (0x10)
+> cas8 decrement cas8-key
+> cas8 get cas8-key
+"cas8-key" => 15 (0x0F)
+> cas16 init cas16-key 10
+> cas16 set cas16-key 10 15
+> cas16 get cas16-key
+"cas16-key" => 15 (0x000F)
+> cas16 set cas16-key 10 20
+> cas16 get cas16-key
+"cas16-key" => 15 (0x000F)
+> cas16 increment cas16-key
+> cas16 get cas16-key
+"cas16-key" => 16 (0x0010)
+> cas16 decrement cas16-key
+> cas16 get cas16-key
+"cas16-key" => 15 (0x000F)
+> cas32 init cas32-key 10
+> cas32 set cas32-key 10 15
+> cas32 get cas32-key
+"cas32-key" => 15 (0x0000000F)
+> cas32 set cas32-key 10 20
+> cas32 get cas32-key
+"cas32-key" => 15 (0x0000000F)
+> cas32 increment cas32-key
+> cas32 get cas32-key
+"cas32-key" => 16 (0x00000010)
+> cas32 decrement cas32-key
+> cas32 get cas32-key
+"cas32-key" => 15 (0x0000000F)
+> cas64 init cas64-key 10
+> cas64 set cas64-key 10 15
+> cas64 get cas64-key
+"cas64-key" => 15 (0x000000000000000f)
+> cas64 set cas64-key 10 20
+> cas64 get cas64-key
+"cas64-key" => 15 (0x000000000000000f)
+> cas64 increment cas64-key
+> cas64 get cas64-key
+"cas64-key" => 16 (0x0000000000000010)
+> cas64 decrement cas64-key
+> cas64 get cas64-key
+"cas64-key" => 15 (0x000000000000000f)
+> echo ######################################################
+######################################################
+> echo ### END OF TEST
+### END OF TEST
+> echo ######################################################
+######################################################
+> exit
+Quit.
+SUCCEED
+==========================================================================
+======= CPPAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP
+==========================================================================
+> echo ######################################################
+######################################################
+> echo ### TEST FOR TEST.SH
+### TEST FOR TEST.SH
+> echo ######################################################
+######################################################
+> echo ### SET & PRINT
+### SET & PRINT
+> echo ###
+###
+> set test-key test-value
+> print test-key
+"test-key" => "test-value"
+> setsub test-key test-subkey test-sub-value
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> set test-key test-value2 rmsublist
+> print test-key
+"test-key" => "test-value2"
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> setsub test-key test-subkey test-sub-value
+> print test-key
+"test-key" => "test-value2"
+    subkey: "test-subkey"
+> set test-key test-value2 rmsub
+> print test-key
+"test-key" => "test-value2"
+> print test-subkey
+"test-subkey" => value is not found
+> rm test-key
+> rm test-subkey
+> echo ######################################################
+######################################################
+> echo ### SETSUB & PRINT
+### SETSUB & PRINT
+> echo ###
+###
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> rm test-key
+> rm test-subkey
+> set test-key test-value
+> setsub test-key test-subkey test-sub-value
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> rm test-key
+> rm test-subkey
+> echo ######################################################
+######################################################
+> echo ### DIRECTPRINT & DIRECTSET
+### DIRECTPRINT & DIRECTSET
+> echo ###
+###
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key
+"test-key" => "test-value"
+    subkey: "test-subkey"
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey" => "test-sub-value"
+> directprint test-key 3 5
+"test-key (offset:5 byte, request 3 byte)" => "val"
+> directset test-key null 5
+> print test-key
+"test-key" => "test-null "
+    subkey: "test-subkey"
+> rm test-key
+> rm test-subkey
+> echo ######################################################
+######################################################
+> echo ### REMOVE
+### REMOVE
+> echo ###
+###
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey" => "test-sub-value"
+> rm test-key
+> print test-key
+"test-key" => value is not found
+> print test-subkey
+"test-subkey" => "test-sub-value"
+> rm test-subkey
+> set test-subkey test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey" => "test-sub-value"
+> rm test-key all
+> print test-key
+"test-key" => value is not found
+> print test-subkey
+"test-subkey" => value is not found
+> echo ######################################################
+######################################################
+> echo ### REMOVE SUB
+### REMOVE SUB
+> echo ###
+###
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key all
+> print test-key
+"test-key" => "test-value"
+> print test-subkey1
+"test-subkey1" => "test-sub-value"
+> print test-subkey2
+"test-subkey2" => "test-sub-value"
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key all rmsub
+> print test-key
+"test-key" => "test-value"
+> print test-subkey1
+"test-subkey1" => value is not found
+> print test-subkey2
+"test-subkey2" => value is not found
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key test-subkey1
+> print test-key
+"test-key" => "test-value"
+> print test-subkey1
+"test-subkey1" => "test-sub-value"
+> print test-subkey2
+"test-subkey2" => "test-sub-value"
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> set test-subkey1 test-sub-value
+> set test-subkey2 test-sub-value
+> set test-key test-value
+> setsub test-key test-subkey1
+> setsub test-key test-subkey2
+> print test-key all
+"test-key" => "test-value"
+  +"test-subkey1" => "test-sub-value"
+  +"test-subkey2" => "test-sub-value"
+> rmsub test-key test-subkey1 rmsub
+> print test-key
+"test-key" => "test-value"
+> print test-subkey1
+"test-subkey1" => value is not found
+> print test-subkey2
+"test-subkey2" => "test-sub-value"
+> rm test-key
+> rm test-subkey1
+> rm test-subkey2
+> echo ######################################################
+######################################################
+> echo ### FILL
+### FILL
+> echo ###
+###
+> fill fill-key fill-value 5
+> print fill-key-1
+"fill-key-1" => "fill-value"
+> print fill-key-2
+"fill-key-2" => "fill-value"
+> print fill-key-3
+"fill-key-3" => "fill-value"
+> print fill-key-4
+"fill-key-4" => "fill-value"
+> print fill-key-5
+"fill-key-5" => value is not found
+> rm fill-key-1
+> rm fill-key-2
+> rm fill-key-3
+> rm fill-key-4
+> rm fill-key-5
+> fillsub fill-parent fill-key fill-value 5
+> print fill-parent
+"fill-parent" => value is not found
+    subkey: "fill-key-0", "fill-key-1", "fill-key-2", "fill-key-3", "fill-key-4"
+> print fill-key-1
+"fill-key-1" => "fill-value"
+> print fill-key-2
+"fill-key-2" => "fill-value"
+> print fill-key-3
+"fill-key-3" => "fill-value"
+> print fill-key-4
+"fill-key-4" => "fill-value"
+> print fill-key-5
+"fill-key-5" => value is not found
+> rm fill-parent
+> rm fill-key-1
+> rm fill-key-2
+> rm fill-key-3
+> rm fill-key-4
+> rm fill-key-5
+> echo ######################################################
+######################################################
+> echo ### RENAME
+### RENAME
+> echo ###
+###
+> set test-key test-value
+> print test-key
+"test-key" => "test-value"
+> rename test-key test-key-ren
+> print test-key
+"test-key" => value is not found
+> print test-key-ren
+"test-key-ren" => "test-value"
+> echo ######################################################
+######################################################
+> echo ### QUEUE
+### QUEUE
+> echo ###
+###
+> queue queue-key push fifo 000
+> sleep 1
+> queue queue-key push fifo 111
+> sleep 1
+> queue queue-key push fifo 222
+> sleep 1
+> queue queue-key push fifo 333
+> sleep 1
+> queue queue-key push fifo 444
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => "000"
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => "111"
+> sleep 1
+> queue queue-key remove fifo 2
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => "444"
+> sleep 1
+> queue queue-key pop fifo
+poped "queue-key" queue => could not pop
+> sleep 1
+> queue queue-key push lifo 000
+> sleep 1
+> queue queue-key push lifo 111
+> sleep 1
+> queue queue-key push lifo 222
+> sleep 1
+> queue queue-key push lifo 333
+> sleep 1
+> queue queue-key push lifo 444
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => "444"
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => "333"
+> sleep 1
+> queue queue-key remove lifo 2
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => "000"
+> sleep 1
+> queue queue-key pop lifo
+poped "queue-key" queue => could not pop
+> sleep 1
+> echo ######################################################
+######################################################
+> echo ### KEY QUEUE
+### KEY QUEUE
+> echo ###
+###
+> keyqueue kqueue-key push fifo kq-stack-key0 stack-value0
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key1 stack-value1
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key2 stack-value2
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key3 stack-value3
+> sleep 1
+> keyqueue kqueue-key push fifo kq-stack-key4 stack-value4
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => "kq-stack-key1" : "stack-value1"
+> sleep 1
+> keyqueue kqueue-key remove fifo 2
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+> sleep 1
+> keyqueue kqueue-key pop fifo
+poped "kqueue-key" queue => could not pop
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key0 stack-value0
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key1 stack-value1
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key2 stack-value2
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key3 stack-value3
+> sleep 1
+> keyqueue kqueue-key push lifo kq-stack-key4 stack-value4
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => "kq-stack-key3" : "stack-value3"
+> sleep 1
+> keyqueue kqueue-key remove lifo 2
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+> sleep 1
+> keyqueue kqueue-key pop lifo
+poped "kqueue-key" queue => could not pop
+> sleep 1
+> echo ######################################################
+######################################################
+> echo ### CAS
+### CAS
+> echo ###
+###
+> cas8 init cas8-key 10
+> cas8 set cas8-key 10 15
+> cas8 get cas8-key
+"cas8-key" => 15 (0x0F)
+> cas8 set cas8-key 10 20
+> cas8 get cas8-key
+"cas8-key" => 15 (0x0F)
+> cas8 increment cas8-key
+> cas8 get cas8-key
+"cas8-key" => 16 (0x10)
+> cas8 decrement cas8-key
+> cas8 get cas8-key
+"cas8-key" => 15 (0x0F)
+> cas16 init cas16-key 10
+> cas16 set cas16-key 10 15
+> cas16 get cas16-key
+"cas16-key" => 15 (0x000F)
+> cas16 set cas16-key 10 20
+> cas16 get cas16-key
+"cas16-key" => 15 (0x000F)
+> cas16 increment cas16-key
+> cas16 get cas16-key
+"cas16-key" => 16 (0x0010)
+> cas16 decrement cas16-key
+> cas16 get cas16-key
+"cas16-key" => 15 (0x000F)
+> cas32 init cas32-key 10
+> cas32 set cas32-key 10 15
+> cas32 get cas32-key
+"cas32-key" => 15 (0x0000000F)
+> cas32 set cas32-key 10 20
+> cas32 get cas32-key
+"cas32-key" => 15 (0x0000000F)
+> cas32 increment cas32-key
+> cas32 get cas32-key
+"cas32-key" => 16 (0x00000010)
+> cas32 decrement cas32-key
+> cas32 get cas32-key
+"cas32-key" => 15 (0x0000000F)
+> cas64 init cas64-key 10
+> cas64 set cas64-key 10 15
+> cas64 get cas64-key
+"cas64-key" => 15 (0x000000000000000f)
+> cas64 set cas64-key 10 20
+> cas64 get cas64-key
+"cas64-key" => 15 (0x000000000000000f)
+> cas64 increment cas64-key
+> cas64 get cas64-key
+"cas64-key" => 16 (0x0000000000000010)
+> cas64 decrement cas64-key
+> cas64 get cas64-key
+"cas64-key" => 15 (0x000000000000000f)
+> echo ######################################################
+######################################################
+> echo ### END OF TEST
+### END OF TEST
+> echo ######################################################
+######################################################
+> exit
+Quit.
+SUCCEED

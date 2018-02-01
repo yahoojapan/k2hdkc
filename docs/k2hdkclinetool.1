@@ -1,0 +1,81 @@
+.TH k2hdkclinetool "1" "September 2016" "k2hdkclinetool" "K2HDKCLINETOOL"
+.SH NAME
+K2HDKCLINETOOL \- Interactive Command Line Tool for K2HDKC by Yahoo! JAPAN
+.SH SYNOPSIS
+.B k2hdkclinetool
+[OPTIONS]
+.SH DESCRIPTION
+.PP
+k2hdkclinetool is interactive tool, this can test almost of K2HDKC library interface and k2hdkc cluster. Then you can create/modify k2hdkc cluster data by this tool. k2hdkclinetool has CUI interface, and command history, etc. You can see usage this tool by typing "-h".
+.SH OPTIONS
+.TP
+\fB\-h\fR
+display help
+.TP
+\fB\-conf\ [file\ path]\fR 15
+specify configration file(.ini .yaml .json).
+.TP
+\fB\-json\ [json\ string]\fR 15
+specify configration by json string.
+.TP
+\fB\-ctlport\fR [port]
+specify slave node chmpx control port
+.TP
+\fB\-lap\fR
+print lap time after line command
+.TP
+\fB\-capi\fR
+use C API for calling internal library
+.TP
+\fB\-perm\fR
+use permanent chmpx handle
+.TP
+\fB\-rejoin\fR
+chmpx auto rejoin if disconnect
+.TP
+\fB\-nogiveup\fR
+no give up auto rejoin
+.TP
+\fB\-nocleanup\fR
+not cleanup backup chmpx files
+.TP
+\fB\-comlog\fR [on | off]
+enable/disable communication command for debug
+.TP
+\fB\-d\fR [debug level]
+print debugging message mode: SILENT(SLT)/ERROR(ERR)/WARNING(WAN)/INFO(MSG)/DUMP(DMP)
+.TP
+\fB\-dfile\fR [file path]
+output file for debugging message(default stderr)
+.TP
+\fB\-his\fR [count]
+set history count(default 500)
+.TP
+\fB\-libversion\fR
+display k2hdkc library version
+.TP
+\fB\-run\fR [file path]
+run command(history) file.
+.PP
+.SH ENVIRONMENT
+.TP
+\fBK2HDKCCONFFILE\fR
+specify the configration file(.ini .yaml .json) path
+.TP
+\fBK2HDKCJSONCONF\fR
+specify the configration json string
+.TP
+\fBDKCDBGMODE\fR
+DKCDBGMODE environment sets debugging message level as same as \-d option. The value is set as SILENT, ERR, WAN, INFO or DUMP.
+When k2hlinetool catches SIGUSER1 signal, the debugging message level is bumpup. The level is changed as order by SILENT, ERR, WAN, INFO, SILENT...
+.TP
+\fDKCDBGFILE\fR
+DKCDBGFILE environment sets the file which is debugging message, this is as same as \-dlog option.
+.SH SEE ALSO
+.TP
+k2hash(1), chmpx(1), k2hdkc(1)
+.SH BUGS
+.TP
+Please report owner and comitter.
+.SH AUTHOR
+k2hash has been written by Takeshi Nakatani <ggtakec@gmail.com>.

@@ -1,0 +1,62 @@
+#
+# K2HDKC
+#
+# Copyright 2018 Yahoo! JAPAN corporation.
+#
+# K2HDKC is k2hash based distributed KVS cluster.
+# K2HDKC uses K2HASH, CHMPX, FULLOCK libraries. K2HDKC supports
+# distributed KVS cluster server program and client libraries.
+#
+# For the full copyright and license information, please view
+# the LICENSE file that was distributed with this source code.
+#
+# AUTHOR:   Takeshi Nakatani
+# CREATE:   Thu Feb 1 2018
+# REVISION:
+#
+
+language: cpp
+
+sudo: required
+
+dist: trusty
+
+cache: apt
+
+git:
+  submodules: false
+
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install -qq git autoconf autotools-dev gcc g++ make gdb dh-make fakeroot dpkg-dev devscripts libtool pkg-config libssl-dev libyaml-dev
+ - git submodule update --init --recursive
+ - cd fullock
+ - ./autogen.sh
+ - ./configure --prefix=/usr
+ - make
+ - sudo make install
+ - cd ..
+ - cd k2hash
+ - ./autogen.sh
+ - ./configure --prefix=/usr
+ - make
+ - sudo make install
+ - cd ..
+ - cd chmpx
+ - ./autogen.sh
+ - ./configure --prefix=/usr
+ - make
+ - sudo make install
+ - cd ..
+
+script:
+ - ./autogen.sh
+ - ./configure --prefix=/usr
+ - make
+ - "cd tests && make check-TESTS"
+
+#
+# VIM modelines
+#
+# vim:set ts=4 fenc=utf-8:
+#
