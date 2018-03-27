@@ -24,10 +24,13 @@ Provides encryption function as distributed KVS for the key's data held as the f
 - **Expiration**  
 Provides the key expiration function which is the feature of k2hash as distributed KVS.
 
-### Doccuments
+### Documents
   - [WIKI](https://github.com/yahoojapan/k2hdkc/wiki)
 
 ### License
-This software is released under the MIT License, see the LICENSE file.
+This software is released under the MIT License, see the license file.
 
-Copyright 2018 Yahoo! JAPAN corporation.
+### AntPickax
+k2hdkc is one of [AntPickax](https://yahoojapan.github.io/AntPickax/) products.
+
+Copyright(C) 2018 Yahoo Japan corporation.

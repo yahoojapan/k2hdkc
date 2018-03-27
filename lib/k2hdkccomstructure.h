@@ -23,8 +23,6 @@
 #include "k2hdkccommon.h"
 #include "k2hdkctypes.h"
 #include "k2hdkc.h"
-#include "k2hdkcutil.h"
-#include "k2hdkcdbg.h"
 
 DECL_EXTERN_C_START
 
@@ -69,8 +67,11 @@ DECL_EXTERN_C_START
 #define	DKC_COM_K2HSTATE				(DKC_COM_REPL_KEY		+ 1L)
 #define	DKC_COM_STATE					(DKC_COM_K2HSTATE		+ 1L)
 #define	DKC_COM_MAX						(DKC_COM_STATE)
+#if defined(__cplusplus)
 #define	DKC_COM_UNKNOWN					static_cast<dkccom_type_t>(-1)
-
+#else
+#define	DKC_COM_UNKNOWN					(dkccom_type_t)(-1L)
+#endif
 //
 // Macros for Command type
 //
@@ -187,9 +188,15 @@ DECL_EXTERN_C_START
 //
 // Macros for Response types
 //
+#if defined(__cplusplus)
 #define	COMPOSE_DKC_RES(hi, low)			(((static_cast<dkcres_type_t>(hi) & DKC_RES_MASK64_LOWBIT) << 32) | (static_cast<dkcres_type_t>(low) & DKC_RES_MASK64_LOWBIT))
 #define	PARSE_DKC_RES_HIGH(restype)			((static_cast<dkcres_type_t>(restype) & DKC_RES_MASK64_HIBIT) >> 32)
 #define	PARSE_DKC_RES_LOW(restype)			(static_cast<dkcres_type_t>(restype) & DKC_RES_MASK64_LOWBIT)
+#else
+#define	COMPOSE_DKC_RES(hi, low)			((((dkccom_type_t)hi & DKC_RES_MASK64_LOWBIT) << 32) | ((dkccom_type_t)low & DKC_RES_MASK64_LOWBIT))
+#define	PARSE_DKC_RES_HIGH(restype)			(((dkccom_type_t)restype & DKC_RES_MASK64_HIBIT) >> 32)
+#define	PARSE_DKC_RES_LOW(restype)			((dkccom_type_t)restype & DKC_RES_MASK64_LOWBIT)
+#endif
 
 #define	GET_DKC_RES_RESULT(restype)			PARSE_DKC_RES_HIGH(restype)
 #define	GET_DKC_RES_SUBCODE(restype)		PARSE_DKC_RES_LOW(restype)
@@ -827,114 +834,9 @@ typedef union k2hdkc_com_all{
 	DKCRES_STATE			res_state;
 }K2HDKC_ATTR_PACKED DKCCOM_ALL, *PDKCCOM_ALL;
 
-DECL_EXTERN_C_END
-
-//---------------------------------------------------------
-// Utility
-//---------------------------------------------------------
-inline bool IS_SAFE_DKC_COM_OFFSET(const DKCCOM_ALL* pComAll, off_t offset, size_t size)
-{
-	if(!pComAll){
-		ERR_DKCPRN("Parameter is wrong.");
-		return false;
-	}
-	if(static_cast<int64_t>(pComAll->com_head.comtype) < DKC_COM_MIN || DKC_COM_MAX < pComAll->com_head.comtype){
-		ERR_DKCPRN("DKCCOM_ALL command type(0x%016" PRIx64 ") is wrong.", pComAll->com_head.comtype);
-		return false;
-	}
-
-	if(	(DKC_COM_GET 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_GET_DIRECT 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_GET_SUBKEYS 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_GET_ATTRS 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_GET_ATTR 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_SET 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_SET_DIRECT 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_SET_SUBKEYS 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_SET_ALL 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_ADD_SUBKEYS 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_DEL 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_DEL_SUBKEYS 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_REN 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_QPUSH 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_QPOP 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_CAS_INIT 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_CAS_GET 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_CAS_SET 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_CAS_INCDEC 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_REPL_KEY 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_K2HSTATE 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_STATE 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) )
-	{
-		ERR_DKCPRN("DKCCOM_ALL command type(0x%016" PRIx64 ") length(%zu byte) is too small( + %zu length byte + %zd offset byte ).", pComAll->com_head.comtype, pComAll->com_head.length, size, offset);
-		return false;
-	}
-	return true;
-}
-
-inline bool IS_SAFE_DKC_COM_ALL(const DKCCOM_ALL* pComAll)
-{
-	return IS_SAFE_DKC_COM_OFFSET(pComAll, 0, 0);
-}
-
-inline const unsigned char* GET_BIN_DKC_COM_ALL(const DKCCOM_ALL* pComAll, off_t offset, size_t size)
-{
-	if(!pComAll){
-		ERR_DKCPRN("pComAll is NULL.");
-		return NULL;
-	}
-	if(!IS_SAFE_DKC_COM_OFFSET(pComAll, offset, size)){
-		return NULL;
-	}
-	if(0 == size){
-		return NULL;
-	}
-	return (reinterpret_cast<const unsigned char*>(pComAll) + offset);
-}
-
-inline unsigned char* CVT_BIN_DKC_COM_ALL(PDKCCOM_ALL pComAll, off_t offset, size_t size)
-{
-	if(!pComAll){
-		ERR_DKCPRN("pComAll is NULL.");
-		return NULL;
-	}
-	if(!IS_SAFE_DKC_COM_OFFSET(pComAll, offset, size)){
-		return NULL;
-	}
-	return (reinterpret_cast<unsigned char*>(pComAll) + offset);
-}
-
-inline bool IS_DKC_RES_SUCCESS(dkcres_type_t restype)
-{
-	return (DKC_RES_HIGH_SUCCESS == PARSE_DKC_RES_HIGH(restype));
-}
-
-inline bool IS_DKC_RES_NOTSUCCESS(dkcres_type_t restype)
-{
-	return (DKC_RES_HIGH_SUCCESS != PARSE_DKC_RES_HIGH(restype));
-}
-
-inline void DKC_RES_PRINT(dkccom_type_t comtype, dkcres_type_t restype)
-{
-	if(IS_DKC_RES_SUCCESS(restype)){
-		if(DKC_RES_SUBCODE_NOTHING == GET_DKC_RES_SUBCODE(restype)){
-			// success without any message is printed on dump mode.
-			DMP_DKCPRN("%s Command Response: DKC_RES_SUCCESS", STR_DKCCOM_TYPE(comtype));
-		}else{
-			// success with some message is printed on message mode.
-			MSG_DKCPRN("%s Command Response: DKC_RES_SUCCESS with %s", STR_DKCCOM_TYPE(comtype), STR_DKCRES_SUBCODE_TYPE(restype));
-		}
-	}else{
-		// error is printed on warning mode.
-		WAN_DKCPRN("%s Command Response: DKC_RES_ERROR with %s", STR_DKCCOM_TYPE(comtype), STR_DKCRES_SUBCODE_TYPE(restype));
-	}
-}
-
 //---------------------------------------------------------
 // Utility Macros
 //---------------------------------------------------------
-DECL_EXTERN_C_START
-
 #define	CVT_DKCCOM_HEAD(pComAll)			(&(pComAll->com_head))
 #define	CVT_DKCCOM_GET(pComAll)				(&(pComAll->com_get))
 #define	CVT_DKCCOM_GET_DIRECT(pComAll)		(&(pComAll->com_get_direct))
@@ -985,6 +887,13 @@ DECL_EXTERN_C_START
 #define	CVT_DKCRES_STATE(pComAll)			(&(pComAll->res_state))
 
 DECL_EXTERN_C_END
+
+//---------------------------------------------------------
+// Debug Utility for Communication
+//---------------------------------------------------------
+#if defined(__cplusplus)
+#include "k2hdkccomdbg.h"
+#endif
 
 #endif	// K2HDKCCOMSTRUCTURE_H
 
