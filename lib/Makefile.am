@@ -25,6 +25,7 @@ pkginclude_HEADERS	=	k2hdkccommon.h \
 						k2hdkc.h \
 						k2hdkccom.h \
 						k2hdkccomstructure.h \
+						k2hdkccomdbg.h \
 						k2hdkccombase.h \
 						k2hdkccomget.h \
 						k2hdkccomgetdirect.h \

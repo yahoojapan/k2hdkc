@@ -19,7 +19,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT(k2hdkc, m4_esyscmd([tr -d '\n' < $(pwd)/RELEASE_VERSION]), k2hash-dev@ml.yahoo-corp.jp )
+AC_INIT(k2hdkc, m4_esyscmd([tr -d '\n' < $(pwd)/RELEASE_VERSION]))
 AM_INIT_AUTOMAKE()
 LT_INIT()
 
@@ -77,7 +77,7 @@ fi
 
 # k2hash
 if test "x${CHECK_K2HASH}" != "xno"; then
-	PKG_CHECK_MODULES([k2hash], [libk2hash >= 1.0.56], [have_k2hash=yes], [have_k2hash=no])
+	PKG_CHECK_MODULES([k2hash], [libk2hash >= 1.0.57], [have_k2hash=yes], [have_k2hash=no])
 	if test "x${have_k2hash}" = "xno"; then
 		AC_MSG_ERROR([not found k2hash package.])
 	fi
@@ -85,7 +85,7 @@ fi
 
 # chmpx
 if test "x${CHECK_CHMPX}" != "xno"; then
-	PKG_CHECK_MODULES([chmpx], [libchmpx >= 1.0.52], [have_chmpx=yes], [have_chmpx=no])
+	PKG_CHECK_MODULES([chmpx], [libchmpx >= 1.0.58], [have_chmpx=yes], [have_chmpx=no])
 	if test "x${have_chmpx}" = "xno"; then
 		AC_MSG_ERROR([not found chmpx package.])
 	fi
