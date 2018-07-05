@@ -2,14 +2,14 @@
  * 
  * K2HDKC
  * 
- * Copyright 2016 Yahoo! JAPAN corporation.
+ * Copyright 2016 Yahoo Japan Corporation.
  * 
  * K2HDKC is k2hash based distributed KVS cluster.
  * K2HDKC uses K2HASH, CHMPX, FULLOCK libraries. K2HDKC supports
  * distributed KVS cluster server program and client libraries.
  * 
  * For the full copyright and license information, please view
- * the LICENSE file that was distributed with this source code.
+ * the license file that was distributed with this source code.
  *
  * AUTHOR:   Takeshi Nakatani
  * CREATE:   Mon Jul 11 2016
@@ -31,43 +31,72 @@
 using namespace	std;
 
 //---------------------------------------------------------
+// Global Variable
+//---------------------------------------------------------
+K2hdkcDbgMode	k2hdkc_debug_mode	= DKCDBG_SILENT;
+FILE*			k2hdkc_dbg_fp		= NULL;
+
+//---------------------------------------------------------
 // Class K2hdkcDbgControl
 //---------------------------------------------------------
 class K2hdkcDbgControl
 {
 	protected:
-		static const char*		DBGENVNAME;
-		static const char*		DBGENVFILE;
-		static K2hdkcDbgControl	singleton;
+		static const char*	DBGENVNAME;
+		static const char*	DBGENVFILE;
+
+		K2hdkcDbgMode*		pk2hdkc_debug_mode;
+		FILE**				pk2hdkc_dbg_fp;
+		string				k2hdkc_dbg_file;
+
+	protected:
+		K2hdkcDbgControl() : pk2hdkc_debug_mode(&k2hdkc_debug_mode), pk2hdkc_dbg_fp(&k2hdkc_dbg_fp), k2hdkc_dbg_file("")
+		{
+			*pk2hdkc_debug_mode	= DKCDBG_SILENT;
+			*pk2hdkc_dbg_fp		= NULL;
+			DbgCtrlLoadEnv();
+		}
+		virtual ~K2hdkcDbgControl()
+		{
+		}
+
+		bool DbgCtrlLoadEnvName(void);
+		bool DbgCtrlLoadEnvFile(void);
 
 	public:
-		static bool LoadEnv(void);
-		static bool LoadEnvName(void);
-		static bool LoadEnvFile(void);
+		static K2hdkcDbgControl& GetK2hdkcDbgCtrl(void)
+		{
+			static K2hdkcDbgControl	singleton;			// singleton
+			return singleton;
+		}
 
-		K2hdkcDbgControl();
-		virtual ~K2hdkcDbgControl();
+		bool DbgCtrlLoadEnv(void);
+		K2hdkcDbgMode SetDbgCtrlMode(K2hdkcDbgMode mode);
+		K2hdkcDbgMode BumpupDbgCtrlMode(void);
+		K2hdkcDbgMode GetDbgCtrlMode(void);
+		bool SetDbgCtrlFile(const char* filepath);
+		bool UnsetDbgCtrlFile(void);
+		const char* GetDbgCtrlFile(void);
 };
 
 //---------------------------------------------------------
 // Class valiables
 //---------------------------------------------------------
-const char*			K2hdkcDbgControl::DBGENVNAME = "DKCDBGMODE";
-const char*			K2hdkcDbgControl::DBGENVFILE = "DKCDBGFILE";
-K2hdkcDbgControl	K2hdkcDbgControl::singleton;
+const char*	K2hdkcDbgControl::DBGENVNAME = "DKCDBGMODE";
+const char*	K2hdkcDbgControl::DBGENVFILE = "DKCDBGFILE";
 
 //---------------------------------------------------------
-// Class Methods
+// Methods
 //---------------------------------------------------------
-bool K2hdkcDbgControl::LoadEnv(void)
+bool K2hdkcDbgControl::DbgCtrlLoadEnv(void)
 {
-	if(!K2hdkcDbgControl::LoadEnvName() || !K2hdkcDbgControl::LoadEnvFile()){
+	if(!DbgCtrlLoadEnvName() || !DbgCtrlLoadEnvFile()){
 		return false;
 	}
 	return true;
 }
 
-bool K2hdkcDbgControl::LoadEnvName(void)
+bool K2hdkcDbgControl::DbgCtrlLoadEnvName(void)
 {
 	string	value;
 	if(!k2h_getenv(K2hdkcDbgControl::DBGENVNAME, value)){
@@ -91,7 +120,7 @@ bool K2hdkcDbgControl::LoadEnvName(void)
 	return true;
 }
 
-bool K2hdkcDbgControl::LoadEnvFile(void)
+bool K2hdkcDbgControl::DbgCtrlLoadEnvFile(void)
 {
 	string	value;
 	if(!k2h_getenv(K2hdkcDbgControl::DBGENVFILE, value)){
@@ -105,41 +134,16 @@ bool K2hdkcDbgControl::LoadEnvFile(void)
 	return true;
 }
 
-//---------------------------------------------------------
-// Constructor / Destructor
-//---------------------------------------------------------
-K2hdkcDbgControl::K2hdkcDbgControl()
+K2hdkcDbgMode K2hdkcDbgControl::SetDbgCtrlMode(K2hdkcDbgMode mode)
 {
-	K2hdkcDbgControl::LoadEnv();
-}
-K2hdkcDbgControl::~K2hdkcDbgControl()
-{
-}
-
-//---------------------------------------------------------
-// Global Variable
-//---------------------------------------------------------
-K2hdkcDbgMode	k2hdkc_debug_mode	= DKCDBG_SILENT;
-FILE*			k2hdkc_dbg_fp		= NULL;
-
-//---------------------------------------------------------
-// Static Variable
-//---------------------------------------------------------
-static string	k2hdkc_dbg_file("");
-
-//---------------------------------------------------------
-// Global Function
-//---------------------------------------------------------
-K2hdkcDbgMode SetK2hdkcDbgMode(K2hdkcDbgMode mode)
-{
-	K2hdkcDbgMode oldmode	= k2hdkc_debug_mode;
-	k2hdkc_debug_mode		= mode;
+	K2hdkcDbgMode oldmode	= *pk2hdkc_debug_mode;
+	*pk2hdkc_debug_mode		= mode;
 	return oldmode;
 }
 
-K2hdkcDbgMode BumpupK2hdkcDbgMode(void)
+K2hdkcDbgMode K2hdkcDbgControl::BumpupDbgCtrlMode(void)
 {
-	K2hdkcDbgMode	mode = GetK2hdkcDbgMode();
+	K2hdkcDbgMode	mode = GetDbgCtrlMode();
 
 	if(DKCDBG_SILENT == mode){
 		mode = DKCDBG_ERR;
@@ -152,26 +156,21 @@ K2hdkcDbgMode BumpupK2hdkcDbgMode(void)
 	}else{	// DKCDBG_DUMP == mode
 		mode = DKCDBG_SILENT;
 	}
-	return ::SetK2hdkcDbgMode(mode);
+	return SetDbgCtrlMode(mode);
 }
 
-K2hdkcDbgMode GetK2hdkcDbgMode(void)
+K2hdkcDbgMode K2hdkcDbgControl::GetDbgCtrlMode(void)
 {
-	return k2hdkc_debug_mode;
+	return *pk2hdkc_debug_mode;
 }
 
-bool LoadK2hdkcDbgEnv(void)
-{
-	return K2hdkcDbgControl::LoadEnv();
-}
-
-bool SetK2hdkcDbgFile(const char* filepath)
+bool K2hdkcDbgControl::SetDbgCtrlFile(const char* filepath)
 {
 	if(DKCEMPTYSTR(filepath)){
 		ERR_DKCPRN("Parameter is wrong.");
 		return false;
 	}
-	if(!UnsetK2hdkcDbgFile()){
+	if(!UnsetDbgCtrlFile()){
 		return false;
 	}
 	FILE*	newfp;
@@ -179,31 +178,70 @@ bool SetK2hdkcDbgFile(const char* filepath)
 		ERR_DKCPRN("Could not open debug file(%s). errno = %d", filepath, errno);
 		return false;
 	}
-	k2hdkc_dbg_fp	= newfp;
+	*pk2hdkc_dbg_fp	= newfp;
 	k2hdkc_dbg_file	= filepath;
 	return true;
 }
 
-bool UnsetK2hdkcDbgFile(void)
+bool K2hdkcDbgControl::UnsetDbgCtrlFile(void)
 {
-	if(k2hdkc_dbg_fp){
-		if(0 != fclose(k2hdkc_dbg_fp)){
+	k2hdkc_dbg_file.clear();
+
+	if(*pk2hdkc_dbg_fp){
+		if(0 != fclose(*pk2hdkc_dbg_fp)){
 			ERR_DKCPRN("Could not close debug file. errno = %d", errno);
-			k2hdkc_dbg_fp = NULL;		// On this case, k2hdkc_dbg_fp is not correct pointer after error...
+			*pk2hdkc_dbg_fp = NULL;		// On this case, k2hdkc_dbg_fp is not correct pointer after error...
 			return false;
 		}
-		k2hdkc_dbg_fp = NULL;
+		*pk2hdkc_dbg_fp = NULL;
 	}
-	k2hdkc_dbg_file.clear();
 	return true;
+}
+
+const char* K2hdkcDbgControl::GetDbgCtrlFile(void)
+{
+	if(*pk2hdkc_dbg_fp && !k2hdkc_dbg_file.empty()){
+		return k2hdkc_dbg_file.c_str();
+	}
+	return NULL;
+}
+
+//---------------------------------------------------------
+// Global Function
+//---------------------------------------------------------
+K2hdkcDbgMode SetK2hdkcDbgMode(K2hdkcDbgMode mode)
+{
+	return K2hdkcDbgControl::GetK2hdkcDbgCtrl().SetDbgCtrlMode(mode);
+}
+
+K2hdkcDbgMode BumpupK2hdkcDbgMode(void)
+{
+	return K2hdkcDbgControl::GetK2hdkcDbgCtrl().BumpupDbgCtrlMode();
+}
+
+K2hdkcDbgMode GetK2hdkcDbgMode(void)
+{
+	return K2hdkcDbgControl::GetK2hdkcDbgCtrl().GetDbgCtrlMode();
+}
+
+bool LoadK2hdkcDbgEnv(void)
+{
+	return K2hdkcDbgControl::GetK2hdkcDbgCtrl().DbgCtrlLoadEnv();
+}
+
+bool SetK2hdkcDbgFile(const char* filepath)
+{
+	return K2hdkcDbgControl::GetK2hdkcDbgCtrl().SetDbgCtrlFile(filepath);
+}
+
+bool UnsetK2hdkcDbgFile(void)
+{
+	return K2hdkcDbgControl::GetK2hdkcDbgCtrl().UnsetDbgCtrlFile();
 }
 
 const char* GetK2hdkcDbgFile(void)
 {
-	if(k2hdkc_dbg_fp && !k2hdkc_dbg_file.empty()){
-		return k2hdkc_dbg_file.c_str();
-	}
-	return NULL;
+	return K2hdkcDbgControl::GetK2hdkcDbgCtrl().GetDbgCtrlFile();
 }
 
 void SetK2hdkcComLog(bool enable)
@@ -229,7 +267,6 @@ bool IsK2hdkcComLog(void)
 {
 	return K2hdkcComNumber::IsEnable();
 }
-
 
 /*
  * VIM modelines

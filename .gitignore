@@ -1,16 +1,14 @@
 #
 # K2HDKC
 #
-# .gitignore
-# 
-# Copyright 2016 Yahoo! JAPAN corporation.
+# Copyright 2016 Yahoo Japan Corporation.
 # 
 # K2HDKC is k2hash based distributed KVS cluster.
 # K2HDKC uses K2HASH, CHMPX, FULLOCK libraries. K2HDKC supports
 # distributed KVS cluster server program and client libraries.
 # 
 # For the full copyright and license information, please view
-# the LICENSE file that was distributed with this source code.
+# the license file that was distributed with this source code.
 #
 # AUTHOR:   Takeshi Nakatani
 # CREATE:   Thu Mar 31 2016
@@ -88,7 +86,7 @@ stamp-h1
 # automakes
 #
 Makefile.in
-*/Makefile.in
+Makefile
 
 
 #
@@ -97,6 +95,7 @@ Makefile.in
 *.tgz
 *.tar.gz
 *.rpm
+*.deb
 *.swp
 
 #
@@ -120,29 +119,24 @@ test-driver/*
 #
 # Other built objects
 #
-*.pc
-Makefile
-*/Makefile
-
-#
-# project custom
-#
 RELEASE_VERSION
+COMMIT_HASH
+*.pc
+*.spec
 *.k2h
-*.desc.long
-*.desc.short
-tests/results.xml
-/k2hdkc.spec
-/k2hdkc.spec.opt
-/k2hdkc.desc.long
-/k2hdkc.desc.short
-/k2hdkc-devel.spec
-/k2hdkc-devel.spec.opt
+buildutils/control
+buildutils/copyright
+rpmbuild
+rpmbuild/*
+debian
+debian/*
+debian_build
+debian_build/*
 lib/k2hdkcversion.cc
 src/k2hdkc
-src/*/k2hdkc
+src/k2hdkcmain
 tests/k2hdkclinetool
-tests/*/k2hdkclinetool
+tests/results.xmlA
 
 #
 # VIM modelines

@@ -2,7 +2,7 @@ K2HDKC
 --------
 [![Build Status](https://travis-ci.org/yahoojapan/k2hdkc.svg?branch=master)](https://travis-ci.org/yahoojapan/k2hdkc)
 
-**K2HDKC** - **K2H**ash based **D**istributed **K**vs **C**luster by Yahoo! JAPAN
+**K2HDKC** - **K2H**ash based **D**istributed **K**vs **C**luster
 
 ### Overview
 k2hdkc is a high speed automated based on [k2hash](https://github.com/yahoojapan/k2hash), [chmpx](https://github.com/yahoojapan/chmpx) Distributed Key Value Store(KVS).
@@ -33,4 +33,4 @@ This software is released under the MIT License, see the license file.
 ### AntPickax
 k2hdkc is one of [AntPickax](https://yahoojapan.github.io/AntPickax/) products.
 
-Copyright(C) 2018 Yahoo Japan corporation.
+Copyright(C) 2018 Yahoo Japan Corporation.
