@@ -2,67 +2,20 @@
 #
 # K2HDKC
 # 
-# Copyright 2016 Yahoo! JAPAN corporation.
+# Copyright 2016 Yahoo Japan Corporation.
 # 
 # K2HDKC is k2hash based distributed KVS cluster.
 # K2HDKC uses K2HASH, CHMPX, FULLOCK libraries. K2HDKC supports
 # distributed KVS cluster server program and client libraries.
 # 
 # For the full copyright and license information, please view
-# the LICENSE file that was distributed with this source code.
+# the license file that was distributed with this source code.
 #
 # AUTHOR:   Takeshi Nakatani
 # CREATE:   Thu Mar 31 2016
 # REVISION:
 #
 #
-
-##############################################################
-### Make result xml function
-###
-### Usage: put_result_xml <result:OK/NG> <output file path>
-###
-put_result_xml_func()
-{
-	if [ $# -ne 2 ]; then
-		return 1
-	fi
-	TESTRESULT=$1
-	XMLOUTPUTFILE=$2
-
-	if [ "X$XMLOUTPUTFILE" != "X" ]; then
-		echo "<?xml version=\"1.0\" encoding='ISO-8859-1' standalone='yes' ?>"	> $XMLOUTPUTFILE
-		echo "<TestRun>"								>> $XMLOUTPUTFILE
-
-		if [ "X$TESTRESULT" != "XOK" ]; then
-			echo "  <FailedTests>"						>> $XMLOUTPUTFILE
-			echo "    <Test id=\"1\">"					>> $XMLOUTPUTFILE
-			echo "      <Name>Test Script</Name>"		>> $XMLOUTPUTFILE
-			echo "    </Test>"							>> $XMLOUTPUTFILE
-			echo "  </FailedTests>"						>> $XMLOUTPUTFILE
-			echo "  <Statistics>"						>> $XMLOUTPUTFILE
-			echo "    <Tests>1</Tests>"					>> $XMLOUTPUTFILE
-			echo "    <FailuresTotal>1</FailuresTotal>"	>> $XMLOUTPUTFILE
-			echo "    <Errors>1</Errors>"				>> $XMLOUTPUTFILE
-			echo "    <Failures>1</Failures>"			>> $XMLOUTPUTFILE
-			echo "  </Statistics>"						>> $XMLOUTPUTFILE
-		else
-			echo "  <SuccessfulTests>"					>> $XMLOUTPUTFILE
-			echo "    <Test id=\"1\">"					>> $XMLOUTPUTFILE
-			echo "      <Name>TestScript</Name>"		>> $XMLOUTPUTFILE
-			echo "    </Test>"							>> $XMLOUTPUTFILE
-			echo "  </SuccessfulTests>"					>> $XMLOUTPUTFILE
-			echo "  <Statistics>"						>> $XMLOUTPUTFILE
-			echo "    <Tests>1</Tests>"					>> $XMLOUTPUTFILE
-			echo "    <FailuresTotal>0</FailuresTotal>"	>> $XMLOUTPUTFILE
-			echo "    <Errors>0</Errors>"				>> $XMLOUTPUTFILE
-			echo "    <Failures>0</Failures>"			>> $XMLOUTPUTFILE
-			echo "  </Statistics>"						>> $XMLOUTPUTFILE
-		fi
-
-		echo "</TestRun>"								>> $XMLOUTPUTFILE
-	fi
-}
 
 ###########################################################
 ## Common Variables
@@ -194,7 +147,6 @@ elif [ -f ${SRCDIR}/${OBJDIR}/k2hdkcmain ]; then
 else
 	echo "ERROR: there is no k2hdkc binary"
 	echo "FAILED"
-	put_result_xml_func NG ${XMLRESULTSFILE}
 	exit 1
 fi
 if [ -f ${TESTSDIR}/${PLATFORM_CURRENT}/k2hdkclinetool ]; then
@@ -204,7 +156,6 @@ elif [ -f ${TESTSDIR}/${OBJDIR}/k2hdkclinetool ]; then
 else
 	echo "ERROR: there is no k2hdkclinetool binary"
 	echo "FAILED"
-	put_result_xml_func NG ${XMLRESULTSFILE}
 	exit 1
 fi
 LINETOOLCMD=${TESTSDIR}/k2hdkclinetool.cmd
@@ -2789,15 +2740,11 @@ if [ ${TEST_RESULT} -ne 0 ]; then
 	echo ""													>> ${LOGFILE}
 	echo "================= `date` ================"		>> ${LOGFILE}
 	cat ${LOGFILE}
-
-	put_result_xml_func NG ${XMLRESULTSFILE}
 else
 	echo "======= ALL TEST                       : SUCCESS"	>> ${LOGFILE}
 	echo ""													>> ${LOGFILE}
 	echo "================= `date` ================"		>> ${LOGFILE}
 	cat ${LOGFILE}
-
-	put_result_xml_func OK ${XMLRESULTSFILE}
 fi
 
 exit ${TEST_RESULT}

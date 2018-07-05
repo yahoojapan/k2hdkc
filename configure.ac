@@ -1,17 +1,25 @@
 #
 # K2HDKC
-# 
-# Copyright 2016 Yahoo! JAPAN corporation.
-# 
-# K2HDKC is k2hash based distributed KVS cluster.
-# K2HDKC uses K2HASH, CHMPX, FULLOCK libraries. K2HDKC supports
-# distributed KVS cluster server program and client libraries.
+#
+# Utility tools for building configure/packages by AntPickax
+#
+# Copyright 2018 Yahoo Japan corporation.
+#
+# AntPickax provides utility tools for supporting autotools
+# builds.
+#
+# These tools retrieve the necessary information from the
+# repository and appropriately set the setting values of
+# configure, Makefile, spec,etc file and so on.
+# These tools were recreated to reduce the number of fixes and
+# reduce the workload of developers when there is a change in
+# the project configuration.
 # 
 # For the full copyright and license information, please view
-# the LICENSE file that was distributed with this source code.
+# the license file that was distributed with this source code.
 #
 # AUTHOR:   Takeshi Nakatani
-# CREATE:   Thu Mar 31 2016
+# CREATE:   Fri, Apr 13 2018
 # REVISION:
 #
 
@@ -26,7 +34,9 @@ LT_INIT()
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 
+#
 # Checks for programs.
+#
 AC_PROG_CXX
 AC_PROG_AWK
 AC_PROG_CC
@@ -37,10 +47,14 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_PROG_LIBTOOL
 
+#
 # Checks for header files.
+#
 AC_CHECK_HEADERS([stdlib.h stdio.h string.h fcntl.h syslog.h])
 
+#
 # Checks for typedefs, structures, and compiler characteristics.
+#
 AC_HEADER_STDBOOL
 AC_C_INLINE
 AC_TYPE_OFF_T
@@ -53,51 +67,86 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT8_T
 
+#
 # Checks for library functions.
+#
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([strcasecmp memset realpath clock_gettime gettimeofday strncasecmp])
 AC_CHECK_HEADERS([limits.h sys/time.h termios.h])
 
 AC_CONFIG_MACRO_DIR([m4])
 
-AC_CONFIG_FILES([Makefile
-		docs/Makefile
-		lib/Makefile
-		lib/libk2hdkc.pc
-		src/Makefile
-		tests/Makefile])
+#
+# Symbols for buildutils
+#
+AC_SUBST([GIT_DOMAIN], "github.com")
+AC_SUBST([GIT_ORG], "yahoojapan")
+AC_SUBST([GIT_REPO], "k2hdkc")
+AC_SUBST([CURRENTREV], "`$(pwd)/buildutils/make_commit_hash.sh -o yahoojapan -r k2hdkc -short`")
+AC_SUBST([DEV_EMAIL], "`echo ${DEBEMAIL:-antpickax-support@mail.yahoo.co.jp}`")
+AC_SUBST([DEV_NAME], "`echo ${DEBFULLNAME:-K2HASH_DEVELOPER}`")
 
-# fullock
-if test "x${CHECK_LIBFULLOCK}" != "xno"; then
-	PKG_CHECK_MODULES([fullock], [libfullock >= 1.0.24], [have_fullock=yes], [have_fullock=no])
-	if test "x${have_fullock}" = "xno"; then
-		AC_MSG_ERROR([not found libfullock-dev package.])
-	fi
-fi
+AC_SUBST([RPMCHANGELOG], "`$(pwd)/buildutils/make_rpm_changelog.sh $(pwd)/ChangeLog`")
+AC_SUBST([SHORTDESC], "`$(pwd)/buildutils/make_description.sh $(pwd)/docs/k2hdkc.1 -short`")
+AC_SUBST([LONGDESC], "`$(pwd)/buildutils/make_description.sh $(pwd)/docs/k2hdkc.1 -long`")
+AC_SUBST([ESCLONGDESC], "`$(pwd)/buildutils/make_description.sh $(pwd)/docs/k2hdkc.1 -esclong`")
+AC_SUBST([DEBLONGDESC], "`$(pwd)/buildutils/make_description.sh $(pwd)/docs/k2hdkc.1 -deblong`")
+AC_SUBST([PKG_VERSION], "`$(pwd)/buildutils/make_variables.sh -pkg_version`")
+AC_SUBST([LIB_VERSION_INFO], "`$(pwd)/buildutils/make_variables.sh -lib_version_info`")
+AC_SUBST([LIB_VERSION_LINK], "`$(pwd)/buildutils/make_variables.sh -lib_version_for_link`")
+AC_SUBST([LIB_MAJOR_NUMBER], "`$(pwd)/buildutils/make_variables.sh -major_number`")
+AC_SUBST([PKGLICENSE], "`grep License COPYING | sed 's/ License//g'`")
+AC_SUBST([DEBCOPYING], "`tail -n +5 COPYING | sed 's/^$/./g' | sed 's/^/ /g'`")
+AM_SUBST_NOTMAKE([CURRENTREV])
+AM_SUBST_NOTMAKE([RPMCHANGELOG])
+AM_SUBST_NOTMAKE([SHORTDESC])
+AM_SUBST_NOTMAKE([LONGDESC])
+AM_SUBST_NOTMAKE([ESCLONGDESC])
+AM_SUBST_NOTMAKE([DEBLONGDESC])
+AM_SUBST_NOTMAKE([DEBCOPYING])
 
-# k2hash
-if test "x${CHECK_K2HASH}" != "xno"; then
-	PKG_CHECK_MODULES([k2hash], [libk2hash >= 1.0.57], [have_k2hash=yes], [have_k2hash=no])
-	if test "x${have_k2hash}" = "xno"; then
-		AC_MSG_ERROR([not found k2hash package.])
-	fi
-fi
+#
+# pkg-config for old version
+#
+AC_PATH_PROG(PKG_CONFIG, pkg-config, [AC_MSG_RESULT(no)])
+AS_IF([test "$PKG_CONFIG" = "no"], [AC_MSG_ERROR(You have to install pkg-config to compile $PACKAGE_NAME v$PACKAGE_VERSION)])
 
-# chmpx
-if test "x${CHECK_CHMPX}" != "xno"; then
-	PKG_CHECK_MODULES([chmpx], [libchmpx >= 1.0.58], [have_chmpx=yes], [have_chmpx=no])
-	if test "x${have_chmpx}" = "xno"; then
-		AC_MSG_ERROR([not found chmpx package.])
-	fi
-fi
+#
+# Checking Libraries
+#
+check_depend_libs=1
+AC_MSG_CHECKING([for checking dependent libraries])
+AC_ARG_ENABLE(check-depend-libs,
+	[AS_HELP_STRING([--disable-check-depend-libs], [disable checking dependent libraries])],
+	[case "${enableval}" in
+		yes)	check_depend_libs=1;;
+		*)		check_depend_libs=0;;
+	esac]
+)
+AS_IF([test ${check_depend_libs} = 1], [AC_MSG_RESULT(yes)], [AC_MSG_RESULT(no)])
+AS_IF([test ${check_depend_libs} = 1], [PKG_CHECK_MODULES([fullock], [libfullock >= 1.0.28], [], [AC_MSG_ERROR(not found libfullock package)])])
+AS_IF([test ${check_depend_libs} = 1], [PKG_CHECK_MODULES([k2hash], [libk2hash >= 1.0.61], [], [AC_MSG_ERROR(not found k2hash package)])])
+AS_IF([test ${check_depend_libs} = 1], [PKG_CHECK_MODULES([chmpx], [libchmpx >= 1.0.62], [], [AC_MSG_ERROR(not found chmpx package)])])
 
+#
 # CFLAGS/CXXFLAGS
+#
 CFLAGS="-Wall $CFLAGS"
 CXXFLAGS="-Wall $CXXFLAGS"
 
-# LIB_VERSION_INFO for libtool library version info
-LIB_VERSION_INFO=`$(pwd)/make_valiables.sh -lib_version_info`
-AC_SUBST([LIB_VERSION_INFO])
+#
+# Config files
+#
+AC_CONFIG_FILES([Makefile
+				docs/Makefile
+				lib/Makefile
+				lib/libk2hdkc.pc
+				src/Makefile
+				tests/Makefile
+				buildutils/Makefile
+				buildutils/control
+				buildutils/copyright
+				buildutils/k2hdkc.spec])
 
 AC_OUTPUT
 

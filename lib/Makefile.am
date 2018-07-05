@@ -1,21 +1,19 @@
 #
 # K2HDKC
 # 
-# Copyright 2016 Yahoo! JAPAN corporation.
+# Copyright 2016 Yahoo Japan Corporation.
 # 
 # K2HDKC is k2hash based distributed KVS cluster.
 # K2HDKC uses K2HASH, CHMPX, FULLOCK libraries. K2HDKC supports
 # distributed KVS cluster server program and client libraries.
 # 
 # For the full copyright and license information, please view
-# the LICENSE file that was distributed with this source code.
+# the license file that was distributed with this source code.
 #
 # AUTHOR:   Takeshi Nakatani
 # CREATE:   Mon Jul 11 2016
 # REVISION:
 #
-
-## AUTOMAKE_OPTIONS	=
 
 pkginclude_HEADERS	=	k2hdkccommon.h \
 						k2hdkctypes.h \
@@ -55,6 +53,7 @@ pkginclude_HEADERS	=	k2hdkccommon.h \
 						k2hdkcthread.h \
 						k2hdkcslave.h \
 						k2hdkccomutil.h
+
 pkgincludedir		= $(includedir)/k2hdkc
 
 EXTRA_DIST			=
@@ -97,6 +96,7 @@ libk2hdkc_la_SOURCES=	k2hdkcdbg.cc \
 						k2hdkcthread.cc \
 						k2hdkcslave.cc \
 						k2hdkcversion.cc
+
 libk2hdkc_la_LDFLAGS= -version-info $(LIB_VERSION_INFO)
 libk2hdkc_la_LIBADD	= $(fullock_LIBS) $(k2hash_LIBS) $(chmpx_LIBS)
 
@@ -108,7 +108,7 @@ AM_CPPFLAGS			= $(fullock_CFLAGS) $(k2hash_CFLAGS) $(chmpx_CFLAGS)
 .PHONY:	k2hdkcxversion
 
 k2hdkcversion.cc:	k2hdkcxversion
-	@../make_rev.sh k2hdkcversion.cc k2hdkc_commit_hash
+	@../buildutils/make_commit_hash_source.sh k2hdkcversion.cc k2hdkc_commit_hash
 
 #
 # VIM modelines
