@@ -626,7 +626,7 @@ extern bool k2hdkc_ex_remove_subkey(const char* config, short ctlport, bool is_a
 extern bool k2hdkc_ex_remove_str_subkey(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, bool is_nest);
 
 extern bool k2hdkc_pm_remove_subkey(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest);
-extern bool k2hdkc_pm_remove_str_subkey(k2hdkc_chmpx_h handle, const char* pkey, const char* psubkey, size_t subkeylength, bool is_nest);
+extern bool k2hdkc_pm_remove_str_subkey(k2hdkc_chmpx_h handle, const char* pkey, const char* psubkey, bool is_nest);
 
 extern bool k2hdkc_remove_subkey_np(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest);
 extern bool k2hdkc_remove_str_subkey_np(const char* config, const char* pkey, const char* psubkey, bool is_nest);
@@ -635,7 +635,7 @@ extern bool k2hdkc_ex_remove_subkey_np(const char* config, short ctlport, bool i
 extern bool k2hdkc_ex_remove_str_subkey_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, bool is_nest);
 
 extern bool k2hdkc_pm_remove_subkey_np(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest);
-extern bool k2hdkc_pm_remove_str_subkey_np(k2hdkc_chmpx_h handle, const char* pkey, const char* psubkey, size_t subkeylength, bool is_nest);
+extern bool k2hdkc_pm_remove_str_subkey_np(k2hdkc_chmpx_h handle, const char* pkey, const char* psubkey, bool is_nest);
 
 //---------------------------------------------------------
 // Functions - Rename key
