@@ -1,3 +1,15 @@
+k2hdkc (0.9.24) unstable; urgency=low
+
+  * Fixed spec file and updated dependency
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Wed, 17 Oct 2018 20:28:44 +0900
+
+k2hdkc (0.9.23) unstable; urgency=low
+
+  * Wrong arguments in k2hdkc_pm_remove_str_subkey functions
+
+ -- Hirotaka Wakabayashi <hiwakaba@yahoo-corp.jp>  Mon, 13 Aug 2018 18:46:11 +0900
+
 k2hdkc (0.9.22) unstable; urgency=low
 
   * avoid static object initialization order problem(SIOF)

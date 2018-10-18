@@ -2243,7 +2243,7 @@ bool k2hdkc_pm_remove_subkey(k2hdkc_chmpx_h handle, const unsigned char* pkey, s
 	return result;
 }
 
-bool k2hdkc_pm_remove_str_subkey(k2hdkc_chmpx_h handle, const char* pkey, const char* psubkey, size_t subkeylength, bool is_nest)
+bool k2hdkc_pm_remove_str_subkey(k2hdkc_chmpx_h handle, const char* pkey, const char* psubkey, bool is_nest)
 {
 	return k2hdkc_pm_remove_subkey(handle, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(psubkey), (psubkey ? strlen(psubkey) + 1 : 0), is_nest);
 }
@@ -2295,7 +2295,7 @@ bool k2hdkc_pm_remove_subkey_np(k2hdkc_chmpx_h handle, const unsigned char* pkey
 	return result;
 }
 
-bool k2hdkc_pm_remove_str_subkey_np(k2hdkc_chmpx_h handle, const char* pkey, const char* psubkey, size_t subkeylength, bool is_nest)
+bool k2hdkc_pm_remove_str_subkey_np(k2hdkc_chmpx_h handle, const char* pkey, const char* psubkey, bool is_nest)
 {
 	return k2hdkc_pm_remove_subkey_np(handle, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(psubkey), (psubkey ? strlen(psubkey) + 1 : 0), is_nest);
 }
