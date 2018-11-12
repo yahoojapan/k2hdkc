@@ -1,3 +1,9 @@
+k2hdkc (0.9.25) unstable; urgency=low
+
+  * Fixed a bug about initializing debug class
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Mon, 12 Nov 2018 12:49:07 +0900
+
 k2hdkc (0.9.24) unstable; urgency=low
 
   * Fixed spec file and updated dependency
