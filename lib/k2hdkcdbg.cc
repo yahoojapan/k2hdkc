@@ -104,15 +104,15 @@ bool K2hdkcDbgControl::DbgCtrlLoadEnvName(void)
 		return true;
 	}
 	if(0 == strcasecmp(value.c_str(), "SLT") || 0 == strcasecmp(value.c_str(), "SILENT")){
-		SetK2hdkcDbgMode(DKCDBG_SILENT);
+		SetDbgCtrlMode(DKCDBG_SILENT);
 	}else if(0 == strcasecmp(value.c_str(), "ERR") || 0 == strcasecmp(value.c_str(), "ERROR")){
-		SetK2hdkcDbgMode(DKCDBG_ERR);
+		SetDbgCtrlMode(DKCDBG_ERR);
 	}else if(0 == strcasecmp(value.c_str(), "WAN") || 0 == strcasecmp(value.c_str(), "WARNING")){
-		SetK2hdkcDbgMode(DKCDBG_WARN);
+		SetDbgCtrlMode(DKCDBG_WARN);
 	}else if(0 == strcasecmp(value.c_str(), "MSG") || 0 == strcasecmp(value.c_str(), "INFO")){
-		SetK2hdkcDbgMode(DKCDBG_MSG);
+		SetDbgCtrlMode(DKCDBG_MSG);
 	}else if(0 == strcasecmp(value.c_str(), "DMP") || 0 == strcasecmp(value.c_str(), "DUMP")){
-		SetK2hdkcDbgMode(DKCDBG_DUMP);
+		SetDbgCtrlMode(DKCDBG_DUMP);
 	}else{
 		MSG_DKCPRN("%s ENV is not unknown string(%s).", K2hdkcDbgControl::DBGENVNAME, value.c_str());
 		return false;
@@ -127,7 +127,7 @@ bool K2hdkcDbgControl::DbgCtrlLoadEnvFile(void)
 		MSG_DKCPRN("%s ENV is not set.", K2hdkcDbgControl::DBGENVFILE);
 		return true;
 	}
-	if(!SetK2hdkcDbgFile(value.c_str())){
+	if(!SetDbgCtrlFile(value.c_str())){
 		MSG_DKCPRN("%s ENV is unsafe string(%s).", K2hdkcDbgControl::DBGENVFILE, value.c_str());
 		return false;
 	}
