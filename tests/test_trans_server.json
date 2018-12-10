@@ -48,6 +48,7 @@
         "CONTIMEOUT":             "500000",
         "MQRWTIMEOUT":            "50",
         "MQRETRYCNT":             "20000",
+        "AUTOMERGE":              "on",
         "DOMERGE":                "on",
         "SSL":                    "no",
         "K2HFULLMAP":             "on",

@@ -1,6 +1,12 @@
 K2HDKC
 --------
 [![Build Status](https://travis-ci.org/yahoojapan/k2hdkc.svg?branch=master)](https://travis-ci.org/yahoojapan/k2hdkc)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/yahoojapan/k2hdkc/master/COPYING)
+[![GitHub forks](https://img.shields.io/github/forks/yahoojapan/k2hdkc.svg)](https://github.com/yahoojapan/k2hdkc/network)
+[![GitHub stars](https://img.shields.io/github/stars/yahoojapan/k2hdkc.svg)](https://github.com/yahoojapan/k2hdkc/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/yahoojapan/k2hdkc.svg)](https://github.com/yahoojapan/k2hdkc/issues)
+[![debian packages](https://img.shields.io/badge/deb-packagecloud.io-844fec.svg)](https://packagecloud.io/antpickax/stable)
+[![RPM packages](https://img.shields.io/badge/rpm-packagecloud.io-844fec.svg)](https://packagecloud.io/antpickax/stable)
 
 **K2HDKC** - **K2H**ash based **D**istributed **K**vs **C**luster
 
@@ -25,12 +31,18 @@ Provides encryption function as distributed KVS for the key's data held as the f
 Provides the key expiration function which is the feature of k2hash as distributed KVS.
 
 ### Documents
-  - [WIKI](https://github.com/yahoojapan/k2hdkc/wiki)
+  - [Document top page](https://k2hdkc.antpick.ax/)
+  - [Github wiki page](https://github.com/yahoojapan/k2hdkc/wiki)
+  - [About AntPickax](https://antpick.ax/)
+
+### Packages
+  - [RPM packages(packagecloud.io)](https://packagecloud.io/antpickax/stable)
+  - [Debian packages(packagecloud.io)](https://packagecloud.io/antpickax/stable)
 
 ### License
 This software is released under the MIT License, see the license file.
 
 ### AntPickax
-k2hdkc is one of [AntPickax](https://yahoojapan.github.io/AntPickax/) products.
+k2hdkc is one of [AntPickax](https://antpick.ax/) products.
 
 Copyright(C) 2018 Yahoo Japan Corporation.

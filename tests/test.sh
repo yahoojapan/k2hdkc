@@ -214,7 +214,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
 	CHMPX_8021_PID=$!
 	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
@@ -224,15 +224,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
 		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
 	fi
-	echo -n "${K2HDKC_8021_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
 	CHMPX_8023_PID=$!
 	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
@@ -242,15 +240,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
 		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
 	fi
-	echo -n "${K2HDKC_8023_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
 	CHMPX_8025_PID=$!
 	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
@@ -260,15 +256,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
 		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
 	fi
-	echo -n "${K2HDKC_8025_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
 	CHMPX_8027_PID=$!
 	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
@@ -278,15 +272,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
 		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
 	fi
-	echo -n "${K2HDKC_8027_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
 	CHMPX_8031_PID=$!
 	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	########################################
 	#
@@ -353,34 +345,33 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	#
 	echo "" >> ${LOGFILE}
 	echo "======= [INI CONF(EXECUTION)] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
 	sleep 1
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -9 ${K2HDKC_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -9 ${K2HDKC_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -9 ${K2HDKC_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -9 ${K2HDKC_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-	sleep 1
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
 
 	########################################
 	#
@@ -421,7 +412,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
 	CHMPX_8021_PID=$!
 	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
@@ -431,15 +422,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
 		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
 	fi
-	echo -n "${K2HDKC_8021_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
 	CHMPX_8023_PID=$!
 	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
@@ -449,15 +438,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
 		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
 	fi
-	echo -n "${K2HDKC_8023_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
 	CHMPX_8025_PID=$!
 	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
@@ -467,15 +454,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
 		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
 	fi
-	echo -n "${K2HDKC_8025_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
 	CHMPX_8027_PID=$!
 	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
@@ -485,15 +470,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
 		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
 	fi
-	echo -n "${K2HDKC_8027_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
 	CHMPX_8031_PID=$!
 	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	########################################
 	#
@@ -562,34 +545,33 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	#
 	echo "" >> ${LOGFILE}
 	echo "======= [YAML CONF(EXECUTION)] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
 	sleep 1
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -9 ${K2HDKC_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -9 ${K2HDKC_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -9 ${K2HDKC_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -9 ${K2HDKC_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-	sleep 1
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
 
 	########################################
 	#
@@ -630,7 +612,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
 	CHMPX_8021_PID=$!
 	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
@@ -640,15 +622,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
 		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
 	fi
-	echo -n "${K2HDKC_8021_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
 	CHMPX_8023_PID=$!
 	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
@@ -658,15 +638,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
 		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
 	fi
-	echo -n "${K2HDKC_8023_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
 	CHMPX_8025_PID=$!
 	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
@@ -676,15 +654,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
 		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
 	fi
-	echo -n "${K2HDKC_8025_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
 	CHMPX_8027_PID=$!
 	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
@@ -694,15 +670,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
 		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
 	fi
-	echo -n "${K2HDKC_8027_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
 	CHMPX_8031_PID=$!
 	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	########################################
 	#
@@ -771,34 +745,33 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	#
 	echo "" >> ${LOGFILE}
 	echo "======= [JSON CONF(EXECUTION)] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
 	sleep 1
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -9 ${K2HDKC_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -9 ${K2HDKC_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -9 ${K2HDKC_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -9 ${K2HDKC_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-	sleep 1
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
 
 	########################################
 	#
@@ -838,7 +811,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
 	CHMPX_8021_PID=$!
 	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
@@ -848,15 +821,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
 		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
 	fi
-	echo -n "${K2HDKC_8021_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
 	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
 	CHMPX_8023_PID=$!
 	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
@@ -866,15 +837,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
 		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
 	fi
-	echo -n "${K2HDKC_8023_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
 	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
 	CHMPX_8025_PID=$!
 	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
@@ -884,15 +853,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
 		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
 	fi
-	echo -n "${K2HDKC_8025_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
 	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
 	CHMPX_8027_PID=$!
 	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
@@ -902,15 +869,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
 		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
 	fi
-	echo -n "${K2HDKC_8027_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
 	chmpx -json "${TEST_SLAVE_JSON}" -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
 	CHMPX_8031_PID=$!
 	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	########################################
 	#
@@ -979,34 +944,33 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	#
 	echo "" >> ${LOGFILE}
 	echo "======= [JSON STRING(EXECUTION)] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
 	sleep 1
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -9 ${K2HDKC_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -9 ${K2HDKC_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -9 ${K2HDKC_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -9 ${K2HDKC_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-	sleep 1
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
 
 	########################################
 	#
@@ -1046,7 +1010,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
 	CHMPX_8021_PID=$!
 	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
 	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
@@ -1056,15 +1020,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
 		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
 	fi
-	echo -n "${K2HDKC_8021_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
 	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
 	CHMPX_8023_PID=$!
 	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
 	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
@@ -1074,15 +1036,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
 		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
 	fi
-	echo -n "${K2HDKC_8023_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
 	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
 	CHMPX_8025_PID=$!
 	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
 	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
@@ -1092,15 +1052,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
 		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
 	fi
-	echo -n "${K2HDKC_8025_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
 	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
 	CHMPX_8027_PID=$!
 	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
 	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
@@ -1110,15 +1068,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
 		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
 	fi
-	echo -n "${K2HDKC_8027_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
 	CHMJSONCONF="${TEST_SLAVE_JSON}" chmpx -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
 	CHMPX_8031_PID=$!
 	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	########################################
 	#
@@ -1187,34 +1143,33 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	#
 	echo "" >> ${LOGFILE}
 	echo "======= [JSON ENV(EXECUTION)] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
 	sleep 1
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -9 ${K2HDKC_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -9 ${K2HDKC_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -9 ${K2HDKC_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -9 ${K2HDKC_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-	sleep 1
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
 
 	########################################
 	#
@@ -1258,7 +1213,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
 	CHMPX_8021_PID=$!
 	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
@@ -1268,15 +1223,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
 		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
 	fi
-	echo -n "${K2HDKC_8021_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
 	CHMPX_8023_PID=$!
 	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
@@ -1286,15 +1239,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
 		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
 	fi
-	echo -n "${K2HDKC_8023_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
 	CHMPX_8025_PID=$!
 	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
@@ -1304,15 +1255,13 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
 		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
 	fi
-	echo -n "${K2HDKC_8025_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
 	CHMPX_8027_PID=$!
 	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
@@ -1322,9 +1271,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
 		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
 	fi
-	echo -n "${K2HDKC_8027_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
 
 	########################################
 	#
@@ -1337,7 +1284,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	chmpx -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
 	CHMPX_8031_PID=$!
 	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- [INI CONF] K2HDKCLINETOOL CAPI/PERM       : " >> ${LOGFILE}
 	echo "=========================================================================="	> ${LINETOOLLOG}
@@ -1405,34 +1352,33 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	#
 	echo "" >> ${LOGFILE}
 	echo "======= [INI CONF] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
 	sleep 1
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -9 ${K2HDKC_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -9 ${K2HDKC_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -9 ${K2HDKC_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -9 ${K2HDKC_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-	sleep 1
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
 
 	########################################
 	#
@@ -1555,7 +1501,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
 	CHMPX_8021_PID=$!
 	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
@@ -1565,15 +1511,13 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
 		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
 	fi
-	echo -n "${K2HDKC_8021_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
 	CHMPX_8023_PID=$!
 	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
@@ -1583,15 +1527,13 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
 		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
 	fi
-	echo -n "${K2HDKC_8023_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
 	CHMPX_8025_PID=$!
 	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
@@ -1601,15 +1543,13 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
 		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
 	fi
-	echo -n "${K2HDKC_8025_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
 	CHMPX_8027_PID=$!
 	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
@@ -1619,9 +1559,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
 		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
 	fi
-	echo -n "${K2HDKC_8027_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
 
 	########################################
 	#
@@ -1636,7 +1574,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	chmpx -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
 	CHMPX_8031_PID=$!
 	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- [YAML CONF] K2HDKCLINETOOL CAPI/PERM       : " >> ${LOGFILE}
 	echo "=========================================================================="	> ${LINETOOLLOG}
@@ -1704,34 +1642,33 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	#
 	echo "" >> ${LOGFILE}
 	echo "======= [YAML CONF] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
 	sleep 1
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -9 ${K2HDKC_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -9 ${K2HDKC_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -9 ${K2HDKC_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -9 ${K2HDKC_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-	sleep 1
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
 
 	########################################
 	#
@@ -1855,7 +1792,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
 	CHMPX_8021_PID=$!
 	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
@@ -1865,15 +1802,13 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
 		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
 	fi
-	echo -n "${K2HDKC_8021_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
 	CHMPX_8023_PID=$!
 	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
@@ -1883,15 +1818,13 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
 		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
 	fi
-	echo -n "${K2HDKC_8023_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
 	CHMPX_8025_PID=$!
 	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
@@ -1901,15 +1834,13 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
 		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
 	fi
-	echo -n "${K2HDKC_8025_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
 	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
 	CHMPX_8027_PID=$!
 	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
@@ -1919,9 +1850,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
 		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
 	fi
-	echo -n "${K2HDKC_8027_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
 
 	########################################
 	#
@@ -1936,7 +1865,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	chmpx -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
 	CHMPX_8031_PID=$!
 	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- [JSON CONF] K2HDKCLINETOOL CAPI/PERM       : " >> ${LOGFILE}
 	echo "=========================================================================="	> ${LINETOOLLOG}
@@ -2004,34 +1933,33 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	#
 	echo "" >> ${LOGFILE}
 	echo "======= [JSON CONF] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
 	sleep 1
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -9 ${K2HDKC_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -9 ${K2HDKC_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -9 ${K2HDKC_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -9 ${K2HDKC_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-	sleep 1
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
 
 	########################################
 	#
@@ -2153,7 +2081,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
 	CHMPX_8021_PID=$!
 	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
@@ -2163,15 +2091,13 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
 		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
 	fi
-	echo -n "${K2HDKC_8021_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
 	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
 	CHMPX_8023_PID=$!
 	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
@@ -2181,15 +2107,13 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
 		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
 	fi
-	echo -n "${K2HDKC_8023_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
 	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
 	CHMPX_8025_PID=$!
 	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
@@ -2199,15 +2123,13 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
 		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
 	fi
-	echo -n "${K2HDKC_8025_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
 	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
 	CHMPX_8027_PID=$!
 	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
 	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
@@ -2217,9 +2139,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
 		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
 	fi
-	echo -n "${K2HDKC_8027_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
 
 	########################################
 	#
@@ -2234,7 +2154,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	chmpx -json "${TEST_SLAVE_JSON}" -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
 	CHMPX_8031_PID=$!
 	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- [JSON STRING] K2HDKCLINETOOL CAPI/PERM       : " >> ${LOGFILE}
 	echo "=========================================================================="	> ${LINETOOLLOG}
@@ -2302,34 +2222,33 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	#
 	echo "" >> ${LOGFILE}
 	echo "======= [JSON STRING] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
 	sleep 1
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -9 ${K2HDKC_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -9 ${K2HDKC_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -9 ${K2HDKC_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -9 ${K2HDKC_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-	sleep 1
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
 
 	########################################
 	#
@@ -2451,7 +2370,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
 	CHMPX_8021_PID=$!
 	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
 	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
@@ -2461,15 +2380,13 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
 		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
 	fi
-	echo -n "${K2HDKC_8021_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
 	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
 	CHMPX_8023_PID=$!
 	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
 	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
@@ -2479,15 +2396,13 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
 		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
 	fi
-	echo -n "${K2HDKC_8023_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
 	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
 	CHMPX_8025_PID=$!
 	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
 	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
@@ -2497,15 +2412,13 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
 		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
 	fi
-	echo -n "${K2HDKC_8025_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
 
 	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
 	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
 	CHMPX_8027_PID=$!
 	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
 	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
@@ -2515,9 +2428,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
 		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
 	fi
-	echo -n "${K2HDKC_8027_PID}, " >> ${LOGFILE}
-	echo "${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-	sleep 1
+	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
 
 	########################################
 	#
@@ -2532,7 +2443,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	CHMJSONCONF="${TEST_SLAVE_JSON}" chmpx -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
 	CHMPX_8031_PID=$!
 	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 3
+	sleep 2
 
 	echo -n "------- [JSON ENV] K2HDKCLINETOOL CAPI/PERM       : " >> ${LOGFILE}
 	echo "=========================================================================="	> ${LINETOOLLOG}
@@ -2600,34 +2511,33 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	#
 	echo "" >> ${LOGFILE}
 	echo "======= [JSON ENV] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
 	sleep 1
-	(ps -p ${CHMPX_8031_PID}		> /dev/null) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null) && (kill -9 ${K2HDKC_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null) && (kill -9 ${K2HDKC_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null) && (kill -9 ${K2HDKC_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null) && (kill -9 ${K2HDKC_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-	sleep 1
+	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
+	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
 
 	########################################
 	#
