@@ -36,7 +36,7 @@ using namespace	std;
 //---------------------------------------------------------
 // Symbols
 //---------------------------------------------------------
-#define	K2HDKC_DEFAULT_TRANSPLUGIN		"libk2htpdtor.so"
+#define	K2HDKC_DEFAULT_TRANSPLUGIN		"libk2htpdtor.so.1"
 
 #define	INI_COMMENT_CHAR				'#'
 #define	INI_INCLUDE_STR					"INCLUDE"

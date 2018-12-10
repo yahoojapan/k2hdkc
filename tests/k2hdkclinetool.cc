@@ -84,7 +84,7 @@ static inline void DKCTOOL_PRINT(const char* prefix, const char* format, ...)
 
 inline std::string PRN_TIMESPEC(const timespec& ts)
 {
-	char	szBuff[32];
+	char	szBuff[64];
 	string	strResult;
 
 	if(0 < ts.tv_sec){
@@ -5164,7 +5164,7 @@ static bool StatusNodeCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 			PRN("}");
 		}else{
 			// make buffer
-			char	szName[24];
+			char	szName[256];
 			char	szAreaRaito[6];
 			char	szElemRaito[6];
 			char	szPageRaito[6];
@@ -5178,7 +5178,7 @@ static bool StatusNodeCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 				szElemRaito[sizeof(szElemRaito) - 1]= '\0';
 				szPageRaito[sizeof(szPageRaito) - 1]= '\0';
 
-				strncpy(szName, pstates[cnt].name, min(strlen(pstates[cnt].name), (sizeof(szName) - 1)));
+				memcpy(szName, pstates[cnt].name, min(strlen(pstates[cnt].name), (sizeof(szName) - 1)));
 
 				long	AreaRaito	= ((pstates[cnt].k2hstate.assigned_area_count * 100) / pstates[cnt].k2hstate.total_area_count);
 				long	ElemRaito	= ((pstates[cnt].k2hstate.assigned_element_count * 100) / pstates[cnt].k2hstate.total_element_count);
