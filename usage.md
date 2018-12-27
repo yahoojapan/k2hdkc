@@ -14,6 +14,50 @@ next_string: Build
 ---
 
 # Usage
+This is an explanation about **K2HDKC** installation and easy operation confirmation.
+
+# 1. Creating a usage environment
+
+## Install K2HDKC
+There are two ways to install **K2HDKC** in your environment.  
+One is to download and install the package of **K2HDKC** from [packagecloud.io](https://packagecloud.io/).  
+The other way is to build and install **K2HDKC** from source code yourself.  
+These methods are described below.  
+
+### Installing packages
+The **K2HDKC** publishes [packages](https://packagecloud.io/app/antpickax/stable/search?q=k2hdkc) in [packagecloud.io - AntPickax stable repository](https://packagecloud.io/antpickax/stable) so that anyone can use it.  
+The package of the **K2HDKC** is released in the form of Debian package, RPM package.  
+Since the installation method differs depending on your OS, please check the following procedure and install it.  
+
+#### Debian(Stretch) / Ubuntu(Bionic Beaver)
+```
+$ sudo apt-get update -y
+$ sudo apt-get install curl -y
+$ curl -s https://packagecloud.io/install/repositories/antpickax/stable/script.deb.sh | sudo bash
+$ sudo apt-get install k2hdkc
+```
+To install the developer package, please install the following package.
+```
+$ sudo apt-get install k2hdkc-dev
+```
+
+#### Fedora28 / CentOS7.x(6.x)
+```
+$ sudo yum makecache
+$ sudo yum install curl -y
+$ curl -s https://packagecloud.io/install/repositories/antpickax/stable/script.rpm.sh | sudo bash
+$ sudo yum install k2hdkc
+```
+To install the developer package, please install the following package.
+```
+$ sudo yum install k2hdkc-devel
+```
+
+#### Other OS
+If you are not using the above OS, packages are not prepared and can not be installed directly.  
+In this case, build from the [source code](https://github.com/yahoojapan/k2hdkc) described below and install it.
+
+# 2. Operation check
 ## k2hdkc Server nodes
 The k2hdkc cluster consists of multiple k2hdkc server nodes.
 
