@@ -13,7 +13,7 @@ next_url: developerja.html
 next_string: Developer
 ---
 
-# 造る
+# ビルド
 
 この章は3つの部分で構成されています。
 
@@ -21,28 +21,28 @@ next_string: Developer
 * ソースコードからK2HDKCを構築する方法
 * K2HDKCのインストール方法
 
-## 1.前提条件をインストールする
+## 1.ビルド環境の構築
 
-K2HDKCは主にfullock、k2hashおよびchmpxに依存します。 それぞれの依存ライブラリとヘッダファイルはK2HDKCを構築するために必要です。 それらをインストールする方法は2つあります。 好きなものを選ぶことができます。
+**K2HDKC**は主に[FULLOCK](https://fullock.antpick.ax/indexja.html)、[K2HASH](https://k2hash.antpick.ax/indexja.html) 、[CHMPX](https://chmpx.antpick.ax/indexja.html)に依存します。 それぞれの依存ライブラリとヘッダファイルは**K2HDKC**を構築するために必要です。 それらをインストールする方法は2つあります。 好きなものを選ぶことができます。
 
-* GitHubを使う  
+* [GitHub](https://github.com/yahoojapan)を使う  
 依存ライブラリのソースコードとヘッダファイルをインストールします。 あなたはそれらをビルドしてインストールします。
-* packagecloud.ioを使用する  
+* [packagecloud.io](https://packagecloud.io/antpickax/stable)を使用する  
 依存ライブラリのパッケージとヘッダファイルをインストールします。 あなたはそれらをインストールするだけです。 ライブラリはすでに構築されています。
 
 ### 1.1. GitHubから各依存ライブラリとヘッダファイルをインストールする
 
 詳細については以下の文書を読んでください。
 
-* [fullock](https://fullock.antpick.ax/build.html)
-* [k2hash](https://k2hash.antpick.ax/build.html) 
-* [chmpx](https://chmpx.antpick.ax/build.html)
+* [FULLOCK](https://fullock.antpick.ax/buildja.html)
+* [K2HASH](https://k2hash.antpick.ax/buildja.html) 
+* [CHMPX](https://chmpx.antpick.ax/buildja.html)
 
 ### 1.2. packagecloud.ioから各依存ライブラリとヘッダファイルをインストールします。
 
-このセクションでは、packagecloud.ioから各依存ライブラリとヘッダーファイルをインストールする方法を説明します。
+このセクションでは、[packagecloud.io](https://packagecloud.io/antpickax/stable)から各依存ライブラリとヘッダーファイルをインストールする方法を説明します。
 
-注：前のセクションで各依存ライブラリとGitHubからのヘッダーファイルをインストールした場合は、このセクションを読み飛ばしてください。
+注：前のセクションで[GitHub](https://github.com/yahoojapan)から各依存ライブラリとヘッダーファイルをインストールした場合は、このセクションを読み飛ばしてください。
 
 DebianStretchまたはUbuntu（Bionic Beaver）をお使いの場合は、以下の手順に従ってください。
 
@@ -70,7 +70,7 @@ $ sudo yum install git -y
 
 ## 2. GitHubからソースコードを複製する
 
-GitHubからK2HDKCのソースコードをダウンロードしてください。
+[GitHub](https://github.com/yahoojapan/k2hdkc)から**K2HDKC**のソースコードをダウンロードしてください。
 
 ```
 $ git clone https://github.com/yahoojapan/k2hdkc.git
@@ -78,7 +78,7 @@ $ git clone https://github.com/yahoojapan/k2hdkc.git
 
 ## 3. ビルドしてインストールする
 
-以下のステップに従ってK2HDKCをビルドしてインストールしてください。 K2HDKCを構築するためにGNU Automakeを使います。
+以下のステップに従って**K2HDKC**をビルドしてインストールしてください。 **K2HDKC**を構築するために[GNU Automake](https://www.gnu.org/software/automake/)を使います。
 
 ```
 $ cd k2hdkc
@@ -88,7 +88,7 @@ $ make
 $ sudo make install
 ```
 
-K2HDKCを正常にインストールすると、k2hdkcのヘルプテキストが表示されます。
+**K2HDKC**を正常にインストールすると、k2hdkcのヘルプテキストが表示されます。
 ```bash
 $ k2hdkc -h
 [Usage]
