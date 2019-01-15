@@ -148,9 +148,9 @@ class LapTime
 		struct timeval	start;
 
 	public:
-		static bool Toggle(void) { return LapTime::Set(!LapTime::isEnable); }
-		static bool Enable(void) { return LapTime::Set(true); }
-		static bool Disable(void) { return LapTime::Set(false); }
+		static bool Toggle(void) { return Set(!LapTime::isEnable); }
+		static bool Enable(void) { return Set(true); }
+		static bool Disable(void) { return Set(false); }
 		static bool IsEnable(void) { return isEnable; }
 
 		LapTime();
@@ -955,7 +955,6 @@ static bool LineOptionParser(const char* pCommand, option_t& opts)
 			if(isQuart){
 				// pattern: "...."
 				if('\"' == *pPos){
-					isQuart = false;
 					if(0 == isspace(*(pPos + sizeof(char))) && '\0' != *(pPos + sizeof(char))){
 						ERR("Quart is not matching.");
 						return false;
@@ -995,7 +994,6 @@ static bool LineOptionParser(const char* pCommand, option_t& opts)
 			if(0 == isspace(*pPos)){
 				strParameter.clear();
 				isMakeParamter	= true;
-				isQuart			= false;
 
 				if('\"' == *pPos){
 					isQuart		= true;
@@ -1045,11 +1043,11 @@ static bool LineOptionParser(const char* pCommand, option_t& opts)
 //
 static bool ReadLine(int fd, string& line)
 {
-	char	szBuff;
-	ssize_t	readlength;
-
 	line.erase();
 	while(true){
+		char	szBuff;
+		ssize_t	readlength;
+
 		szBuff = '\0';
 		// read one character
 		if(-1 == (readlength = read(fd, &szBuff, 1))){
@@ -2070,10 +2068,11 @@ static bool CopyFileCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 	}
 
 	// loop
-	size_t			reqsize;
-	off_t			reqoffset;
-	unsigned char*	pval;
 	for(size_t totalvallen = 0L, vallength = 0L; totalvallen < length; totalvallen += vallength){
+		size_t			reqsize;
+		off_t			reqoffset;
+		unsigned char*	pval;
+
 		// get value
 		reqsize		= min(static_cast<size_t>(MAX_ONE_VALUE_LENGTH), (length - totalvallen));
 		reqoffset	= offset + totalvallen;
@@ -2351,10 +2350,11 @@ static bool SetFileCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 	}
 
 	// loop
-	size_t			reqsize;
-	off_t			reqoffset;
-	unsigned char*	pval;
 	for(size_t totallen = 0L, vallen = 0L; totallen < flen; totallen += vallen){
+		unsigned char*	pval;
+		off_t			reqoffset;
+		size_t			reqsize;
+
 		// read
 		reqsize		= min(static_cast<size_t>(10), (flen - totallen));
 		reqoffset	= static_cast<off_t>(totallen);
@@ -3024,8 +3024,6 @@ static bool RemoveSubkeyCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 				}
 
 				// convert
-				unsigned char*	psubkeys	= NULL;
-				size_t			subkeyslen	= 0;
 				if(!K2hdkcCvtPackToSubkeys(pnewskeypck, newskeypckcnt, &psubkeys, &subkeyslen)){
 					ERR("Something error occurred adding new subkey into subkeys array.");
 					DKC_FREE_KEYPACK(pnewskeypck, newskeypckcnt);
@@ -3085,8 +3083,6 @@ static bool RemoveSubkeyCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 				}
 
 				// convert
-				unsigned char*	psubkeys	= NULL;
-				size_t			subkeyslen	= 0;
 				if(!K2hdkcCvtPackToSubkeys(pnewskeypck, newskeypckcnt, &psubkeys, &subkeyslen)){
 					ERR("Something error occurred adding new subkey into subkeys array.");
 					DKC_FREE_KEYPACK(pnewskeypck, newskeypckcnt);
@@ -5245,6 +5241,7 @@ static bool HistoryCommand(ConsoleInput& InputIF)
 	const strarr_t&	history = InputIF.GetAllHistory();
 
 	int	nCnt = 1;
+	// cppcheck-suppress postfixOperator
 	for(strarr_t::const_iterator iter = history.begin(); iter != history.end(); iter++, nCnt++){
 		PRN(" %d  %s", nCnt, iter->c_str());
 	}
@@ -5263,6 +5260,7 @@ static bool SaveCommand(ConsoleInput& InputIF, params_t& params)
 	}
 
 	const strarr_t&	history = InputIF.GetAllHistory();
+	// cppcheck-suppress postfixOperator
 	for(strarr_t::const_iterator iter = history.begin(); iter != history.end(); iter++){
 		// check except command for writing file
 		if(	0 == strncasecmp(iter->c_str(), "his",		strlen("his"))		||
@@ -5401,6 +5399,8 @@ static bool CommandStringHandle(k2hdkc_chmpx_h chmpxhandle, ConsoleInput& InputI
 	if(!LineOptionParser(pCommand, opts)){
 		return true;	// for continue.
 	}
+	// cppcheck-suppress unmatchedSuppression
+	// cppcheck-suppress stlSize
 	if(0 == opts.size()){
 		return true;
 	}

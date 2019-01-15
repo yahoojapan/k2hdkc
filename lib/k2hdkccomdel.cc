@@ -175,6 +175,7 @@ bool K2hdkcComDel::CommandSend(const unsigned char* pkey, size_t keylength, bool
 
 		}else{
 			// remove subkeys
+			// cppcheck-suppress postfixOperator
 			for(K2HSubKeys::iterator iter = pSubKeys->begin(); iter != pSubKeys->end(); iter++){
 				if(0UL == iter->length){
 					WAN_DKCPRN("Subkey is empty in key(%s).", bin_to_string(pkey, keylength).c_str());

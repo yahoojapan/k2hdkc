@@ -595,6 +595,7 @@ SUCCEED
 > rmsub test-key test-subkey1
 > print test-key
 "test-key" => "test-value"
+    subkey: "test-subkey2"
 > print test-subkey1
 "test-subkey1" => "test-sub-value"
 > print test-subkey2
@@ -614,6 +615,7 @@ SUCCEED
 > rmsub test-key test-subkey1 rmsub
 > print test-key
 "test-key" => "test-value"
+    subkey: "test-subkey2"
 > print test-subkey1
 "test-subkey1" => value is not found
 > print test-subkey2
@@ -1449,6 +1451,7 @@ SUCCEED
 > rmsub test-key test-subkey1
 > print test-key
 "test-key" => "test-value"
+    subkey: "test-subkey2"
 > print test-subkey1
 "test-subkey1" => "test-sub-value"
 > print test-subkey2
@@ -1468,6 +1471,7 @@ SUCCEED
 > rmsub test-key test-subkey1 rmsub
 > print test-key
 "test-key" => "test-value"
+    subkey: "test-subkey2"
 > print test-subkey1
 "test-subkey1" => value is not found
 > print test-subkey2

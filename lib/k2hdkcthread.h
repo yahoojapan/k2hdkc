@@ -88,7 +88,7 @@ class K2hdkcThread
 		size_t JoinThreads(bool& is_rest_thread);
 
 	public:
-		K2hdkcThread(void* pobj = NULL);
+		explicit K2hdkcThread(void* pobj = NULL);
 		virtual ~K2hdkcThread();
 
 		bool Initialize(size_t minthcnt = K2hdkcThread::MIN_THREAD_COUNT, size_t maxthcnt = K2hdkcThread::MAX_THREAD_COUNT, time_t reduce_timeout = K2hdkcThread::DEFAULT_REDUCE_TIMEOUT);

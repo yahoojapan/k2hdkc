@@ -284,8 +284,7 @@ bool K2hdkcCntrl::WorkerProc(void* pobj, bool* piswork)
 		}
 
 		// processing
-		bool	result;
-		if(false == (result = pComObj->CommandProcess())){
+		if(false == pComObj->CommandProcess()){
 			// this is command result, thus debug message level should be msg.
 			MSG_DKCPRN("Failed processing for received data.");
 		}
@@ -639,6 +638,8 @@ K2hdkcCommand* K2hdkcCntrl::FindWaitCommandObject(uint64_t comnum, dkccom_type_t
 					pcommap->erase(itercom);
 				}
 				// check empty
+				// cppcheck-suppress unmatchedSuppression
+				// cppcheck-suppress stlSize
 				if(0 == pcommap->size()){
 					DKC_DELETE(pcommap)
 					waitmap.erase(iternum);

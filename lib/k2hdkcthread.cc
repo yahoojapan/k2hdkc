@@ -89,9 +89,10 @@ void* K2hdkcThread::WorkerProc(void* pparam)
 
 	// loop
 	struct timespec	abstimeout;
-	int				condres;
-	int				unlockres;
 	for(pthparam->result_code = 0, pthparam->idle_count = 0; !pthparam->stop_req; ){
+		int			condres;
+		int			unlockres;
+
 		// set new abstimeout
 		make_current_timespec_with_mergin(pthparam->sleep_ns, abstimeout);
 
@@ -159,7 +160,7 @@ void* K2hdkcThread::WorkerProc(void* pparam)
 			if(fullock::flck_trylock_noshared_mutex(&(pthparam->parent_obj->list_lockval))){		// LOCK
 				if(pthparam->parent_obj->min_thread_cnt < pthparam->parent_obj->run_thread_map.size() && 1 < pthparam->parent_obj->run_thread_map.size()){
 					// remove this
-					MSG_DKCPRN("This thread is idle count(%zu), and thread count in parent is over minimum count. so this thread is going to exit now.", pthparam->idle_count);
+					MSG_DKCPRN("This thread is idle count(%ld), and thread count in parent is over minimum count. so this thread is going to exit now.", pthparam->idle_count);
 
 					pthparam->parent_obj->run_thread_map.erase(pthparam->threadid);
 					pthparam->result_code = 0;
@@ -196,7 +197,7 @@ void* K2hdkcThread::WorkerProc(void* pparam)
 // Constructor/Destructor
 //---------------------------------------------------------
 K2hdkcThread::K2hdkcThread(void* pobj) :
-	pthread_paramobj(pobj), is_init_cond_vals(false), list_lockval(FLCK_NOSHARED_MUTEX_VAL_UNLOCKED),
+	pthread_paramobj(pobj), is_init_cond_vals(false), exit_notice(false), list_lockval(FLCK_NOSHARED_MUTEX_VAL_UNLOCKED),
 	min_thread_cnt(K2hdkcThread::MIN_THREAD_COUNT), max_thread_cnt(K2hdkcThread::MAX_THREAD_COUNT), free_thread_count(0),
 	reduce_idlecnt(K2hdkcThread::DEFAULT_REDUCE_IDLE_COUNT), auto_run_wpfp(NULL)
 {
