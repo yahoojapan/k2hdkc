@@ -155,7 +155,7 @@ bool K2hdkcComGetAttrs::CommandProcessing(void)
 		// set response data
 		if(!SetResponseData(byAttrs, attrs_length)){
 			MSG_DKCPRN("Failed to make response data for key(%s)", bin_to_string(pKey, pCom->key_length).c_str());
-			// continue for responsing
+			// continue for responding
 		}
 		DKC_FREE(byAttrs);
 
@@ -235,7 +235,7 @@ bool K2hdkcComGetAttrs::GetResponseData(K2HAttrs** ppAttrsObj, dkcres_type_t* pr
 	}
 	PDKCRES_GET_ATTRS	pResGetAttrs = CVT_DKCRES_GET_ATTRS(pcomall);
 	if(DKC_COM_GET_ATTRS != pResGetAttrs->head.comtype || DKC_NORESTYPE == pResGetAttrs->head.restype){
-		ERR_DKCPRN("Response(received) data is somthing wrong(internal error: data is invalid).");
+		ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 		return false;
 	}
 	if(ppAttrsObj){
@@ -243,7 +243,7 @@ bool K2hdkcComGetAttrs::GetResponseData(K2HAttrs** ppAttrsObj, dkcres_type_t* pr
 		if(0 < pResGetAttrs->attrs_length){
 			unsigned char*	pAttr = reinterpret_cast<unsigned char*>(pResGetAttrs) + pResGetAttrs->attrs_offset;	// to absolute address
 			if(!(*ppAttrsObj)->Serialize(pAttr, pResGetAttrs->attrs_length)){
-				ERR_DKCPRN("Response(received) data is somthing wrong(internal error: data is invalid).");
+				ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 				DKC_DELETE((*ppAttrsObj));
 				return false;
 			}

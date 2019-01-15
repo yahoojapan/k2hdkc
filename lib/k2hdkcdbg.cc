@@ -80,7 +80,7 @@ class K2hdkcDbgControl
 };
 
 //---------------------------------------------------------
-// Class valiables
+// Class variables
 //---------------------------------------------------------
 const char*	K2hdkcDbgControl::DBGENVNAME = "DKCDBGMODE";
 const char*	K2hdkcDbgControl::DBGENVFILE = "DKCDBGFILE";

@@ -1,5 +1,5 @@
 # 
-# K2HDKC CONFIGRATION FILE FOR TEST
+# K2HDKC CONFIGURATION FILE FOR TEST
 #
 # Copyright 2016 Yahoo Japan Corporation.
 #
@@ -16,12 +16,12 @@
 #
 
 ################################################################
-# CONFIGRATION FILE FOR STANDALONE TEST
+# CONFIGURATION FILE FOR STANDALONE TEST
 #
 # NOTE:
 # - k2hdkc server node must not be use MQACK
 # - k2hash for k2hdkc is memory mode, because multi server node
-#   run on one server and we do not use configration files for
+#   run on one server and we do not use configuration files for
 #   each process.
 ################################################################
 

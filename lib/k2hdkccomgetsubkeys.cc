@@ -155,7 +155,7 @@ bool K2hdkcComGetSubkeys::CommandProcessing(void)
 		// set response data
 		if(!SetResponseData(bySubkeys, subkeys_length)){
 			MSG_DKCPRN("Failed to make response data for key(%s)", bin_to_string(pKey, pCom->key_length).c_str());
-			// continue for responsing
+			// continue for responding
 		}
 		DKC_FREE(bySubkeys);
 
@@ -236,7 +236,7 @@ bool K2hdkcComGetSubkeys::GetResponseData(K2HSubKeys** ppSubKeys, dkcres_type_t*
 	}
 	PDKCRES_GET_SUBKEYS	pResGetSubkeys = CVT_DKCRES_GET_SUBKEYS(pcomall);
 	if(DKC_COM_GET_SUBKEYS != pResGetSubkeys->head.comtype || DKC_NORESTYPE == pResGetSubkeys->head.restype){
-		ERR_DKCPRN("Response(received) data is somthing wrong(internal error: data is invalid).");
+		ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 		return false;
 	}
 	if(ppSubKeys){
@@ -244,7 +244,7 @@ bool K2hdkcComGetSubkeys::GetResponseData(K2HSubKeys** ppSubKeys, dkcres_type_t*
 		if(0 < pResGetSubkeys->subkeys_length){
 			unsigned char*	pSKey = reinterpret_cast<unsigned char*>(pResGetSubkeys) + pResGetSubkeys->subkeys_offset;	// to absolute address
 			if(!(*ppSubKeys)->Serialize(pSKey, pResGetSubkeys->subkeys_length)){
-				ERR_DKCPRN("Response(received) data is somthing wrong(internal error: data is invalid).");
+				ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 				DKC_DELETE((*ppSubKeys));
 				return false;
 			}

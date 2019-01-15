@@ -1571,7 +1571,7 @@ bool k2hdkc_pm_da_set_value(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 	K2hdkcComSetDirect*	pComObj = GetPmSlaveK2hdkcComSetDirect(pSlave);
 	bool				result	= K2hdkcFullSetDirect(pComObj, pkey, keylength, pval, vallength, setpos);
 	if(!result){
-		ERR_DKCPRN("Failed to set value direclty.");
+		ERR_DKCPRN("Failed to set value directly.");
 	}
 	DKC_DELETE(pComObj);
 	return result;
@@ -1680,7 +1680,7 @@ bool k2hdkc_ex_set_subkeys(const char* config, short ctlport, bool is_auto_rejoi
 	K2hdkcComSetSubkeys*	pComObj = GetOtSlaveK2hdkcComSetSubkeys(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
 	bool					result	= K2hdkcFullSetSubkeys(pComObj, pkey, keylength, psubkeys, subkeyslength);
 	if(!result){
-		ERR_DKCPRN("Failed to set bukeys.");
+		ERR_DKCPRN("Failed to set subkeys.");
 	}
 	DKC_FREE(psubkeys);
 	DKC_DELETE(pComObj);
@@ -1698,7 +1698,7 @@ bool k2hdkc_ex_set_str_subkeys(const char* config, short ctlport, bool is_auto_r
 	K2hdkcComSetSubkeys*	pComObj = GetOtSlaveK2hdkcComSetSubkeys(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
 	bool					result	= K2hdkcFullSetSubkeys(pComObj, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), psubkeys, subkeyslength);
 	if(!result){
-		ERR_DKCPRN("Failed to set bukeys.");
+		ERR_DKCPRN("Failed to set subkeys.");
 	}
 	DKC_FREE(psubkeys);
 	DKC_DELETE(pComObj);
@@ -1726,7 +1726,7 @@ bool k2hdkc_pm_set_subkeys(k2hdkc_chmpx_h handle, const unsigned char* pkey, siz
 	K2hdkcComSetSubkeys*	pComObj = GetPmSlaveK2hdkcComSetSubkeys(pSlave);
 	bool					result	= K2hdkcFullSetSubkeys(pComObj, pkey, keylength, psubkeys, subkeyslength);
 	if(!result){
-		ERR_DKCPRN("Failed to set bukeys.");
+		ERR_DKCPRN("Failed to set subkeys.");
 	}
 	DKC_FREE(psubkeys);
 	DKC_DELETE(pComObj);
@@ -1754,7 +1754,7 @@ bool k2hdkc_pm_set_str_subkeys(k2hdkc_chmpx_h handle, const char* pkey, const ch
 	K2hdkcComSetSubkeys*	pComObj = GetPmSlaveK2hdkcComSetSubkeys(pSlave);
 	bool					result	= K2hdkcFullSetSubkeys(pComObj, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), psubkeys, subkeyslength);
 	if(!result){
-		ERR_DKCPRN("Failed to set bukeys.");
+		ERR_DKCPRN("Failed to set subkeys.");
 	}
 	DKC_FREE(psubkeys);
 	DKC_DELETE(pComObj);
@@ -1917,7 +1917,7 @@ bool k2hdkc_ex_set_all(const char* config, short ctlport, bool is_auto_rejoin, b
 	K2hdkcComSetAll*	pComObj = GetOtSlaveK2hdkcComSetAll(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullSetAll(pComObj, pkey, keylength, pval, vallength, psubkeys, subkeyslength);
 	if(!result){
-		ERR_DKCPRN("Failed to set bukeys.");
+		ERR_DKCPRN("Failed to set subkeys.");
 	}
 	DKC_FREE(psubkeys);
 	DKC_DELETE(pComObj);
@@ -1935,7 +1935,7 @@ bool k2hdkc_ex_set_str_all(const char* config, short ctlport, bool is_auto_rejoi
 	K2hdkcComSetAll*	pComObj = GetOtSlaveK2hdkcComSetAll(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullSetAll(pComObj, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pval), (pval ? strlen(pval) + 1 : 0), psubkeys, subkeyslength);
 	if(!result){
-		ERR_DKCPRN("Failed to set bukeys.");
+		ERR_DKCPRN("Failed to set subkeys.");
 	}
 	DKC_FREE(psubkeys);
 	DKC_DELETE(pComObj);
@@ -1963,7 +1963,7 @@ bool k2hdkc_pm_set_all(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t 
 	K2hdkcComSetAll*	pComObj = GetPmSlaveK2hdkcComSetAll(pSlave);
 	bool				result	= K2hdkcFullSetAll(pComObj, pkey, keylength, pval, vallength, psubkeys, subkeyslength);
 	if(!result){
-		ERR_DKCPRN("Failed to set bukeys.");
+		ERR_DKCPRN("Failed to set subkeys.");
 	}
 	DKC_FREE(psubkeys);
 	DKC_DELETE(pComObj);
@@ -1991,7 +1991,7 @@ bool k2hdkc_pm_set_str_all(k2hdkc_chmpx_h handle, const char* pkey, const char* 
 	K2hdkcComSetAll*	pComObj = GetPmSlaveK2hdkcComSetAll(pSlave);
 	bool				result	= K2hdkcFullSetAll(pComObj, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pval), (pval ? strlen(pval) + 1 : 0), psubkeys, subkeyslength);
 	if(!result){
-		ERR_DKCPRN("Failed to set bukeys.");
+		ERR_DKCPRN("Failed to set subkeys.");
 	}
 	DKC_FREE(psubkeys);
 	DKC_DELETE(pComObj);
@@ -2012,7 +2012,7 @@ bool k2hdkc_ex_set_all_wa(const char* config, short ctlport, bool is_auto_rejoin
 {
 	k2hdkc_chmpx_h	handle = k2hdkc_open_chmpx_ex(config, ctlport, is_auto_rejoin, no_giveup_rejoin, true);
 	if(K2HDKC_INVALID_HANDLE == handle){
-		ERR_DKCPRN("Could not open(join) shmpx msgid on slave node.");
+		ERR_DKCPRN("Could not open(join) chmpx msgid on slave node.");
 		return false;
 	}
 	bool	result;
@@ -2029,7 +2029,7 @@ bool k2hdkc_ex_set_str_all_wa(const char* config, short ctlport, bool is_auto_re
 {
 	k2hdkc_chmpx_h	handle = k2hdkc_open_chmpx_ex(config, ctlport, is_auto_rejoin, no_giveup_rejoin, true);
 	if(K2HDKC_INVALID_HANDLE == handle){
-		ERR_DKCPRN("Could not open(join) shmpx msgid on slave node.");
+		ERR_DKCPRN("Could not open(join) chmpx msgid on slave node.");
 		return false;
 	}
 	bool	result;
@@ -2211,7 +2211,7 @@ bool k2hdkc_ex_remove_subkey(const char* config, short ctlport, bool is_auto_rej
 	K2hdkcComDelSubkey*	pComObj = GetOtSlaveK2hdkcComDelSubkey(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullDelSubkey(pComObj, pkey, keylength, psubkey, subkeylength, is_nest, true);
 	if(!result){
-		ERR_DKCPRN("Failed to remove sbukey.");
+		ERR_DKCPRN("Failed to remove subkey.");
 	}
 	DKC_DELETE(pComObj);
 	return result;
@@ -2237,7 +2237,7 @@ bool k2hdkc_pm_remove_subkey(k2hdkc_chmpx_h handle, const unsigned char* pkey, s
 	K2hdkcComDelSubkey*	pComObj = GetPmSlaveK2hdkcComDelSubkey(pSlave);
 	bool				result	= K2hdkcFullDelSubkey(pComObj, pkey, keylength, psubkey, subkeylength, is_nest, true);
 	if(!result){
-		ERR_DKCPRN("Failed to remove sbukey.");
+		ERR_DKCPRN("Failed to remove subkey.");
 	}
 	DKC_DELETE(pComObj);
 	return result;
@@ -2263,7 +2263,7 @@ bool k2hdkc_ex_remove_subkey_np(const char* config, short ctlport, bool is_auto_
 	K2hdkcComDelSubkey*	pComObj = GetOtSlaveK2hdkcComDelSubkey(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullDelSubkey(pComObj, pkey, keylength, psubkey, subkeylength, is_nest, false);
 	if(!result){
-		ERR_DKCPRN("Failed to remove sbukey.");
+		ERR_DKCPRN("Failed to remove subkey.");
 	}
 	DKC_DELETE(pComObj);
 	return result;
@@ -2289,7 +2289,7 @@ bool k2hdkc_pm_remove_subkey_np(k2hdkc_chmpx_h handle, const unsigned char* pkey
 	K2hdkcComDelSubkey*	pComObj = GetPmSlaveK2hdkcComDelSubkey(pSlave);
 	bool				result	= K2hdkcFullDelSubkey(pComObj, pkey, keylength, psubkey, subkeylength, is_nest, false);
 	if(!result){
-		ERR_DKCPRN("Failed to remove sbukey.");
+		ERR_DKCPRN("Failed to remove subkey.");
 	}
 	DKC_DELETE(pComObj);
 	return result;

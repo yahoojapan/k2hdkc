@@ -159,7 +159,7 @@ bool K2hdkcComDel::CommandSend(const unsigned char* pkey, size_t keylength, bool
 	// 
 	// [NOTICE]
 	// This command is a collection of other command which is delete subkey.
-	// The if some operation is occuured to key and subkey by other process during
+	// The if some operation is occurred to key and subkey by other process during
 	// from modifying(creating) subkey to adding subkey name to key's subkey list,
 	// maybe there is a possibility that the inconvenience will occur.
 	//

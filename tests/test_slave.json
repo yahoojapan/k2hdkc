@@ -1,5 +1,5 @@
 # 
-# K2HDKC CONFIGRATION FILE FOR TEST
+# K2HDKC CONFIGURATION FILE FOR TEST
 #
 # Copyright 2016 Yahoo Japan Corporation.
 #
@@ -16,7 +16,7 @@
 #
 
 ################################################################
-# CONFIGRATION FILE FOR STANDALONE TEST
+# CONFIGURATION FILE FOR STANDALONE TEST
 #
 # NOTE:
 # - k2hdkc server node must not be use MQACK

@@ -65,18 +65,18 @@ using namespace	std;
 // Functions
 //---------------------------------------------------------
 //	[Usage]
-//	k2hdkc -conf <configration file path> [-ctlport <port>] [-comlog] [-no_giveup_rejoin] [-d [slient|err|wan|msg|dump]] [-dfile <debug file path>]
+//	k2hdkc -conf <configuration file path> [-ctlport <port>] [-comlog] [-no_giveup_rejoin] [-d [silent|err|wan|msg|dump]] [-dfile <debug file path>]
 //
 static bool PrintUsage(const char* prgname)
 {
 	cout << "[Usage]" << endl;
-	cout << (prgname ? prgname : "prgname") << " [-conf <file path> | -json <json string>] [-ctlport <port>] [-comlog] [-no_giveup_rejoin] [-d [slient|err|wan|msg|dump]] [-dfile <file path>]"	<< endl;
+	cout << (prgname ? prgname : "prgname") << " [-conf <file path> | -json <json string>] [-ctlport <port>] [-comlog] [-no_giveup_rejoin] [-d [silent|err|wan|msg|dump]] [-dfile <file path>]"	<< endl;
 	cout << (prgname ? prgname : "prgname") << " [ -h | -v ]"										<< endl;
 	cout << "[option]"																				<< endl;
-	cout << "  -conf <path>         specify the configration file(.ini .yaml .json) path"			<< endl;
-	cout << "  -json <string>       specify the configration json string"							<< endl;
-	cout << "  -ctlport <port>      specify the self contrl port(*)"								<< endl;
-	cout << "  -no_giveup_rejoin    not gitve up rejoining chmpx"									<< endl;
+	cout << "  -conf <path>         specify the configuration file(.ini .yaml .json) path"			<< endl;
+	cout << "  -json <string>       specify the configuration json string"							<< endl;
+	cout << "  -ctlport <port>      specify the self control port(*)"								<< endl;
+	cout << "  -no_giveup_rejoin    not give up rejoining chmpx"									<< endl;
 	cout << "  -comlog              enable logging communication command"							<< endl;
 	cout << "  -d <param>           specify the debugging output mode:"								<< endl;
 	cout << "                        silent - no output"											<< endl;
@@ -88,14 +88,14 @@ static bool PrintUsage(const char* prgname)
 	cout << "  -h(help)             display this usage."											<< endl;
 	cout << "  -v(version)          display version."												<< endl;
 	cout << endl;
-	cout << "[environemnt]"																			<< endl;
-	cout << "  K2HDKCCONFFILE       specify the configration file(.ini .yaml .json) path"			<< endl;
-	cout << "  K2HDKCJSONCONF       specify the configration json string"							<< endl;
+	cout << "[environment]"																			<< endl;
+	cout << "  K2HDKCCONFFILE       specify the configuration file(.ini .yaml .json) path"			<< endl;
+	cout << "  K2HDKCJSONCONF       specify the configuration json string"							<< endl;
 	cout << endl;
 	cout << "(*) you can use environment DKCDBGMODE and DKCDBGFILE instead of -d/-dfile options."	<< endl;
 	cout << "(*) if ctlport option is specified, chmpx searches same ctlport in configuration"		<< endl;
 	cout << "    file and ignores \"CTLPORT\" directive in \"GLOBAL\" section. and chmpx will"		<< endl;
-	cout << "    start in the mode indicated by the server entry that has beed detected."			<< endl;
+	cout << "    start in the mode indicated by the server entry that has been detected."			<< endl;
 
 	return true;
 }
@@ -175,11 +175,11 @@ int main(int argc, char** argv)
 		SetK2hdkcDbgMode(dbgmode);
 	}
 
-	// parameter - configration file path
+	// parameter - configuration file path
 	string	config;
 	if(!opts.Get(OPT_CONFPATH, config)){
 		if(!opts.Get(OPT_JSON, config)){
-			// over check for environemnt
+			// over check for environment
 			CHMCONFTYPE	conftype = check_chmconf_type_ex(NULL, K2HDKC_CONFFILE_ENV_NAME, K2HDKC_JSONCONF_ENV_NAME, NULL);
 			if(CHMCONF_TYPE_UNKNOWN == conftype || CHMCONF_TYPE_NULL == conftype){
 				cout << "ERROR: not specify option \"-conf\" or \"-json\", thus checking environments." << endl;

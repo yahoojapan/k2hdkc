@@ -83,7 +83,7 @@ while [ $# -ne 0 ]; do
 		DKC_COMLOG_PARAM="-comlog"
 
 	else
-		echo "ERROR: Unkown option $1"
+		echo "ERROR: Unknown option $1"
 		echo "Usage: ${PROGRAM_NAME} [-chmpx_dbg_level <err|wan|msg|dump>] [-dkc_dbg_level <err|wan|msg|dump>] [-dkccomlog] [-logfile <filepath>]"
 		exit 1
 	fi
@@ -294,7 +294,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 		echo "FAILED" >> ${LINETOOLLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : LOGFILE *****************"
+		echo "*********** DETAIL LOG : LOGFILE *****************"
 		cat ${LOGFILE}
 
 		echo ""
@@ -302,35 +302,35 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 		cat ${LINETOOLEXITLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8021) *************"
+		echo "*********** DETAIL LOG : CHMPX(8021) *************"
 		cat ${CHMPXLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8023) *************"
+		echo "*********** DETAIL LOG : CHMPX(8023) *************"
 		cat ${CHMPXLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8025) *************"
+		echo "*********** DETAIL LOG : CHMPX(8025) *************"
 		cat ${CHMPXLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8027) *************"
+		echo "*********** DETAIL LOG : CHMPX(8027) *************"
 		cat ${CHMPXLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8021) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
 		cat ${K2HDKCLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8023) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
 		cat ${K2HDKCLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8025) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
 		cat ${K2HDKCLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8027) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
 		cat ${K2HDKCLOG}_8027.log
 
 		TEST_RESULT=1
@@ -494,43 +494,43 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 		echo "FAILED" >> ${LINETOOLLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : LOGFILE *****************"
+		echo "*********** DETAIL LOG : LOGFILE *****************"
 		cat ${LOGFILE}
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL **********"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
 		cat ${LINETOOLEXITLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8021) *************"
+		echo "*********** DETAIL LOG : CHMPX(8021) *************"
 		cat ${CHMPXLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8023) *************"
+		echo "*********** DETAIL LOG : CHMPX(8023) *************"
 		cat ${CHMPXLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8025) *************"
+		echo "*********** DETAIL LOG : CHMPX(8025) *************"
 		cat ${CHMPXLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8027) *************"
+		echo "*********** DETAIL LOG : CHMPX(8027) *************"
 		cat ${CHMPXLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8021) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
 		cat ${K2HDKCLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8023) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
 		cat ${K2HDKCLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8025) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
 		cat ${K2HDKCLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8027) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
 		cat ${K2HDKCLOG}_8027.log
 
 		TEST_RESULT=1
@@ -694,7 +694,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 		echo "FAILED" >> ${LINETOOLLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : LOGFILE *****************"
+		echo "*********** DETAIL LOG : LOGFILE *****************"
 		cat ${LOGFILE}
 
 		echo ""
@@ -702,35 +702,35 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 		cat ${LINETOOLEXITLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8021) *************"
+		echo "*********** DETAIL LOG : CHMPX(8021) *************"
 		cat ${CHMPXLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8023) *************"
+		echo "*********** DETAIL LOG : CHMPX(8023) *************"
 		cat ${CHMPXLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8025) *************"
+		echo "*********** DETAIL LOG : CHMPX(8025) *************"
 		cat ${CHMPXLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8027) *************"
+		echo "*********** DETAIL LOG : CHMPX(8027) *************"
 		cat ${CHMPXLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8021) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
 		cat ${K2HDKCLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8023) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
 		cat ${K2HDKCLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8025) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
 		cat ${K2HDKCLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8027) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
 		cat ${K2HDKCLOG}_8027.log
 
 		TEST_RESULT=1
@@ -893,7 +893,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 		echo "FAILED" >> ${LINETOOLLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : LOGFILE *****************"
+		echo "*********** DETAIL LOG : LOGFILE *****************"
 		cat ${LOGFILE}
 
 		echo ""
@@ -901,35 +901,35 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 		cat ${LINETOOLEXITLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8021) *************"
+		echo "*********** DETAIL LOG : CHMPX(8021) *************"
 		cat ${CHMPXLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8023) *************"
+		echo "*********** DETAIL LOG : CHMPX(8023) *************"
 		cat ${CHMPXLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8025) *************"
+		echo "*********** DETAIL LOG : CHMPX(8025) *************"
 		cat ${CHMPXLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8027) *************"
+		echo "*********** DETAIL LOG : CHMPX(8027) *************"
 		cat ${CHMPXLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8021) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
 		cat ${K2HDKCLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8023) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
 		cat ${K2HDKCLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8025) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
 		cat ${K2HDKCLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8027) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
 		cat ${K2HDKCLOG}_8027.log
 
 		TEST_RESULT=1
@@ -993,7 +993,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 fi
 
 ###########################################################
-## Start JSON environemnt(execution)
+## Start JSON environment(execution)
 ###########################################################
 if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	echo ""
@@ -1092,7 +1092,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 		echo "FAILED" >> ${LINETOOLLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : LOGFILE *****************"
+		echo "*********** DETAIL LOG : LOGFILE *****************"
 		cat ${LOGFILE}
 
 		echo ""
@@ -1100,35 +1100,35 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 		cat ${LINETOOLEXITLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8021) *************"
+		echo "*********** DETAIL LOG : CHMPX(8021) *************"
 		cat ${CHMPXLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8023) *************"
+		echo "*********** DETAIL LOG : CHMPX(8023) *************"
 		cat ${CHMPXLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8025) *************"
+		echo "*********** DETAIL LOG : CHMPX(8025) *************"
 		cat ${CHMPXLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8027) *************"
+		echo "*********** DETAIL LOG : CHMPX(8027) *************"
 		cat ${CHMPXLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8021) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
 		cat ${K2HDKCLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8023) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
 		cat ${K2HDKCLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8025) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
 		cat ${K2HDKCLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8027) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
 		cat ${K2HDKCLOG}_8027.log
 
 		TEST_RESULT=1
@@ -1382,7 +1382,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 
 	########################################
 	#
-	# CEHCK RESULT
+	# CHECK RESULT
 	#
 	echo -n "------- [INI CONF] K2HDKCLINETOOL LOG DIFF RESULT : " >> ${LOGFILE}
 	diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} >/dev/null 2>&1
@@ -1399,59 +1399,59 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 		diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} 2> /dev/null
 
 		echo ""
-		echo "*********** DEATIL LOG : LOGFILE *****************"
+		echo "*********** DETAIL LOG : LOGFILE *****************"
 		cat ${LOGFILE}
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL **********"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
 		cat ${LINETOOLLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8021) *************"
+		echo "*********** DETAIL LOG : CHMPX(8021) *************"
 		cat ${CHMPXLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8023) *************"
+		echo "*********** DETAIL LOG : CHMPX(8023) *************"
 		cat ${CHMPXLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8025) *************"
+		echo "*********** DETAIL LOG : CHMPX(8025) *************"
 		cat ${CHMPXLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8027) *************"
+		echo "*********** DETAIL LOG : CHMPX(8027) *************"
 		cat ${CHMPXLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8021) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
 		cat ${K2HDKCLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8023) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
 		cat ${K2HDKCLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8025) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
 		cat ${K2HDKCLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8027) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
 		cat ${K2HDKCLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(C-PERM) ***"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C-PERM) ***"
 		cat ${LINETOOLERRLOG}_C_P.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
 		cat ${LINETOOLERRLOG}_CPP_P.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(C) ********"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C) ********"
 		cat ${LINETOOLERRLOG}_C.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(CPP) ******"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP) ******"
 		cat ${LINETOOLERRLOG}_CPP.log
 
 		TEST_RESULT=1
@@ -1672,7 +1672,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 
 	########################################
 	#
-	# CEHCK RESULT
+	# CHECK RESULT
 	#
 	echo -n "------- [YAML CONF] K2HDKCLINETOOL LOG DIFF RESULT : " >> ${LOGFILE}
 	diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} >/dev/null 2>&1
@@ -1680,7 +1680,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 		echo "YAML CONF TEST RESULT --> FAILED" >> ${LOGFILE}
 		echo "" >> ${LOGFILE}
 
-		echo "======= YAML OCNF FILE TEST            : FAILED"	>> ${LOGFILE}
+		echo "======= YAML CONF FILE TEST            : FAILED"	>> ${LOGFILE}
 		echo ""													>> ${LOGFILE}
 		echo "================= `date` ================"		>> ${LOGFILE}
 
@@ -1689,59 +1689,59 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 		diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} 2> /dev/null
 
 		echo ""
-		echo "*********** DEATIL LOG : LOGFILE *****************"
+		echo "*********** DETAIL LOG : LOGFILE *****************"
 		cat ${LOGFILE}
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL **********"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
 		cat ${LINETOOLLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8021) *************"
+		echo "*********** DETAIL LOG : CHMPX(8021) *************"
 		cat ${CHMPXLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8023) *************"
+		echo "*********** DETAIL LOG : CHMPX(8023) *************"
 		cat ${CHMPXLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8025) *************"
+		echo "*********** DETAIL LOG : CHMPX(8025) *************"
 		cat ${CHMPXLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8027) *************"
+		echo "*********** DETAIL LOG : CHMPX(8027) *************"
 		cat ${CHMPXLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8021) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
 		cat ${K2HDKCLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8023) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
 		cat ${K2HDKCLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8025) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
 		cat ${K2HDKCLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8027) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
 		cat ${K2HDKCLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(C-PERM) ***"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C-PERM) ***"
 		cat ${LINETOOLERRLOG}_C_P.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
 		cat ${LINETOOLERRLOG}_CPP_P.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(C) ********"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C) ********"
 		cat ${LINETOOLERRLOG}_C.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(CPP) ******"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP) ******"
 		cat ${LINETOOLERRLOG}_CPP.log
 
 		TEST_RESULT=1
@@ -1963,7 +1963,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 
 	########################################
 	#
-	# CEHCK RESULT
+	# CHECK RESULT
 	#
 	echo -n "------- [JSON CONF] K2HDKCLINETOOL LOG DIFF RESULT : " >> ${LOGFILE}
 	diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} >/dev/null 2>&1
@@ -1980,59 +1980,59 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 		diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} 2> /dev/null
 
 		echo ""
-		echo "*********** DEATIL LOG : LOGFILE *****************"
+		echo "*********** DETAIL LOG : LOGFILE *****************"
 		cat ${LOGFILE}
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL **********"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
 		cat ${LINETOOLLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8021) *************"
+		echo "*********** DETAIL LOG : CHMPX(8021) *************"
 		cat ${CHMPXLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8023) *************"
+		echo "*********** DETAIL LOG : CHMPX(8023) *************"
 		cat ${CHMPXLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8025) *************"
+		echo "*********** DETAIL LOG : CHMPX(8025) *************"
 		cat ${CHMPXLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8027) *************"
+		echo "*********** DETAIL LOG : CHMPX(8027) *************"
 		cat ${CHMPXLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8021) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
 		cat ${K2HDKCLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8023) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
 		cat ${K2HDKCLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8025) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
 		cat ${K2HDKCLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8027) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
 		cat ${K2HDKCLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(C-PERM) ***"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C-PERM) ***"
 		cat ${LINETOOLERRLOG}_C_P.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
 		cat ${LINETOOLERRLOG}_CPP_P.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(C) ********"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C) ********"
 		cat ${LINETOOLERRLOG}_C.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(CPP) ******"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP) ******"
 		cat ${LINETOOLERRLOG}_CPP.log
 
 		TEST_RESULT=1
@@ -2252,7 +2252,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 
 	########################################
 	#
-	# CEHCK RESULT
+	# CHECK RESULT
 	#
 	echo -n "------- [JSON STRING] K2HDKCLINETOOL LOG DIFF RESULT : " >> ${LOGFILE}
 	diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} >/dev/null 2>&1
@@ -2269,59 +2269,59 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 		diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} 2> /dev/null
 
 		echo ""
-		echo "*********** DEATIL LOG : LOGFILE *****************"
+		echo "*********** DETAIL LOG : LOGFILE *****************"
 		cat ${LOGFILE}
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL **********"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
 		cat ${LINETOOLLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8021) *************"
+		echo "*********** DETAIL LOG : CHMPX(8021) *************"
 		cat ${CHMPXLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8023) *************"
+		echo "*********** DETAIL LOG : CHMPX(8023) *************"
 		cat ${CHMPXLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8025) *************"
+		echo "*********** DETAIL LOG : CHMPX(8025) *************"
 		cat ${CHMPXLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8027) *************"
+		echo "*********** DETAIL LOG : CHMPX(8027) *************"
 		cat ${CHMPXLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8021) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
 		cat ${K2HDKCLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8023) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
 		cat ${K2HDKCLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8025) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
 		cat ${K2HDKCLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8027) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
 		cat ${K2HDKCLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(C-PERM) ***"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C-PERM) ***"
 		cat ${LINETOOLERRLOG}_C_P.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
 		cat ${LINETOOLERRLOG}_CPP_P.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(C) ********"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C) ********"
 		cat ${LINETOOLERRLOG}_C.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(CPP) ******"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP) ******"
 		cat ${LINETOOLERRLOG}_CPP.log
 
 		TEST_RESULT=1
@@ -2354,7 +2354,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 
 elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	###########################################################
-	## Start JSON environemnt
+	## Start JSON environment
 	###########################################################
 	echo ""
 	echo "====== START TEST FOR JSON ENV ============================="
@@ -2541,7 +2541,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 
 	########################################
 	#
-	# CEHCK RESULT
+	# CHECK RESULT
 	#
 	echo -n "------- [JSON ENV] K2HDKCLINETOOL LOG DIFF RESULT : " >> ${LOGFILE}
 	diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} >/dev/null 2>&1
@@ -2558,59 +2558,59 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 		diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} 2> /dev/null
 
 		echo ""
-		echo "*********** DEATIL LOG : LOGFILE *****************"
+		echo "*********** DETAIL LOG : LOGFILE *****************"
 		cat ${LOGFILE}
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL **********"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
 		cat ${LINETOOLLOG}
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8021) *************"
+		echo "*********** DETAIL LOG : CHMPX(8021) *************"
 		cat ${CHMPXLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8023) *************"
+		echo "*********** DETAIL LOG : CHMPX(8023) *************"
 		cat ${CHMPXLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8025) *************"
+		echo "*********** DETAIL LOG : CHMPX(8025) *************"
 		cat ${CHMPXLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : CHMPX(8027) *************"
+		echo "*********** DETAIL LOG : CHMPX(8027) *************"
 		cat ${CHMPXLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8021) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
 		cat ${K2HDKCLOG}_8021.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8023) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
 		cat ${K2HDKCLOG}_8023.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8025) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
 		cat ${K2HDKCLOG}_8025.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKC(8027) *************"
+		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
 		cat ${K2HDKCLOG}_8027.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(C-PERM) ***"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C-PERM) ***"
 		cat ${LINETOOLERRLOG}_C_P.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
 		cat ${LINETOOLERRLOG}_CPP_P.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(C) ********"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C) ********"
 		cat ${LINETOOLERRLOG}_C.log
 
 		echo ""
-		echo "*********** DEATIL LOG : K2HDKCLINETOOL(CPP) ******"
+		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP) ******"
 		cat ${LINETOOLERRLOG}_CPP.log
 
 		TEST_RESULT=1

@@ -83,7 +83,7 @@ bool K2hdkcComQDel::SetErrorResponseData(dkcres_type_t subcode, dkcres_type_t er
 	// if has slave command object, set response code into it.
 	if(pSlaveObj){
 		if(!pSlaveObj->SetResponseCode(pRcvComAll->com_head.restype)){
-			ERR_DKCPRN("Failed to set response code(%s - %s(0x%016" PRIx64 ")) to slave command object, but coontinue...", STR_DKCRES_RESULT_TYPE(pRcvComAll->com_head.restype), STR_DKCRES_SUBCODE_TYPE(pRcvComAll->com_head.restype), pRcvComAll->com_head.restype);
+			ERR_DKCPRN("Failed to set response code(%s - %s(0x%016" PRIx64 ")) to slave command object, but continue...", STR_DKCRES_RESULT_TYPE(pRcvComAll->com_head.restype), STR_DKCRES_SUBCODE_TYPE(pRcvComAll->com_head.restype), pRcvComAll->com_head.restype);
 		}
 	}
 
@@ -150,21 +150,21 @@ bool K2hdkcComQDel::CommandSend(const unsigned char* pprefix, size_t prefixlengt
 			const unsigned char*	pGetKey		= NULL;
 			size_t					GetKeyLength= 0;
 			if(!pComQPop->KeyQueueCommandSend(pprefix, prefixlength, is_fifo, checkattr, encpass, &pGetKey, &GetKeyLength, &pGetVal, &GetValLength, &rescode)){
-				ERR_DKCPRN("Failed to pop queue by merker prefix(%s) in DKCCOM_QDEL(%p).", bin_to_string(pprefix, prefixlength).c_str(), pRcvComAll);
+				ERR_DKCPRN("Failed to pop queue by marker prefix(%s) in DKCCOM_QDEL(%p).", bin_to_string(pprefix, prefixlength).c_str(), pRcvComAll);
 				DKC_DELETE(pComQPop);
-				SetErrorResponseData(DKC_RES_SUBCODE_POPQUQUE);
+				SetErrorResponseData(DKC_RES_SUBCODE_POPQUEUE);
 				return false;
 			}
 		}else{
 			if(!pComQPop->QueueCommandSend(pprefix, prefixlength, is_fifo, checkattr, encpass, &pGetVal, &GetValLength, &rescode)){
-				ERR_DKCPRN("Failed to pop queue by merker prefix(%s) in DKCCOM_QDEL(%p).", bin_to_string(pprefix, prefixlength).c_str(), pRcvComAll);
+				ERR_DKCPRN("Failed to pop queue by marker prefix(%s) in DKCCOM_QDEL(%p).", bin_to_string(pprefix, prefixlength).c_str(), pRcvComAll);
 				DKC_DELETE(pComQPop);
-				SetErrorResponseData(DKC_RES_SUBCODE_POPQUQUE);
+				SetErrorResponseData(DKC_RES_SUBCODE_POPQUEUE);
 				return false;
 			}
 		}
 		if(IS_DKC_RES_NOTSUCCESS(rescode)){
-			ERR_DKCPRN("Failed to pop queue by marker prefix(%s) in DKCCOM_QDEL(%p) by subcude(%s).", bin_to_string(pprefix, prefixlength).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
+			ERR_DKCPRN("Failed to pop queue by marker prefix(%s) in DKCCOM_QDEL(%p) by subcode(%s).", bin_to_string(pprefix, prefixlength).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
 			DKC_DELETE(pComQPop);
 			SetErrorResponseData(GET_DKC_RES_SUBCODE(rescode));
 			return false;

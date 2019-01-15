@@ -149,7 +149,7 @@ bool K2hdkcComCasIncDec::CommandProcessing(void)
 				--(*pTmpVal);
 			}
 		}else{	// binary data
-			ERR_DKCPRN("key(%s) value(%s) is binaty data array, so could not %s.", bin_to_string(pKey, pCom->key_length).c_str(), bin_to_string(pValue, ValLen).c_str(), pCom->increment ? "increment" : "decrement");
+			ERR_DKCPRN("key(%s) value(%s) is binary data array, so could not %s.", bin_to_string(pKey, pCom->key_length).c_str(), bin_to_string(pValue, ValLen).c_str(), pCom->increment ? "increment" : "decrement");
 			SetErrorResponseData(DKC_RES_SUBCODE_NOTSAMEDATATYPE);
 			DKC_FREE(pValue);
 			DKC_FREE(pEncPass);

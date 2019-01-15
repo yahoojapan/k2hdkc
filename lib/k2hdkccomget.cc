@@ -149,7 +149,7 @@ bool K2hdkcComGet::CommandProcessing(void)
 		// set response data
 		if(!SetResponseData(pValue, static_cast<size_t>(ValLen))){
 			MSG_DKCPRN("Failed to make response data for key(%s)", bin_to_string(pKey, pCom->key_length).c_str());
-			// continue for responsing
+			// continue for responding
 		}
 		DKC_FREE(pValue);
 
@@ -240,7 +240,7 @@ bool K2hdkcComGet::GetResponseData(const unsigned char** ppdata, size_t* plength
 	}
 	PDKCRES_GET	pResGet = CVT_DKCRES_GET(pcomall);
 	if(DKC_COM_GET != pResGet->head.comtype || DKC_NORESTYPE == pResGet->head.restype || RcvComLength != pResGet->head.length){
-		ERR_DKCPRN("Response(received) data is somthing wrong(internal error: data is invalid).");
+		ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 		return false;
 	}
 	if(ppdata && plength){

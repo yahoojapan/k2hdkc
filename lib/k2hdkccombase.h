@@ -75,8 +75,8 @@ class K2hdkcCommand
 		PDKCCOM_ALL					pSendComAll;					// Command data for send(response) data
 		size_t						SendLength;						// send(response) data length
 		msgid_t						SendMsgid;						// msgid on chmpx slave node for sending
-		chmhash_t					SendHash;						// hash code for sending(responsing)
-		bool						IsLocalMsgid;					// msgid is opened by object, so need to close it before desctuct
+		chmhash_t					SendHash;						// hash code for sending(responding)
+		bool						IsLocalMsgid;					// msgid is opened by object, so need to close it before destructing
 		bool						IsCreateSlave;					// whether creating slave command object
 		K2hdkcSlave*				pSlaveObj;						// slave command object pointer
 

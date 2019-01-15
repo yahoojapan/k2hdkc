@@ -60,9 +60,9 @@ class K2hdkcCntrl
 		short				chmpxctlport;
 		bool				no_giveup_rejoin;
 		volatile bool		is_loop;
-		volatile int		waitmap_lockval;			// lock valiable for waitmap used by fullock_mutex
+		volatile int		waitmap_lockval;			// lock variable for waitmap used by fullock_mutex
 		k2hdkcwaitresmap_t	waitmap;
-		volatile int		procdatas_lockval;			// lock valiable for proc datas used by fullock_mutex
+		volatile int		procdatas_lockval;			// lock variable for proc datas used by fullock_mutex
 		k2hdkcrcvprocdata_t	rcvprocdatas;
 
 	protected:

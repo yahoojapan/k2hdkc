@@ -139,7 +139,7 @@ bool K2hdkcComQPush::CommandProcessing(void)
 		K2HLowOpsQueue*	pQueue			= pK2hObj->GetLowOpsQueueObj(pCom->fifo, pPrefix, pCom->prefix_length);
 		if(!pQueue){
 			ERR_DKCPRN("Failed to get queue prefix(%s) in DKCCOM_QPUSH(%p)", bin_to_string(pPrefix, pCom->prefix_length).c_str(), pRcvComAll);
-			SetErrorResponseData(DKC_RES_SUBCODE_GETQUQUE);
+			SetErrorResponseData(DKC_RES_SUBCODE_GETQUEUE);
 			DKC_FREE(pEncPass);
 			DKC_FREE(pMarker);
 			return false;
@@ -172,7 +172,7 @@ bool K2hdkcComQPush::CommandProcessing(void)
 			DKC_DELETE(pComSetObj);
 
 			if(IS_DKC_RES_NOTSUCCESS(rescode)){
-				ERR_DKCPRN("Failed to set key(%s) and val(%s) in DKCCOM_QPUSH(%p) by subcude(%s).", bin_to_string(pKey, pCom->key_length).c_str(), bin_to_string(pVal, pCom->val_length).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
+				ERR_DKCPRN("Failed to set key(%s) and val(%s) in DKCCOM_QPUSH(%p) by subcode(%s).", bin_to_string(pKey, pCom->key_length).c_str(), bin_to_string(pVal, pCom->val_length).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
 				SetErrorResponseData(DKC_RES_SUBCODE_SETVAL);
 				DKC_FREE(pEncPass);
 				DKC_FREE(pMarker);
@@ -203,7 +203,7 @@ bool K2hdkcComQPush::CommandProcessing(void)
 			DKC_DELETE(pComSetObj);
 
 			if(IS_DKC_RES_NOTSUCCESS(rescode)){
-				ERR_DKCPRN("Failed to set new queue key(%s) and val(%s) in DKCCOM_QPUSH(%p) by subcude(%s).", bin_to_string(pQKey, qkey_length).c_str(), bin_to_string(pTmpVal, tmpvallen).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
+				ERR_DKCPRN("Failed to set new queue key(%s) and val(%s) in DKCCOM_QPUSH(%p) by subcode(%s).", bin_to_string(pQKey, qkey_length).c_str(), bin_to_string(pTmpVal, tmpvallen).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
 				SetErrorResponseData(DKC_RES_SUBCODE_SETVAL);
 				DKC_FREE(pEncPass);
 				DKC_FREE(pMarker);
@@ -263,7 +263,7 @@ bool K2hdkcComQPush::CommandProcessing(void)
 				DKC_DELETE(pComAddSubkeys);
 
 				if(IS_DKC_RES_NOTSUCCESS(rescode)){
-					ERR_DKCPRN("Failed to add new queue key(%s) into subkey of key(%s) in DKCCOM_QPUSH(%p)  by subcude(%s).", bin_to_string(pQKey, qkey_length).c_str(), bin_to_string(pExKey, exkey_length).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
+					ERR_DKCPRN("Failed to add new queue key(%s) into subkey of key(%s) in DKCCOM_QPUSH(%p)  by subcode(%s).", bin_to_string(pQKey, qkey_length).c_str(), bin_to_string(pExKey, exkey_length).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
 					SetErrorResponseData(DKC_RES_SUBCODE_ADDSKEYLIST);
 					DKC_FREE(pMarker);
 					DKC_FREE(pQKey);
@@ -290,7 +290,7 @@ bool K2hdkcComQPush::CommandProcessing(void)
 				DKC_DELETE(pComAddSubkeys);
 
 				if(IS_DKC_RES_NOTSUCCESS(rescode)){
-					ERR_DKCPRN("Failed to add existed key(%s) into new queue key(%s) in DKCCOM_QPUSH(%p) by subcude(%s).", bin_to_string(pExKey, exkey_length).c_str(), bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
+					ERR_DKCPRN("Failed to add existed key(%s) into new queue key(%s) in DKCCOM_QPUSH(%p) by subcode(%s).", bin_to_string(pExKey, exkey_length).c_str(), bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
 					SetErrorResponseData(DKC_RES_SUBCODE_ADDSKEYLIST);
 					DKC_FREE(pMarker);
 					DKC_FREE(pQKey);

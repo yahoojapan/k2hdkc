@@ -35,7 +35,7 @@ const uint64_t	K2hdkcComNumber::INIT_NUMBER;
 //---------------------------------------------------------
 K2hdkcComNumber& K2hdkcComNumber::GetSingleton(void)
 {
-	static K2hdkcComNumber	singleton;			// singlton
+	static K2hdkcComNumber	singleton;			// singleton
 	return singleton;
 }
 

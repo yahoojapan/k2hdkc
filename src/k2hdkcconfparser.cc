@@ -211,7 +211,7 @@ bool K2hdkcConfig::Clear(void)
 	expire_time		= 0;
 
 	// [NOTE]
-	// enc_passphrases has pass phrases, then we MUST clear buffer by NULL charactor.
+	// enc_passphrases has pass phrases, then we MUST clear buffer by NULL character.
 	//
 	for(strarr_t::iterator iter = enc_passphrases.begin(); iter != enc_passphrases.end(); ++iter){
 		size_t	strlength	= iter->length();
@@ -225,7 +225,7 @@ bool K2hdkcConfig::Clear(void)
 
 bool K2hdkcConfig::Load(const char* config)
 {
-	// initialize all valiables
+	// initialize all variables
 	Clear();
 
 	// check configuration
@@ -234,7 +234,7 @@ bool K2hdkcConfig::Load(const char* config)
 
 	// set default(initial value)
 	dkc_config			= normalize_config;
-	svrnode_config		= normalize_config;		// default is same configration for chmpx server node.
+	svrnode_config		= normalize_config;		// default is same configuration for chmpx server node.
 
 	bool		result	= false;
 	switch(conftype){
@@ -261,23 +261,23 @@ bool K2hdkcConfig::Load(const char* config)
 	// check values
 	if(result){
 		if(svrnode_config.empty()){
-			ERR_DKCPRN("Could not find keyworad(%s) in section(%s) in configuration(%s).", INI_KEY_SVRNODEINI_STR, INI_MAIN_SEC_STR, normalize_config.c_str());
+			ERR_DKCPRN("Could not find keyword(%s) in section(%s) in configuration(%s).", INI_KEY_SVRNODEINI_STR, INI_MAIN_SEC_STR, normalize_config.c_str());
 			result = false;
 		}
 		if(repl_config.empty()){
-			MSG_DKCPRN("Could not find keyworad(%s) in section(%s) in configuration(%s).", INI_KEY_REPLCLUSTERINI_STR, INI_MAIN_SEC_STR, normalize_config.c_str());
+			MSG_DKCPRN("Could not find keyword(%s) in section(%s) in configuration(%s).", INI_KEY_REPLCLUSTERINI_STR, INI_MAIN_SEC_STR, normalize_config.c_str());
 		}
 		if(k2h_file.empty()){
 			// memory type
 			if(k2h_file_temp || !k2h_fullmap || !k2h_need_init || k2h_create_file){
-				ERR_DKCPRN("keyworad(%s) in section(%s) in configuration(%s) is %s, but %s or %s value are wrong.", INI_KEY_K2HTYPE_STR, INI_MAIN_SEC_STR, normalize_config.c_str(), INI_VAL_MEM3_STR, INI_KEY_K2HFULLMAP_STR, INI_KEY_K2HINIT_STR);
+				ERR_DKCPRN("keyword(%s) in section(%s) in configuration(%s) is %s, but %s or %s value are wrong.", INI_KEY_K2HTYPE_STR, INI_MAIN_SEC_STR, normalize_config.c_str(), INI_VAL_MEM3_STR, INI_KEY_K2HFULLMAP_STR, INI_KEY_K2HINIT_STR);
 				result = false;
 			}
 		}else{
 			if(k2h_file_temp){
 				// temporary file type
 				if(!k2h_need_init){
-					ERR_DKCPRN("keyworad(%s) in section(%s) in configuration(%s) is %s, but %s value are wrong.", INI_KEY_K2HTYPE_STR, INI_MAIN_SEC_STR, normalize_config.c_str(), INI_VAL_TEMP3_STR, INI_KEY_K2HINIT_STR);
+					ERR_DKCPRN("keyword(%s) in section(%s) in configuration(%s) is %s, but %s value are wrong.", INI_KEY_K2HTYPE_STR, INI_MAIN_SEC_STR, normalize_config.c_str(), INI_VAL_TEMP3_STR, INI_KEY_K2HINIT_STR);
 					result = false;
 				}
 			}else{
@@ -306,7 +306,7 @@ bool K2hdkcConfig::LoadIni(const char* file)
 	strarr_t	lines;
 	strarr_t	files;
 	if(!K2hdkcConfig::ReadContents(file, lines, files)){
-		ERR_DKCPRN("Failed to load oncfigration ini file(%s)", file);
+		ERR_DKCPRN("Failed to load configuration ini file(%s)", file);
 		return false;
 	}
 
@@ -338,7 +338,7 @@ bool K2hdkcConfig::LoadIni(const char* file)
 		if(INI_KEY_RCV_TIMEOUT_STR == key){
 			rcvtimeout_ms = static_cast<long>(atoi(value.c_str()));
 			if(rcvtimeout_ms <= 0){
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 
@@ -352,7 +352,7 @@ bool K2hdkcConfig::LoadIni(const char* file)
 				// value is configuration file, thus we need to check it.
 				string	abspath;
 				if(!is_file_exist(value.c_str()) || !path_to_abspath(value.c_str(), abspath)){
-					ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+					ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 					return false;
 				}
 				svrnode_config = abspath;
@@ -368,7 +368,7 @@ bool K2hdkcConfig::LoadIni(const char* file)
 				// value is configuration file, thus we need to check it.
 				string	abspath;
 				if(!is_file_exist(value.c_str()) || !path_to_abspath(value.c_str(), abspath)){
-					ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+					ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 					return false;
 				}
 				repl_config = abspath;
@@ -377,21 +377,21 @@ bool K2hdkcConfig::LoadIni(const char* file)
 		}else if(INI_KEY_DTORTHREADCNT_STR == key){
 			repl_thread_cnt = atoi(value.c_str());
 			if(repl_thread_cnt < K2HTransManager::NO_THREAD_POOL || K2HTransManager::MAX_THREAD_POOL < repl_thread_cnt){
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) must be from %d to %d range.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR, K2HTransManager::NO_THREAD_POOL, K2HTransManager::MAX_THREAD_POOL);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) must be from %d to %d range.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR, K2HTransManager::NO_THREAD_POOL, K2HTransManager::MAX_THREAD_POOL);
 				return false;
 			}
 
 		}else if(INI_KEY_DTORCTP_STR == key){
 			string	abspath;
 			if(!is_file_exist(value.c_str()) || !path_to_abspath(value.c_str(), abspath)){
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 			repl_ctp_file = abspath;
 
 		}else if(INI_KEY_K2HTYPE_STR == key){
 			if(is_set_k2htype){
-				ERR_DKCPRN("keyworad(%s) in section(%s) is already set. this value is set only onece.", key.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s) in section(%s) is already set. this value is set only once.", key.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 			is_set_k2htype	= true;
@@ -410,7 +410,7 @@ bool K2hdkcConfig::LoadIni(const char* file)
 				k2h_file_temp	= true;
 
 			}else{
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is unkown value.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is unknown value.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 
@@ -421,7 +421,7 @@ bool K2hdkcConfig::LoadIni(const char* file)
 			}else{
 				string	abspath;
 				if(!path_to_abspath(value.c_str(), abspath)){
-					ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is something wrong.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+					ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is something wrong.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 					return false;
 				}
 				k2h_create_file	= false;
@@ -435,7 +435,7 @@ bool K2hdkcConfig::LoadIni(const char* file)
 			}else if(INI_VAL_NO1_STR == value || INI_VAL_NO2_STR == value || INI_VAL_OFF_STR == value){
 				k2h_fullmap = false;
 			}else{
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is unkown value.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is unknown value.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 
@@ -446,28 +446,28 @@ bool K2hdkcConfig::LoadIni(const char* file)
 			}else if(INI_VAL_NO1_STR == value || INI_VAL_NO2_STR == value || INI_VAL_OFF_STR == value){
 				k2h_need_init = false;
 			}else{
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is unkown value.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is unknown value.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 
 		}else if(INI_KEY_K2HMASKBIT_STR == key){
 			k2h_maskbit = atoi(value.c_str());
 			if(k2h_maskbit < K2HShm::MIN_MASK_BITCOUNT || K2HShm::MAX_MASK_BITCOUNT < k2h_maskbit){
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) must be from %d to %d range.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR, K2HShm::MIN_MASK_BITCOUNT, K2HShm::MAX_MASK_BITCOUNT);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) must be from %d to %d range.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR, K2HShm::MIN_MASK_BITCOUNT, K2HShm::MAX_MASK_BITCOUNT);
 				return false;
 			}
 
 		}else if(INI_KEY_K2HCMASKBIT_STR == key){
 			k2h_cmaskbit = atoi(value.c_str());
 			if(k2h_cmaskbit <= 0){
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 
 		}else if(INI_KEY_K2HMAXELE_STR == key){
 			k2h_elementcnt = atoi(value.c_str());
 			if(k2h_elementcnt <= 0){
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 
@@ -476,27 +476,27 @@ bool K2hdkcConfig::LoadIni(const char* file)
 
 		}else if(INI_KEY_PASSPHRASES_STR == key){
 			if(is_set_passfile){
-				ERR_DKCPRN("keyworad(%s) in section(%s) is already set by %s key. you can set only one of this key and %s key.", key.c_str(), INI_MAIN_SEC_STR, INI_KEY_PASSFILE_STR, INI_KEY_PASSFILE_STR);
+				ERR_DKCPRN("keyword(%s) in section(%s) is already set by %s key. you can set only one of this key and %s key.", key.c_str(), INI_MAIN_SEC_STR, INI_KEY_PASSFILE_STR, INI_KEY_PASSFILE_STR);
 				return false;
 			}
 			is_set_passstr = true;
 
 			if(value.empty()){
-				ERR_DKCPRN("keyworad(%s)'s value in section(%s) is empty string.", key.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s)'s value in section(%s) is empty string.", key.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 			enc_passphrases.push_back(value);
 
 		}else if(INI_KEY_PASSFILE_STR == key){
 			if(is_set_passfile || is_set_passstr){
-				ERR_DKCPRN("keyworad(%s) in section(%s) is already set for encrypt pass phrases. you can set only one of this key and %s key.", key.c_str(), INI_MAIN_SEC_STR, INI_KEY_PASSPHRASES_STR);
+				ERR_DKCPRN("keyword(%s) in section(%s) is already set for encrypt pass phrases. you can set only one of this key and %s key.", key.c_str(), INI_MAIN_SEC_STR, INI_KEY_PASSPHRASES_STR);
 				return false;
 			}
 			is_set_passfile = true;
 
 			string	abspath;
 			if(!is_file_exist(value.c_str()) || !path_to_abspath(value.c_str(), abspath)){
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 			enc_pass_file = abspath;
@@ -508,7 +508,7 @@ bool K2hdkcConfig::LoadIni(const char* file)
 			}else if(INI_VAL_NO1_STR == value || INI_VAL_NO2_STR == value || INI_VAL_OFF_STR == value){
 				is_history = false;
 			}else{
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is unkown value.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is unknown value.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 
@@ -518,7 +518,7 @@ bool K2hdkcConfig::LoadIni(const char* file)
 		}else if(INI_KEY_ATTRPLUGIN_STR == key){
 			string	abspath;
 			if(!is_file_exist(value.c_str()) || !path_to_abspath(value.c_str(), abspath)){
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 			attr_plugin_files.push_back(abspath);
@@ -526,14 +526,14 @@ bool K2hdkcConfig::LoadIni(const char* file)
 		}else if(INI_KEY_MIN_THREAD_CNT_STR == key){
 			min_thread_cnt = static_cast<size_t>(atoi(value.c_str()));
 			if(min_thread_cnt < K2hdkcThread::MIN_THREAD_COUNT || (is_set_maxthcnt && (max_thread_cnt < min_thread_cnt))){
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is wrong(maximum value is %zu).", key.c_str(), value.c_str(), INI_MAIN_SEC_STR, max_thread_cnt);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is wrong(maximum value is %zu).", key.c_str(), value.c_str(), INI_MAIN_SEC_STR, max_thread_cnt);
 				return false;
 			}
 
 		}else if(INI_KEY_MAX_THREAD_CNT_STR == key){
 			max_thread_cnt = static_cast<size_t>(atoi(value.c_str()));
 			if(max_thread_cnt < min_thread_cnt){
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is wrong(minimum value is %zu).", key.c_str(), value.c_str(), INI_MAIN_SEC_STR, min_thread_cnt);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is wrong(minimum value is %zu).", key.c_str(), value.c_str(), INI_MAIN_SEC_STR, min_thread_cnt);
 				return false;
 			}
 			is_set_maxthcnt = true;
@@ -541,12 +541,12 @@ bool K2hdkcConfig::LoadIni(const char* file)
 		}else if(INI_KEY_REDUCE_TIME_STR == key){
 			thread_reduce_time = static_cast<time_t>(atoi(value.c_str()));
 			if(thread_reduce_time <= 0){
-				ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
+				ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), value.c_str(), INI_MAIN_SEC_STR);
 				return false;
 			}
 
 		}else{
-			WAN_DKCPRN("Unknown keyworad(%s) in section(%s), so skip it and continue...", key.c_str(), INI_MAIN_SEC_STR);
+			WAN_DKCPRN("Unknown keyword(%s) in section(%s), so skip it and continue...", key.c_str(), INI_MAIN_SEC_STR);
 		}
 	}
 
@@ -784,7 +784,7 @@ bool K2hdkcConfig::LoadYamlTopLevel(yaml_parser_t& yparser)
 						result = false;
 					}
 				}else{
-					// Found Top Level Keywards, start to loading
+					// Found Top Level Keywords, start to loading
 					if(0 == strcasecmp(MAIN_SEC_STR, reinterpret_cast<const char*>(yevent.data.scalar.value))){
 						if(is_set_main){
 							MSG_DKCPRN("Got yaml scalar event in loop, but already loading %s. Thus stacks this event.", MAIN_SEC_STR);
@@ -799,7 +799,7 @@ bool K2hdkcConfig::LoadYamlTopLevel(yaml_parser_t& yparser)
 							}
 						}
 					}else{
-						MSG_DKCPRN("Got yaml scalar event in loop, but unknown keyward(%s) for me. Thus stacks this event.", reinterpret_cast<const char*>(yevent.data.scalar.value));
+						MSG_DKCPRN("Got yaml scalar event in loop, but unknown keyword(%s) for me. Thus stacks this event.", reinterpret_cast<const char*>(yevent.data.scalar.value));
 						if(!other_stack.add(yevent.type)){
 							result = false;
 						}
@@ -866,7 +866,7 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 				if(0 == strcasecmp(INI_KEY_RCV_TIMEOUT_STR, key.c_str())){
 					rcvtimeout_ms = static_cast<long>(atoi(reinterpret_cast<const char*>(yevent.data.scalar.value)));
 					if(rcvtimeout_ms <= 0){
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 						result = false;
 					}
 
@@ -880,7 +880,7 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 						// value is configuration file, thus we need to check it.
 						string	abspath;
 						if(!is_file_exist(reinterpret_cast<const char*>(yevent.data.scalar.value)) || !path_to_abspath(reinterpret_cast<const char*>(yevent.data.scalar.value), abspath)){
-							ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+							ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 							result = false;
 						}else{
 							svrnode_config = abspath;
@@ -897,7 +897,7 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 						// value is configuration file, thus we need to check it.
 						string	abspath;
 						if(!is_file_exist(reinterpret_cast<const char*>(yevent.data.scalar.value)) || !path_to_abspath(reinterpret_cast<const char*>(yevent.data.scalar.value), abspath)){
-							ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+							ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 							result = false;
 						}else{
 							repl_config = abspath;
@@ -907,14 +907,14 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 				}else if(0 == strcasecmp(INI_KEY_DTORTHREADCNT_STR, key.c_str())){
 					repl_thread_cnt = atoi(reinterpret_cast<const char*>(yevent.data.scalar.value));
 					if(repl_thread_cnt < K2HTransManager::NO_THREAD_POOL || K2HTransManager::MAX_THREAD_POOL < repl_thread_cnt){
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) must be from %d to %d range.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR, K2HTransManager::NO_THREAD_POOL, K2HTransManager::MAX_THREAD_POOL);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) must be from %d to %d range.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR, K2HTransManager::NO_THREAD_POOL, K2HTransManager::MAX_THREAD_POOL);
 						result = false;
 					}
 
 				}else if(0 == strcasecmp(INI_KEY_DTORCTP_STR, key.c_str())){
 					string	abspath;
 					if(!is_file_exist(reinterpret_cast<const char*>(yevent.data.scalar.value)) || !path_to_abspath(reinterpret_cast<const char*>(yevent.data.scalar.value), abspath)){
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 						result = false;
 					}else{
 						repl_ctp_file = abspath;
@@ -936,7 +936,7 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 						k2h_file_temp	= true;
 
 					}else{
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is unkown value.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is unknown value.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 						result = false;
 					}
 
@@ -947,7 +947,7 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 					}else{
 						string	abspath;
 						if(!path_to_abspath(reinterpret_cast<const char*>(yevent.data.scalar.value), abspath)){
-							ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is something wrong.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+							ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is something wrong.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 							result = false;
 						}else{
 							k2h_create_file	= false;
@@ -962,7 +962,7 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 					}else if(INI_VAL_NO1_STR == strvalue || INI_VAL_NO2_STR == strvalue || INI_VAL_OFF_STR == strvalue){
 						k2h_fullmap = false;
 					}else{
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is unkown value.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is unknown value.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 						result = false;
 					}
 
@@ -973,28 +973,28 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 					}else if(INI_VAL_NO1_STR == strvalue || INI_VAL_NO2_STR == strvalue || INI_VAL_OFF_STR == strvalue){
 						k2h_need_init = false;
 					}else{
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is unkown value.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is unknown value.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 						result = false;
 					}
 
 				}else if(0 == strcasecmp(INI_KEY_K2HMASKBIT_STR, key.c_str())){
 					k2h_maskbit = atoi(reinterpret_cast<const char*>(yevent.data.scalar.value));
 					if(k2h_maskbit < K2HShm::MIN_MASK_BITCOUNT || K2HShm::MAX_MASK_BITCOUNT < k2h_maskbit){
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) must be from %d to %d range.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR, K2HShm::MIN_MASK_BITCOUNT, K2HShm::MAX_MASK_BITCOUNT);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) must be from %d to %d range.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR, K2HShm::MIN_MASK_BITCOUNT, K2HShm::MAX_MASK_BITCOUNT);
 						result = false;
 					}
 
 				}else if(0 == strcasecmp(INI_KEY_K2HCMASKBIT_STR, key.c_str())){
 					k2h_cmaskbit = atoi(reinterpret_cast<const char*>(yevent.data.scalar.value));
 					if(k2h_cmaskbit <= 0){
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 						result = false;
 					}
 
 				}else if(0 == strcasecmp(INI_KEY_K2HMAXELE_STR, key.c_str())){
 					k2h_elementcnt = atoi(reinterpret_cast<const char*>(yevent.data.scalar.value));
 					if(k2h_elementcnt <= 0){
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 						result = false;
 					}
 
@@ -1003,13 +1003,13 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 
 				}else if(0 == strcasecmp(INI_KEY_PASSPHRASES_STR, key.c_str())){
 					if(is_set_passfile){
-						ERR_DKCPRN("keyworad(%s) in section(%s) is already set by %s key. you can set only one of this key and %s key.", key.c_str(), MAIN_SEC_STR, INI_KEY_PASSFILE_STR, INI_KEY_PASSFILE_STR);
+						ERR_DKCPRN("keyword(%s) in section(%s) is already set by %s key. you can set only one of this key and %s key.", key.c_str(), MAIN_SEC_STR, INI_KEY_PASSFILE_STR, INI_KEY_PASSFILE_STR);
 						result = false;
 					}else{
 						is_set_passstr = true;
 
 						if(DKCEMPTYSTR(reinterpret_cast<const char*>(yevent.data.scalar.value))){
-							ERR_DKCPRN("keyworad(%s)'s value in section(%s) is empty string.", key.c_str(), MAIN_SEC_STR);
+							ERR_DKCPRN("keyword(%s)'s value in section(%s) is empty string.", key.c_str(), MAIN_SEC_STR);
 							result = false;
 						}else{
 							enc_passphrases.push_back(reinterpret_cast<const char*>(yevent.data.scalar.value));
@@ -1018,14 +1018,14 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 
 				}else if(0 == strcasecmp(INI_KEY_PASSFILE_STR, key.c_str())){
 					if(is_set_passfile || is_set_passstr){
-						ERR_DKCPRN("keyworad(%s) in section(%s) is already set for encrypt pass phrases. you can set only one of this key and %s key.", key.c_str(), MAIN_SEC_STR, INI_KEY_PASSPHRASES_STR);
+						ERR_DKCPRN("keyword(%s) in section(%s) is already set for encrypt pass phrases. you can set only one of this key and %s key.", key.c_str(), MAIN_SEC_STR, INI_KEY_PASSPHRASES_STR);
 						result = false;
 					}else{
 						is_set_passfile = true;
 
 						string	abspath;
 						if(!is_file_exist(reinterpret_cast<const char*>(yevent.data.scalar.value)) || !path_to_abspath(reinterpret_cast<const char*>(yevent.data.scalar.value), abspath)){
-							ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+							ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 							result = false;
 						}else{
 							enc_pass_file = abspath;
@@ -1039,7 +1039,7 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 					}else if(INI_VAL_NO1_STR == strvalue || INI_VAL_NO2_STR == strvalue || INI_VAL_OFF_STR == strvalue){
 						is_history = false;
 					}else{
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is unkown value.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is unknown value.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 						result = false;
 					}
 
@@ -1049,7 +1049,7 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 				}else if(0 == strcasecmp(INI_KEY_ATTRPLUGIN_STR, key.c_str())){
 					string	abspath;
 					if(!is_file_exist(reinterpret_cast<const char*>(yevent.data.scalar.value)) || !path_to_abspath(reinterpret_cast<const char*>(yevent.data.scalar.value), abspath)){
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is not existed file.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 						result = false;
 					}else{
 						attr_plugin_files.push_back(abspath);
@@ -1058,14 +1058,14 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 				}else if(0 == strcasecmp(INI_KEY_MIN_THREAD_CNT_STR, key.c_str())){
 					min_thread_cnt = static_cast<size_t>(atoi(reinterpret_cast<const char*>(yevent.data.scalar.value)));
 					if(min_thread_cnt < K2hdkcThread::MIN_THREAD_COUNT || (is_set_maxthcnt && (max_thread_cnt < min_thread_cnt))){
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is wrong(maximum value is %zu).", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR, max_thread_cnt);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is wrong(maximum value is %zu).", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR, max_thread_cnt);
 						result = false;
 					}
 
 				}else if(0 == strcasecmp(INI_KEY_MAX_THREAD_CNT_STR, key.c_str())){
 					max_thread_cnt = static_cast<size_t>(atoi(reinterpret_cast<const char*>(yevent.data.scalar.value)));
 					if(max_thread_cnt < min_thread_cnt){
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) is wrong(minimum value is %zu).", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR, min_thread_cnt);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) is wrong(minimum value is %zu).", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR, min_thread_cnt);
 						result = false;
 					}else{
 						is_set_maxthcnt = true;
@@ -1074,7 +1074,7 @@ bool K2hdkcConfig::LoadYamlMainSec(yaml_parser_t& yparser)
 				}else if(0 == strcasecmp(INI_KEY_REDUCE_TIME_STR, key.c_str())){
 					thread_reduce_time = static_cast<time_t>(atoi(reinterpret_cast<const char*>(yevent.data.scalar.value)));
 					if(thread_reduce_time <= 0){
-						ERR_DKCPRN("keyworad(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
+						ERR_DKCPRN("keyword(%s)'s value(%s) in section(%s) must be over 0.", key.c_str(), reinterpret_cast<const char*>(yevent.data.scalar.value), MAIN_SEC_STR);
 						result = false;
 					}
 
