@@ -84,7 +84,7 @@ bool K2hdkcComAddSubkey::SetErrorResponseData(dkcres_type_t subcode, dkcres_type
 	// if has slave command object, set response code into it.
 	if(pSlaveObj){
 		if(!pSlaveObj->SetResponseCode(pRcvComAll->com_head.restype)){
-			ERR_DKCPRN("Failed to set response code(%s - %s(0x%016" PRIx64 ")) to slave command object, but coontinue...", STR_DKCRES_RESULT_TYPE(pRcvComAll->com_head.restype), STR_DKCRES_SUBCODE_TYPE(pRcvComAll->com_head.restype), pRcvComAll->com_head.restype);
+			ERR_DKCPRN("Failed to set response code(%s - %s(0x%016" PRIx64 ")) to slave command object, but continue...", STR_DKCRES_RESULT_TYPE(pRcvComAll->com_head.restype), STR_DKCRES_SUBCODE_TYPE(pRcvComAll->com_head.restype), pRcvComAll->com_head.restype);
 		}
 	}
 
@@ -141,7 +141,7 @@ bool K2hdkcComAddSubkey::CommandSend(const unsigned char* pkey, size_t keylength
 	// [NOTICE]
 	// This command is a collection of other 2 commands which are setting subkey and
 	// adding subkey commands.
-	// The if some operation is occuured to key and subkey by other process during
+	// The if some operation is occurred to key and subkey by other process during
 	// from modifying(creating) subkey to adding subkey name to key's subkey list,
 	// maybe there is a possibility that the inconvenience will occur.
 	//
@@ -157,11 +157,11 @@ bool K2hdkcComAddSubkey::CommandSend(const unsigned char* pkey, size_t keylength
 	DKC_DELETE(pComSetObj);
 
 	if(IS_DKC_RES_NOTSUCCESS(rescode)){
-		ERR_DKCPRN("Failed to set subkey(%s) and subkey val(%s) in DKCCOM_ADD_SUBKEY(%p) by subcude(%s).", bin_to_string(psubkey, subkeylength).c_str(), bin_to_string(pskeyval, skeyvallength).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
+		ERR_DKCPRN("Failed to set subkey(%s) and subkey val(%s) in DKCCOM_ADD_SUBKEY(%p) by subcode(%s).", bin_to_string(psubkey, subkeylength).c_str(), bin_to_string(pskeyval, skeyvallength).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
 		SetErrorResponseData(GET_DKC_RES_SUBCODE(rescode));
 		return false;
 	}else if(DKC_RES_SUBCODE_NOTHING != GET_DKC_RES_SUBCODE(rescode)){
-		MSG_DKCPRN("Get result subcude(%s) for setting subkey(%s) and subkey val(%s) in DKCCOM_ADD_SUBKEY(%p).", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(psubkey, subkeylength).c_str(), bin_to_string(pskeyval, skeyvallength).c_str(), pRcvComAll);
+		MSG_DKCPRN("Get result subcode(%s) for setting subkey(%s) and subkey val(%s) in DKCCOM_ADD_SUBKEY(%p).", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(psubkey, subkeylength).c_str(), bin_to_string(pskeyval, skeyvallength).c_str(), pRcvComAll);
 	}
 
 	// [2] add subkey into key's subkeys list
@@ -176,11 +176,11 @@ bool K2hdkcComAddSubkey::CommandSend(const unsigned char* pkey, size_t keylength
 	DKC_DELETE(pComAddSubkeys);
 
 	if(IS_DKC_RES_NOTSUCCESS(rescode)){
-		ERR_DKCPRN("Failed to add subkey(%s) to key(%s) in DKCCOM_ADD_SUBKEY(%p) by subcude(%s).", bin_to_string(psubkey, subkeylength).c_str(), bin_to_string(pkey, keylength).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
+		ERR_DKCPRN("Failed to add subkey(%s) to key(%s) in DKCCOM_ADD_SUBKEY(%p) by subcode(%s).", bin_to_string(psubkey, subkeylength).c_str(), bin_to_string(pkey, keylength).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
 		SetErrorResponseData(GET_DKC_RES_SUBCODE(rescode));
 		return false;
 	}else if(DKC_RES_SUBCODE_NOTHING != GET_DKC_RES_SUBCODE(rescode)){
-		MSG_DKCPRN("Get result subcude(%s) for adding subkey(%s) to key(%s) in DKCCOM_ADD_SUBKEY(%p).", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(psubkey, subkeylength).c_str(), bin_to_string(pkey, keylength).c_str(), pRcvComAll);
+		MSG_DKCPRN("Get result subcode(%s) for adding subkey(%s) to key(%s) in DKCCOM_ADD_SUBKEY(%p).", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(psubkey, subkeylength).c_str(), bin_to_string(pkey, keylength).c_str(), pRcvComAll);
 	}
 
 	// set dummy response

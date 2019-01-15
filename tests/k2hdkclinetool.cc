@@ -217,7 +217,7 @@ class ConsoleInput
 		strarr_t			history;
 		ssize_t				history_pos;
 		string				input;
-		size_t				input_pos;	// == cursole pos
+		size_t				input_pos;	// == cursor pos
 		struct termios		tty_backup;
 		bool				is_set_terminal;
 		int					last_errno;
@@ -347,13 +347,13 @@ void ConsoleInput::ClearInput(void)
 
 void ConsoleInput::ClearLine(void)
 {
-	for(size_t Count = 0; Count < input_pos; Count++){		// cursol to head
+	for(size_t Count = 0; Count < input_pos; Count++){		// cursor to head
 		putchar('\x08');
 	}
 	for(size_t Count = 0; Count < input.length(); Count++){	// clear by space
 		putchar(' ');
 	}
-	for(size_t Count = 0; Count < input.length(); Count++){	// rewind cursol to head
+	for(size_t Count = 0; Count < input.length(); Count++){	// rewind cursor to head
 		putchar('\x08');
 	}
 	fflush(stdout);
@@ -383,7 +383,7 @@ bool ConsoleInput::GetCommand(void)
 
 	char	input_char;
 	while(true){
-		// read one charactor
+		// read one character
 		if(!ReadByte(input_char)){
 			if(EINTR == last_errno){
 				last_errno = 0;
@@ -399,12 +399,12 @@ bool ConsoleInput::GetCommand(void)
 			break;
 
 		}else if('\x1b' == input_char){
-			// escape charactor --> next byte read
+			// escape character --> next byte read
 			if(!ReadByte(input_char)){
 				break;
 			}
 			if('\x5b' == input_char){
-				// read more charactor
+				// read more character
 				if(!ReadByte(input_char)){
 					break;
 				}
@@ -464,7 +464,7 @@ bool ConsoleInput::GetCommand(void)
 					}
 
 				}else if('\x31' == input_char){
-					// read more charactor
+					// read more character
 					if(!ReadByte(input_char)){
 						break;
 					}
@@ -478,7 +478,7 @@ bool ConsoleInput::GetCommand(void)
 					}
 
 				}else if('\x34' == input_char){
-					// read more charactor
+					// read more character
 					if(!ReadByte(input_char)){
 						break;
 					}
@@ -492,7 +492,7 @@ bool ConsoleInput::GetCommand(void)
 					}
 
 				}else if('\x33' == input_char){
-					// read more charactor
+					// read more character
 					if(!ReadByte(input_char)){
 						break;
 					}
@@ -566,7 +566,7 @@ bool ConsoleInput::GetCommand(void)
 			fflush(stdout);
 
 		}else if(isprint(input_char)){
-			// normal charactor
+			// normal character
 			input.insert(input_pos, 1, input_char);
 			for(size_t Count = input_pos; Count < input.length(); Count++){
 				putchar(input[Count]);
@@ -622,7 +622,7 @@ static bool		isCleanupBup	= true;
 //---------------------------------------------------------
 // 
 // -help(h)           help display
-// -conf <filename>   chmpx configration file path
+// -conf <filename>   chmpx configuration file path
 // -ctlport <port>    slave node chmpx control port
 // -lap               print lap time after line command
 // -capi              use C API for calling internal library
@@ -644,8 +644,8 @@ static void Help(const char* progname)
 	PRN("       %s -help", progname ? progname : "program");
 	PRN(NULL);
 	PRN("Option -help(h)           help display");
-	PRN("       -conf <filename>   k2hdkc configration file path(.ini .yaml .json)");
-	PRN("       -json <string>     k2hdkc configration by json string");
+	PRN("       -conf <filename>   k2hdkc configuration file path(.ini .yaml .json)");
+	PRN("       -json <string>     k2hdkc configuration by json string");
 	PRN("       -ctlport <port>    slave node chmpx control port");
 	PRN("       -lap               print lap time after line command");
 	PRN("       -capi              use C API for calling internal library");
@@ -663,11 +663,11 @@ static void Help(const char* progname)
 	PRN("(*) You can specify \"K2HDKCCONFFILE\" or \"K2HDKCJSONCONF\" environment instead of");
 	PRN("    \"-conf\" or \"-json\" option for configuration.");
 	PRN("(*) You can set debug level by another way which is setting environment as \"DKCDBGMODE\".");
-	PRN("    \"DKCDBGMODE\" enviroment is took as \"SILENT(SLT)\", \"ERROR(ERR)\", \"WARNING(WAN)\",");
+	PRN("    \"DKCDBGMODE\" environment is took as \"SILENT(SLT)\", \"ERROR(ERR)\", \"WARNING(WAN)\",");
 	PRN("    \"INFO(MSG)\" or \"DUMP(DMP)\" value.");
-	PRN("    When this process gets SIGUSER1 signal, the debug level is bumpup.");
+	PRN("    When this process gets SIGUSR1 signal, the debug level is bumpup.");
 	PRN("    (The debug level is changed as \"SLT\"->\"ERR\"->\"WAN\"->\"MSG\"->\"DMP\"->...)");
-	PRN("(*) You can set debugging message log file by the envirnment \"DKCDBGFILE\".");
+	PRN("(*) You can set debugging message log file by the environment \"DKCDBGFILE\".");
 	PRN(NULL);
 }
 
@@ -771,7 +771,7 @@ static void LineHelp(void)
 }
 
 //---------------------------------------------------------
-// Utilities: Comamnd Parser
+// Utilities: Command Parser
 //---------------------------------------------------------
 const OPTTYPE ExecOptionTypes[] = {
 	{"-help",			"-help",			0,	0},
@@ -892,7 +892,7 @@ static bool BaseOptionParser(strarr_t& args, CPOPTTYPE pTypes, option_t& opts)
 		for(Count2 = 0; pTypes[Count2].option; Count2++){
 			if(0 == strcasecmp(args[Count].c_str(), pTypes[Count2].option)){
 				if(args.size() < ((Count + 1) + pTypes[Count2].min_param_cnt)){
-					ERR("Option(%s) needs %d paraemter.", args[Count].c_str(), pTypes[Count2].min_param_cnt);
+					ERR("Option(%s) needs %d parameter.", args[Count].c_str(), pTypes[Count2].min_param_cnt);
 					return false;
 				}
 
@@ -1003,7 +1003,7 @@ static bool LineOptionParser(const char* pCommand, option_t& opts)
 					isQuart		= false;
 
 					if('\\' == *pPos){
-						// found escape charactor
+						// found escape character
 						pPos++;
 						if('\0' == *pPos || '\n' == *pPos){
 							break;
@@ -1051,7 +1051,7 @@ static bool ReadLine(int fd, string& line)
 	line.erase();
 	while(true){
 		szBuff = '\0';
-		// read one charactor
+		// read one character
 		if(-1 == (readlength = read(fd, &szBuff, 1))){
 			line.erase();
 			return false;
@@ -1062,7 +1062,7 @@ static bool ReadLine(int fd, string& line)
 			return false;
 		}
 
-		// check charactor
+		// check character
 		if('\r' == szBuff || '\0' == szBuff){
 			// skip words
 
@@ -1521,7 +1521,7 @@ static bool GetSubkeysCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* p
 	bool			result;
 	dkcres_type_t	rescode		= DKC_NORESTYPE;
 	if(K2HDKC_INVALID_HANDLE == chmpxhandle){
-		// use one-time champx object
+		// use one-time chmpx object
 		if(isModeCAPI){
 			if(is_noattr){
 				// no check attribute type
@@ -1617,7 +1617,7 @@ static bool SubkeyPrintCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* 
 		// print all subkeys(reentrant key printing)
 		for(int cnt = 0; pskeypck && cnt < skeypckcnt; ++cnt){
 			if(!RawPrintCommand(chmpxhandle, pskeypck[cnt].pkey, pskeypck[cnt].length, is_all, is_noattr, passphrase, is_dump, nestcnt)){
-				WAN("Somthing wrong occurred durging subkey printing, but continue...");
+				WAN("Something wrong occurred during printing subkey, but continue...");
 			}
 		}
 	}else if(0 < skeypckcnt){
@@ -1661,7 +1661,7 @@ static bool RawPrintCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* pke
 	size_t					vallength	= 0;
 	dkcres_type_t			rescode		= DKC_NORESTYPE;
 	if(K2HDKC_INVALID_HANDLE == chmpxhandle){
-		// use one-time champx object
+		// use one-time chmpx object
 		if(isModeCAPI){
 			if(is_noattr){
 				// no check attribute type
@@ -1757,7 +1757,7 @@ static bool RawPrintCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* pke
 
 	// print subkeys(list or dump)
 	if(!SubkeyPrintCommand(chmpxhandle, pkey, keylength, is_all, is_noattr, passphrase, is_dump, nestcnt + 1, false)){
-		WAN("Somthing wrong occurred durging subkey printing.");
+		WAN("Something wrong occurred during printing subkey.");
 	}
 	return true;
 }
@@ -1815,7 +1815,7 @@ static bool RawDirectGetCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char*
 	bool			result;
 	dkcres_type_t	rescode = DKC_NORESTYPE;
 	if(K2HDKC_INVALID_HANDLE == chmpxhandle){
-		// use one-time champx object
+		// use one-time chmpx object
 		if(isModeCAPI){
 			result		= k2hdkc_ex_da_get_value(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylen, offset, length, ppval, &vallen);
 			rescode		= k2hdkc_get_lastres_code();
@@ -1965,7 +1965,7 @@ static bool PrintAttrCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 	PK2HDKCATTRPCK	pattrspck	= NULL;
 	int				attrspckcnt	= 0;
 	if(K2HDKC_INVALID_HANDLE == chmpxhandle){
-		// use one-time champx object
+		// use one-time chmpx object
 		if(isModeCAPI){
 			result = k2hdkc_ex_get_attrs(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &pattrspck, &attrspckcnt);
 			rescode= k2hdkc_get_lastres_code();
@@ -2189,7 +2189,7 @@ static bool RawSetCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* pKey,
 	if(is_rmsub){
 		for(int cnt = 0; pskeypck && cnt < skeypckcnt; ++cnt){
 			if(!RemoveCommand(chmpxhandle, pskeypck[cnt].pkey, pskeypck[cnt].length, is_rmsub)){
-				WAN("Somthing wrong occurred durging removing subkey, but continue...");
+				WAN("Something wrong occurred during removing subkey, but continue...");
 			}
 		}
 	}
@@ -2263,7 +2263,7 @@ static bool RawDirectSetCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char*
 	bool			result;
 	dkcres_type_t	rescode		= DKC_NORESTYPE;
 	if(K2HDKC_INVALID_HANDLE == chmpxhandle){
-		// use one-time champx object
+		// use one-time chmpx object
 		if(isModeCAPI){
 			result	= k2hdkc_ex_da_set_value(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylen, pval, vallen, offset);
 			rescode	= k2hdkc_get_lastres_code();
@@ -2503,7 +2503,7 @@ static bool RemoveCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* pkey,
 	bool			result;
 	dkcres_type_t	rescode		= DKC_NORESTYPE;
 	if(K2HDKC_INVALID_HANDLE == chmpxhandle){
-		// use one-time champx object
+		// use one-time chmpx object
 		if(isModeCAPI){
 			if(is_subkeys){
 				// with subkeys
@@ -2675,7 +2675,7 @@ static bool RawSetSubkeyCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char*
 	bool			result;
 	dkcres_type_t	rescode		= DKC_NORESTYPE;
 	if(K2HDKC_INVALID_HANDLE == chmpxhandle){
-		// use one-time champx object
+		// use one-time chmpx object
 		if(isModeCAPI){
 			// add subkey with value and set into parent key
 			if(!pExpire && pPassPhrase){
@@ -2793,7 +2793,7 @@ static bool SetSubkeyCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 		dkcres_type_t	rescode	= DKC_NORESTYPE;
 
 		if(K2HDKC_INVALID_HANDLE == chmpxhandle){
-			// use one-time champx object
+			// use one-time chmpx object
 			if(isModeCAPI){
 				// get subkeys
 				PK2HDKCKEYPCK	psrcskeypck		= NULL;
@@ -3190,7 +3190,7 @@ static bool RenameCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 					result = k2hdkc_ex_rename_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pOldKey, OldKeyLen, pNewKey, NewkeyLen, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}
 			}else{
-				// rename key and change subkey list in parenet key
+				// rename key and change subkey list in parent key
 				if(-1 == Expire && PassPhrase.empty()){
 					result = k2hdkc_ex_rename_with_parent(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pOldKey, OldKeyLen, pNewKey, NewkeyLen, pParentKey, pParentKeyLen);
 				}else{
@@ -3200,7 +3200,7 @@ static bool RenameCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			// rename only key (and change subkey list in parenet key)
+			// rename only key (and change subkey list in parent key)
 			K2hdkcComRen*	pComObj = GetOtSlaveK2hdkcComRen(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
@@ -3222,7 +3222,7 @@ static bool RenameCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 					result = k2hdkc_pm_rename_wa(chmpxhandle, pOldKey, OldKeyLen, pNewKey, NewkeyLen, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}
 			}else{
-				// rename key and change subkey list in parenet key
+				// rename key and change subkey list in parent key
 				if(-1 == Expire && PassPhrase.empty()){
 					result = k2hdkc_pm_rename_with_parent(chmpxhandle, pOldKey, OldKeyLen, pNewKey, NewkeyLen, pParentKey, pParentKeyLen);
 				}else{
@@ -3232,7 +3232,7 @@ static bool RenameCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 			rescode	= k2hdkc_get_res_code(chmpxhandle);
 
 		}else{
-			// rename only key (and change subkey list in parenet key)
+			// rename only key (and change subkey list in parent key)
 			K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(chmpxhandle);
 			K2hdkcComRen*	pComObj = GetPmSlaveK2hdkcComRen(pSlave);
 			if(!pComObj){
@@ -3441,16 +3441,16 @@ static bool QueuePopCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* pNa
 		if(!is_dump){
 			char*	pQueueName	= GetPrintableString(pName, NameLen);
 			char*	pQueueValue	= GetPrintableString(pval, vallength);
-			PRN("poped \"%s\" queue => \"%s\"", (pQueueName ? pQueueName : ""), (pQueueValue ? pQueueValue : ""));
+			PRN("popped \"%s\" queue => \"%s\"", (pQueueName ? pQueueName : ""), (pQueueValue ? pQueueValue : ""));
 			DKC_FREE(pQueueName);
 			DKC_FREE(pQueueValue);
 		}else{
-			BinaryDumpUtility("queue name =", pName, NameLen, 0);
-			BinaryDumpUtility("poped value=", pval, vallength, 0);
+			BinaryDumpUtility("queue name  =", pName, NameLen, 0);
+			BinaryDumpUtility("popped value=", pval, vallength, 0);
 		}
 	}else{
 		char*	pQueueName	= GetPrintableString(pName, NameLen);
-		PRN("poped \"%s\" queue => could not pop", (pQueueName ? pQueueName : ""));
+		PRN("popped \"%s\" queue => could not pop", (pQueueName ? pQueueName : ""));
 		DKC_FREE(pQueueName);
 	}
 	DKC_FREE(pval);
@@ -3570,8 +3570,8 @@ static bool QueueCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 	// dispatch sub command
 	//
 	// [NOTICE]
-	// Name does not include null charactor, because this tool should be as same as
-	// k2hlinetool. It does not include null charactor for marker.
+	// Name does not include null character, because this tool should be as same as
+	// k2hlinetool. It does not include null character for marker.
 	//
 	bool	result;
 	if(0 == strcasecmp(strSubCmd.c_str(), "push")){
@@ -3581,7 +3581,7 @@ static bool QueueCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 	}else if(0 == strcasecmp(strSubCmd.c_str(), "remove") || 0 == strcasecmp(strSubCmd.c_str(), "rm") || 0 == strcasecmp(strSubCmd.c_str(), "del")){
 		result = QueueRemoveCommand(chmpxhandle, reinterpret_cast<const unsigned char*>(strName.c_str()), strName.length(), is_Fifo, params);
 	}else{
-		ERR("Unknown sub coammnd(%s) for queue command.", strSubCmd.c_str());
+		ERR("Unknown sub command(%s) for queue command.", strSubCmd.c_str());
 		return true;	// for continue.
 	}
 
@@ -3796,18 +3796,18 @@ static bool KeyQueuePopCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* 
 			char*	pKeyQueueName	= GetPrintableString(pName, NameLen);
 			char*	pKeyQueueKey	= GetPrintableString(pkey, keylength);
 			char*	pKeyQueueValue	= GetPrintableString(pval, vallength);
-			PRN("poped \"%s\" queue => \"%s\" : \"%s\"", (pKeyQueueName ? pKeyQueueName : ""), (pKeyQueueKey ? pKeyQueueKey : ""), (pKeyQueueValue ? pKeyQueueValue : ""));
+			PRN("popped \"%s\" queue => \"%s\" : \"%s\"", (pKeyQueueName ? pKeyQueueName : ""), (pKeyQueueKey ? pKeyQueueKey : ""), (pKeyQueueValue ? pKeyQueueValue : ""));
 			DKC_FREE(pKeyQueueName);
 			DKC_FREE(pKeyQueueKey);
 			DKC_FREE(pKeyQueueValue);
 		}else{
-			BinaryDumpUtility("queue name =", pName, NameLen, 0);
-			BinaryDumpUtility("queue key  =", pkey, keylength, 0);
-			BinaryDumpUtility("poped value=", pval, vallength, 0);
+			BinaryDumpUtility("queue name  =", pName, NameLen, 0);
+			BinaryDumpUtility("queue key   =", pkey, keylength, 0);
+			BinaryDumpUtility("popped value=", pval, vallength, 0);
 		}
 	}else{
 		char*	pKeyQueueName	= GetPrintableString(pName, NameLen);
-		PRN("poped \"%s\" queue => could not pop", (pKeyQueueName ? pKeyQueueName : ""));
+		PRN("popped \"%s\" queue => could not pop", (pKeyQueueName ? pKeyQueueName : ""));
 		DKC_FREE(pKeyQueueName);
 	}
 	DKC_FREE(pval);
@@ -3927,8 +3927,8 @@ static bool KeyQueueCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 	// dispatch sub command
 	//
 	// [NOTICE]
-	// Name does not include null charactor, because this tool should be as same as
-	// k2hlinetool. It does not include null charactor for marker.
+	// Name does not include null character, because this tool should be as same as
+	// k2hlinetool. It does not include null character for marker.
 	//
 	bool	result;
 	if(0 == strcasecmp(strSubCmd.c_str(), "push")){
@@ -3938,7 +3938,7 @@ static bool KeyQueueCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 	}else if(0 == strcasecmp(strSubCmd.c_str(), "remove") || 0 == strcasecmp(strSubCmd.c_str(), "rm") || 0 == strcasecmp(strSubCmd.c_str(), "del")){
 		result = KeyQueueRemoveCommand(chmpxhandle, reinterpret_cast<const unsigned char*>(strName.c_str()), strName.length(), is_Fifo, params);
 	}else{
-		ERR("Unknown sub coammnd(%s) for queue command.", strSubCmd.c_str());
+		ERR("Unknown sub command(%s) for queue command.", strSubCmd.c_str());
 		return true;	// for continue.
 	}
 
@@ -4574,8 +4574,8 @@ static bool CasCommand(k2hdkc_chmpx_h chmpxhandle, CASTYPE type, params_t& param
 	// dispatch sub command
 	//
 	// [NOTICE]
-	// Name does not include null charactor, because this tool should be as same as
-	// k2hlinetool. It does not include null charactor for marker.
+	// Name does not include null character, because this tool should be as same as
+	// k2hlinetool. It does not include null character for marker.
 	//
 	bool	result;
 	if(0 == strcasecmp(strSubCmd.c_str(), "init")){
@@ -4743,9 +4743,9 @@ static bool StatusChmpxCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 			PRN("maximum socket count per chmpx(socket pool)  = %d",				pInfo->pchminfo->max_sock_pool);
 			PRN("timeout for socket pool                      = %zd (s)",			pInfo->pchminfo->sock_pool_timeout);
 			PRN("retry count on socket                        = %d",				pInfo->pchminfo->sock_retrycnt);
-			PRN("timeout for send/recieve on socket           = %ld (us)",			pInfo->pchminfo->timeout_wait_socket);
+			PRN("timeout for send/receive on socket           = %ld (us)",			pInfo->pchminfo->timeout_wait_socket);
 			PRN("timeout for connect on socket                = %ld (us)",			pInfo->pchminfo->timeout_wait_connect);
-			PRN("timeout for send/recieve on socket           = %ld (us)",			pInfo->pchminfo->timeout_wait_mq);
+			PRN("timeout for send/receive on socket           = %ld (us)",			pInfo->pchminfo->timeout_wait_mq);
 			PRN("maximum MQ count                             = %ld",				pInfo->pchminfo->max_mqueue);
 			PRN("chmpx process MQ count                       = %ld",				pInfo->pchminfo->chmpx_mqueue);
 			PRN("maximum queue per chmpx process MQ           = %ld",				pInfo->pchminfo->max_q_per_chmpxmq);
@@ -4759,8 +4759,8 @@ static bool StatusChmpxCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 
 			// chmpx info & info ex --> chmpx manager
 			PRN("chmpx name                                   = %s",				pInfo->pchminfo->chmpx_man.group);
-			PRN("configration file version                    = %ld",				pInfo->pchminfo->chmpx_man.cfg_revision);
-			PRN("configration file date                       = %zu (unix time)",	pInfo->pchminfo->chmpx_man.cfg_date);
+			PRN("configuration file version                   = %ld",				pInfo->pchminfo->chmpx_man.cfg_revision);
+			PRN("configuration file date                      = %zu (unix time)",	pInfo->pchminfo->chmpx_man.cfg_date);
 			PRN("replication count                            = %ld",				pInfo->pchminfo->chmpx_man.replica_count);
 			PRN("maximum chmpx count                          = %ld",				pInfo->pchminfo->chmpx_man.chmpx_count);
 			PRN("base hash count                              = %ld",				pInfo->pchminfo->chmpx_man.chmpx_bhash_count);
@@ -4959,7 +4959,7 @@ static bool StatusChmpxCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 			PRN("last assigned msgid                          = 0x%016" PRIx64 ,	pInfo->pchminfo->last_msgid_assigned);
 
 			// chmpx info & info ex --> client process
-			PRN("joining client proces = {");
+			PRN("joining client process = {");
 			for(counter = 0, pproclist = pInfo->pchminfo->client_pids; pproclist; pproclist = pproclist->next, ++counter){
 				PRN("  [%d] pid                                   = %d",			counter, pproclist->pid);
 			}
@@ -5146,7 +5146,7 @@ static bool StatusNodeCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 			PRN("    paging size                                = %zu (byte)", 		pstates[cnt].k2hstate.page_size);
 			PRN("    total used size                            = %zu (byte)", 		pstates[cnt].k2hstate.total_used_size);
 			PRN("    total mapping size                         = %zu (byte)", 		pstates[cnt].k2hstate.total_map_size);
-			PRN("    total element erea size                    = %zu (byte)", 		pstates[cnt].k2hstate.total_element_size);
+			PRN("    total element area size                    = %zu (byte)", 		pstates[cnt].k2hstate.total_element_size);
 			PRN("    total page area size                       = %zu (byte)", 		pstates[cnt].k2hstate.total_page_size);
 			PRN("    total area count                           = %ld", 			pstates[cnt].k2hstate.total_area_count);
 			PRN("    total element count                        = %ld", 			pstates[cnt].k2hstate.total_element_count);
@@ -5628,7 +5628,7 @@ static bool CommandHandle(k2hdkc_chmpx_h chmpxhandle, ConsoleInput& InputIF)
 	const string	strLine = InputIF.c_str();
 	bool			is_exit = false;
 	if(0 < strLine.length() && '!' == strLine[0]){
-		// special charactor("!") command
+		// special character("!") command
 		const char*	pSpecialCommand = strLine.c_str();
 		pSpecialCommand++;
 

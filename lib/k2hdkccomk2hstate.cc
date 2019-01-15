@@ -141,7 +141,7 @@ bool K2hdkcComK2hState::CommandProcessing(void)
 			return false;
 		}
 		if(pCom->base_hash != pSelfInfo->base_hash){
-			WAN_DKCPRN("Diffrent base hash of request(%016" PRIx64 ") and self(%016" PRIx64 "), but continue...", pCom->base_hash, pSelfInfo->base_hash);
+			WAN_DKCPRN("Different base hash of request(%016" PRIx64 ") and self(%016" PRIx64 "), but continue...", pCom->base_hash, pSelfInfo->base_hash);
 		}
 
 		// do command
@@ -156,7 +156,7 @@ bool K2hdkcComK2hState::CommandProcessing(void)
 		// set response data
 		if(!SetResponseData(pSelfInfo, pState)){
 			MSG_DKCPRN("Failed to make response data for getting k2hash state.");
-			// continue for responsing
+			// continue for responding
 		}
 
 		// free
@@ -240,7 +240,7 @@ bool K2hdkcComK2hState::GetResponseData(chmpxid_t* pchmpxid, const char** ppname
 	}
 	PDKCRES_K2HSTATE	pResK2hState = CVT_DKCRES_K2HSTATE(pcomall);
 	if(DKC_COM_K2HSTATE != pResK2hState->head.comtype || DKC_NORESTYPE == pResK2hState->head.restype || RcvComLength != pResK2hState->head.length){
-		ERR_DKCPRN("Response(received) data is somthing wrong(internal error: data is invalid).");
+		ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 		return false;
 	}
 	if(pchmpxid){

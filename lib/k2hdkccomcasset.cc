@@ -124,7 +124,7 @@ bool K2hdkcComCasSet::CommandProcessing(void)
 
 		// compare data
 		if(static_cast<size_t>(ValLen) != pCom->oldval_length || 0 != memcmp(pValue, pOldVal, ValLen)){
-			MSG_DKCPRN("key(%s) has val(%s) but it is different from requst val(%s)", bin_to_string(pKey, pCom->key_length).c_str(), bin_to_string(pValue, ValLen).c_str(), bin_to_string(pOldVal, pCom->oldval_length).c_str());
+			MSG_DKCPRN("key(%s) has val(%s) but it is different from request val(%s)", bin_to_string(pKey, pCom->key_length).c_str(), bin_to_string(pValue, ValLen).c_str(), bin_to_string(pOldVal, pCom->oldval_length).c_str());
 			SetErrorResponseData(DKC_RES_SUBCODE_NOTSAMEVAL);
 			DKC_FREE(pValue);
 			DKC_FREE(pEncPass);

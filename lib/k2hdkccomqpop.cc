@@ -171,7 +171,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 		K2HLowOpsQueue*	pQueue			= pK2hObj->GetLowOpsQueueObj(pCom->fifo, pPrefix, pCom->prefix_length);
 		if(!pQueue){
 			ERR_DKCPRN("Failed to get queue prefix(%s) in DKCCOM_QPOP(%p)", bin_to_string(pPrefix, pCom->prefix_length).c_str(), pRcvComAll);
-			SetErrorResponseData(DKC_RES_SUBCODE_GETQUQUE);
+			SetErrorResponseData(DKC_RES_SUBCODE_GETQUEUE);
 			DKC_FREE(pEncPass);
 			DKC_FREE(pMarker);
 			return false;
@@ -183,7 +183,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 		if(!pQKey){
 			// there is no stacked queue data
 			MSG_DKCPRN("Failed to get planned queue key name for queue prefix(%s) in DKCCOM_QPOP(%p)", bin_to_string(pPrefix, pCom->prefix_length).c_str(), pRcvComAll);
-			SetErrorResponseData(DKC_RES_SUBCODE_GETPOPQUQUENAME);
+			SetErrorResponseData(DKC_RES_SUBCODE_GETPOPQUEUENAME);
 			DKC_FREE(pEncPass);
 			DKC_FREE(pMarker);
 			DKC_DELETE(pQueue);
@@ -197,7 +197,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 			K2hdkcComGetSubkeys*	pComGetSubkeys	= GetCommonK2hdkcComGetSubkeys(pK2hObj, pChmObj, SendMsgid, GetDispComNumber(), false, true, true);	// [NOTICE] wait result
 			K2HSubKeys*				pSubKeys		= NULL;
 			dkcres_type_t			rescode			= DKC_INITRESTYPE;
-			if(!pComGetSubkeys->CommandSend(pQKey, qkey_length, pCom->check_attr, &pSubKeys, &rescode) || !pSubKeys || 0 == pSubKeys->size()){			// [NOTE] probabry not check attr
+			if(!pComGetSubkeys->CommandSend(pQKey, qkey_length, pCom->check_attr, &pSubKeys, &rescode) || !pSubKeys || 0 == pSubKeys->size()){			// [NOTE] probably not check attr
 				MSG_DKCPRN("Failed to get subkeys in planned queue key(%s) name for queue prefix(%s) in DKCCOM_QPOP(%p)", bin_to_string(pQKey, qkey_length).c_str(), bin_to_string(pPrefix, pCom->prefix_length).c_str(), pRcvComAll);
 			}else{
 				// get one subkey
@@ -226,7 +226,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 		// [4] pop marker key
 		if(!pQueue->Pop(pNextKey, nextkey_length)){
 			ERR_DKCPRN("Failed to set planned new queue key(%s) name for queue prefix(%s) in DKCCOM_QPOP(%p)", bin_to_string(pQKey, qkey_length).c_str(), bin_to_string(pPrefix, pCom->prefix_length).c_str(), pRcvComAll);
-			SetErrorResponseData(DKC_RES_SUBCODE_POPQUQUE);
+			SetErrorResponseData(DKC_RES_SUBCODE_POPQUEUE);
 			DKC_FREE(pEncPass);
 			DKC_FREE(pMarker);
 			DKC_FREE(pQKey);
@@ -247,14 +247,14 @@ bool K2hdkcComQPop::CommandProcessing(void)
 		//
 		bool	result = false;
 		do{
-			// [5] get queue key's value(= poped queue value)
+			// [5] get queue key's value(= popped queue value)
 			{
 				// [5-1] get value
 				K2hdkcComGet*			pComGetObj	= GetCommonK2hdkcComGet(pK2hObj, pChmObj, SendMsgid, GetDispComNumber(), false, true, true);	// [NOTICE] wait result
 				dkcres_type_t			rescode		= DKC_INITRESTYPE;
 				const unsigned char*	pTmpResData	= NULL;
 				if(!pComGetObj->CommandSend(pQKey, qkey_length, true, pEncPass, &pTmpResData, &ResDataLength, &rescode)){							// [NOTE] always check attr
-					ERR_DKCPRN("Failed to get poped queue key(%s) value in DKCCOM_QPOP(%p).", bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll);
+					ERR_DKCPRN("Failed to get popped queue key(%s) value in DKCCOM_QPOP(%p).", bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll);
 					SetErrorResponseData(DKC_RES_SUBCODE_GETVAL);
 					DKC_FREE(pEncPass);
 					DKC_FREE(pMarker);
@@ -264,7 +264,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 					return false;
 				}
 				if(IS_DKC_RES_NOTSUCCESS(rescode)){
-					ERR_DKCPRN("Failed to get poped queue key(%s) value in DKCCOM_QPOP(%p) by subcude(%s).", bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
+					ERR_DKCPRN("Failed to get popped queue key(%s) value in DKCCOM_QPOP(%p) by subcode(%s).", bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
 					SetErrorResponseData(DKC_RES_SUBCODE_GETVAL);
 					DKC_FREE(pEncPass);
 					DKC_DELETE(pComGetObj);
@@ -273,7 +273,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 					DKC_DELETE(pQueue);
 					return false;
 				}else if(DKC_RES_SUBCODE_NOTHING != GET_DKC_RES_SUBCODE(rescode)){
-					MSG_DKCPRN("Get result subcode(%s) for getting poped queue key(%s) value in DKCCOM_QPOP(%p).", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll);
+					MSG_DKCPRN("Get result subcode(%s) for getting popped queue key(%s) value in DKCCOM_QPOP(%p).", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll);
 				}
 
 				// copy resdata
@@ -284,7 +284,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 				K2hdkcComDel*	pComDelObj		= GetCommonK2hdkcComDel(pK2hObj, pChmObj, SendMsgid, GetDispComNumber(), false, true, true);	// [NOTICE] wait result
 				rescode							= DKC_INITRESTYPE;
 				if(!pComDelObj->CommandSend(pQKey, qkey_length, false, true, &rescode)){														// [NOTE] always check attr
-					ERR_DKCPRN("Failed to delete poped queue key(%s) value in DKCCOM_QPOP(%p).", bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll);
+					ERR_DKCPRN("Failed to delete popped queue key(%s) value in DKCCOM_QPOP(%p).", bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll);
 					SetErrorResponseData(DKC_RES_SUBCODE_DELKEY);
 					DKC_FREE(pEncPass);
 					DKC_FREE(pMarker);
@@ -297,7 +297,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 				DKC_DELETE(pComDelObj);
 
 				if(IS_DKC_RES_NOTSUCCESS(rescode)){
-					ERR_DKCPRN("Failed to delete poped queue key(%s) value in DKCCOM_QPOP(%p) by subcude(%s).", bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
+					ERR_DKCPRN("Failed to delete popped queue key(%s) value in DKCCOM_QPOP(%p) by subcode(%s).", bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
 					SetErrorResponseData(DKC_RES_SUBCODE_DELKEY);
 					DKC_FREE(pEncPass);
 					DKC_FREE(pMarker);
@@ -306,12 +306,12 @@ bool K2hdkcComQPop::CommandProcessing(void)
 					DKC_DELETE(pQueue);
 					return false;
 				}else if(DKC_RES_SUBCODE_NOTHING != GET_DKC_RES_SUBCODE(rescode)){
-					ERR_DKCPRN("Get result subcode(%s) for deleting poped queue key(%s) value in DKCCOM_QPOP(%p)", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll);
+					ERR_DKCPRN("Get result subcode(%s) for deleting popped queue key(%s) value in DKCCOM_QPOP(%p)", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(pQKey, qkey_length).c_str(), pRcvComAll);
 				}
 			}
 			DKC_FREE(pQKey);
 
-			// [6] KEYQUEUE - read value from key(= poped queue key's value)
+			// [6] KEYQUEUE - read value from key(= popped queue key's value)
 			if(pCom->keyqueue){
 				// [6-1] read value
 				pResKey								= pResData;			// swap
@@ -322,7 +322,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 				dkcres_type_t			rescode		= DKC_INITRESTYPE;
 				const unsigned char*	pTmpResData	= NULL;
 				if(!pComGetObj->CommandSend(pResKey, ResKeyLength, true, pEncPass, &pTmpResData, &ResDataLength, &rescode)){						// [NOTE] always check attr
-					ERR_DKCPRN("Failed to get poped key queue key(%s) value in DKCCOM_QPOP(%p).", bin_to_string(pResKey, ResKeyLength).c_str(), pRcvComAll);
+					ERR_DKCPRN("Failed to get popped key queue key(%s) value in DKCCOM_QPOP(%p).", bin_to_string(pResKey, ResKeyLength).c_str(), pRcvComAll);
 					SetErrorResponseData(DKC_RES_SUBCODE_GETVAL);
 					DKC_FREE(pEncPass);
 					DKC_FREE(pMarker);
@@ -332,7 +332,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 					return false;
 				}
 				if(IS_DKC_RES_NOTSUCCESS(rescode)){
-					ERR_DKCPRN("Failed to get poped key queue key(%s) value in DKCCOM_QPOP(%p) by subcude(%s).", bin_to_string(pResKey, ResKeyLength).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
+					ERR_DKCPRN("Failed to get popped key queue key(%s) value in DKCCOM_QPOP(%p) by subcode(%s).", bin_to_string(pResKey, ResKeyLength).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
 					SetErrorResponseData(DKC_RES_SUBCODE_GETVAL);
 					DKC_FREE(pEncPass);
 					DKC_DELETE(pComGetObj);
@@ -341,7 +341,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 					DKC_DELETE(pQueue);
 					return false;
 				}else if(DKC_RES_SUBCODE_NOTHING != GET_DKC_RES_SUBCODE(rescode)){
-					MSG_DKCPRN("Get result subcode(%s) for getting poped key queue key(%s) value in DKCCOM_QPOP(%p).", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(pResKey, ResKeyLength).c_str(), pRcvComAll);
+					MSG_DKCPRN("Get result subcode(%s) for getting popped key queue key(%s) value in DKCCOM_QPOP(%p).", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(pResKey, ResKeyLength).c_str(), pRcvComAll);
 				}
 
 				// copy resdata
@@ -352,7 +352,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 				K2hdkcComDel*	pComDelObj		= GetCommonK2hdkcComDel(pK2hObj, pChmObj, SendMsgid, GetDispComNumber(), false, true, true);	// [NOTICE] wait result
 				rescode							= DKC_INITRESTYPE;
 				if(!pComDelObj->CommandSend(pResKey, ResKeyLength, false, true, &rescode)){														// [NOTE] always check attr
-					ERR_DKCPRN("Failed to delete poped queue key(%s) value in DKCCOM_QPOP(%p).", bin_to_string(pResKey, ResKeyLength).c_str(), pRcvComAll);
+					ERR_DKCPRN("Failed to delete popped queue key(%s) value in DKCCOM_QPOP(%p).", bin_to_string(pResKey, ResKeyLength).c_str(), pRcvComAll);
 					SetErrorResponseData(DKC_RES_SUBCODE_DELKEY);
 					DKC_FREE(pEncPass);
 					DKC_FREE(pMarker);
@@ -365,7 +365,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 				DKC_DELETE(pComDelObj);
 
 				if(IS_DKC_RES_NOTSUCCESS(rescode)){
-					ERR_DKCPRN("Failed to delete poped queue key(%s) value in DKCCOM_QPOP(%p) by subcude(%s).", bin_to_string(pResKey, ResKeyLength).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
+					ERR_DKCPRN("Failed to delete popped queue key(%s) value in DKCCOM_QPOP(%p) by subcode(%s).", bin_to_string(pResKey, ResKeyLength).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
 					SetErrorResponseData(DKC_RES_SUBCODE_DELKEY);
 					DKC_FREE(pEncPass);
 					DKC_FREE(pMarker);
@@ -374,7 +374,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 					DKC_DELETE(pQueue);
 					return false;
 				}else if(DKC_RES_SUBCODE_NOTHING != GET_DKC_RES_SUBCODE(rescode)){
-					ERR_DKCPRN("Get result subcode(%s) for deleting poped queue key(%s) value in DKCCOM_QPOP(%p)", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(pResKey, ResKeyLength).c_str(), pRcvComAll);
+					ERR_DKCPRN("Get result subcode(%s) for deleting popped queue key(%s) value in DKCCOM_QPOP(%p)", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(pResKey, ResKeyLength).c_str(), pRcvComAll);
 				}
 			}
 			result = true;
@@ -385,7 +385,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 		struct timespec	ts;
 		INIT_DKC_TIMESPEC(ts);
 
-		// [7] replicate merker key and datas to other servers assap
+		// [7] replicate marker key and datas to other servers assap
 		//
 		// [NOTE] reason of sending other server after replying result.
 		// because the result of sending replication data to other server on server node can not be caught
@@ -400,7 +400,7 @@ bool K2hdkcComQPop::CommandProcessing(void)
 		if(result){
 			if(!SetResponseData(pResKey, ResKeyLength, pResData, ResDataLength)){
 				MSG_DKCPRN("Failed to make response data for marker prefix(%s)", bin_to_string(pPrefix, pCom->prefix_length).c_str());
-				// continue for responsing
+				// continue for responding
 			}
 		}
 		DKC_FREE(pEncPass);
@@ -430,7 +430,7 @@ bool K2hdkcComQPop::CommandSend(const unsigned char* pprefix, size_t prefixlengt
 	// do command
 	// 
 	// [NOTICE]
-	// If command is keyueue type, at first we pop queue which is key name.
+	// If command is keyqueue type, at first we pop queue which is key name.
 	// After that, we get value by key name and remove the key, and remake response
 	// which is received by QPOP command.
 	//
@@ -505,7 +505,7 @@ bool K2hdkcComQPop::GetResponseData(const unsigned char** ppkey, size_t* pkeylen
 	}
 	PDKCRES_QPOP	pResQPop = CVT_DKCRES_QPOP(pcomall);
 	if(DKC_COM_QPOP != pResQPop->head.comtype || DKC_NORESTYPE == pResQPop->head.restype || RcvComLength != pResQPop->head.length){
-		ERR_DKCPRN("Response(received) data is somthing wrong(internal error: data is invalid).");
+		ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 		return false;
 	}
 	if(ppkey && pkeylength){

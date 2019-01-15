@@ -124,7 +124,7 @@ bool K2hdkcComSet::CommandProcessing(void)
 			}
 		}
 		if(!pCom->rm_subkeylist){
-			pSKeysObj = pK2hObj->GetSubKeys(pKey, pCom->key_length, false);											// not check attributes and no encript pass
+			pSKeysObj = pK2hObj->GetSubKeys(pKey, pCom->key_length, false);											// not check attributes and no encrypt pass
 		}
 
 		// do command
@@ -181,7 +181,7 @@ bool K2hdkcComSet::CommandSendEx(const unsigned char* pkey, size_t keylength, co
 		return false;
 	}
 	if(DKC_QUEUE_TYPE_NOTQUEUE == queue_type && (pattrs || 0 < attrslength)){
-		// if attibutes mask type is normal, pattrs must be empty.
+		// if attributes mask type is normal, pattrs must be empty.
 		ERR_DKCPRN("Parameter are wrong.");
 		return false;
 	}

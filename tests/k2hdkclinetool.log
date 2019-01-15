@@ -268,18 +268,18 @@
 > queue queue-key push fifo 444
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => "000"
+popped "queue-key" queue => "000"
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => "111"
+popped "queue-key" queue => "111"
 > sleep 1
 > queue queue-key remove fifo 2
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => "444"
+popped "queue-key" queue => "444"
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => could not pop
+popped "queue-key" queue => could not pop
 > sleep 1
 > queue queue-key push lifo 000
 > sleep 1
@@ -292,18 +292,18 @@ poped "queue-key" queue => could not pop
 > queue queue-key push lifo 444
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => "444"
+popped "queue-key" queue => "444"
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => "333"
+popped "queue-key" queue => "333"
 > sleep 1
 > queue queue-key remove lifo 2
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => "000"
+popped "queue-key" queue => "000"
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => could not pop
+popped "queue-key" queue => could not pop
 > sleep 1
 > echo ######################################################
 ######################################################
@@ -322,18 +322,18 @@ poped "queue-key" queue => could not pop
 > keyqueue kqueue-key push fifo kq-stack-key4 stack-value4
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+popped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => "kq-stack-key1" : "stack-value1"
+popped "kqueue-key" queue => "kq-stack-key1" : "stack-value1"
 > sleep 1
 > keyqueue kqueue-key remove fifo 2
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+popped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => could not pop
+popped "kqueue-key" queue => could not pop
 > sleep 1
 > keyqueue kqueue-key push lifo kq-stack-key0 stack-value0
 > sleep 1
@@ -346,18 +346,18 @@ poped "kqueue-key" queue => could not pop
 > keyqueue kqueue-key push lifo kq-stack-key4 stack-value4
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+popped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => "kq-stack-key3" : "stack-value3"
+popped "kqueue-key" queue => "kq-stack-key3" : "stack-value3"
 > sleep 1
 > keyqueue kqueue-key remove lifo 2
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+popped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => could not pop
+popped "kqueue-key" queue => could not pop
 > sleep 1
 > echo ######################################################
 ######################################################
@@ -694,18 +694,18 @@ SUCCEED
 > queue queue-key push fifo 444
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => "000"
+popped "queue-key" queue => "000"
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => "111"
+popped "queue-key" queue => "111"
 > sleep 1
 > queue queue-key remove fifo 2
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => "444"
+popped "queue-key" queue => "444"
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => could not pop
+popped "queue-key" queue => could not pop
 > sleep 1
 > queue queue-key push lifo 000
 > sleep 1
@@ -718,18 +718,18 @@ poped "queue-key" queue => could not pop
 > queue queue-key push lifo 444
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => "444"
+popped "queue-key" queue => "444"
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => "333"
+popped "queue-key" queue => "333"
 > sleep 1
 > queue queue-key remove lifo 2
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => "000"
+popped "queue-key" queue => "000"
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => could not pop
+popped "queue-key" queue => could not pop
 > sleep 1
 > echo ######################################################
 ######################################################
@@ -748,18 +748,18 @@ poped "queue-key" queue => could not pop
 > keyqueue kqueue-key push fifo kq-stack-key4 stack-value4
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+popped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => "kq-stack-key1" : "stack-value1"
+popped "kqueue-key" queue => "kq-stack-key1" : "stack-value1"
 > sleep 1
 > keyqueue kqueue-key remove fifo 2
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+popped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => could not pop
+popped "kqueue-key" queue => could not pop
 > sleep 1
 > keyqueue kqueue-key push lifo kq-stack-key0 stack-value0
 > sleep 1
@@ -772,18 +772,18 @@ poped "kqueue-key" queue => could not pop
 > keyqueue kqueue-key push lifo kq-stack-key4 stack-value4
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+popped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => "kq-stack-key3" : "stack-value3"
+popped "kqueue-key" queue => "kq-stack-key3" : "stack-value3"
 > sleep 1
 > keyqueue kqueue-key remove lifo 2
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+popped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => could not pop
+popped "kqueue-key" queue => could not pop
 > sleep 1
 > echo ######################################################
 ######################################################
@@ -1122,18 +1122,18 @@ SUCCEED
 > queue queue-key push fifo 444
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => "000"
+popped "queue-key" queue => "000"
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => "111"
+popped "queue-key" queue => "111"
 > sleep 1
 > queue queue-key remove fifo 2
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => "444"
+popped "queue-key" queue => "444"
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => could not pop
+popped "queue-key" queue => could not pop
 > sleep 1
 > queue queue-key push lifo 000
 > sleep 1
@@ -1146,18 +1146,18 @@ poped "queue-key" queue => could not pop
 > queue queue-key push lifo 444
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => "444"
+popped "queue-key" queue => "444"
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => "333"
+popped "queue-key" queue => "333"
 > sleep 1
 > queue queue-key remove lifo 2
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => "000"
+popped "queue-key" queue => "000"
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => could not pop
+popped "queue-key" queue => could not pop
 > sleep 1
 > echo ######################################################
 ######################################################
@@ -1176,18 +1176,18 @@ poped "queue-key" queue => could not pop
 > keyqueue kqueue-key push fifo kq-stack-key4 stack-value4
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+popped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => "kq-stack-key1" : "stack-value1"
+popped "kqueue-key" queue => "kq-stack-key1" : "stack-value1"
 > sleep 1
 > keyqueue kqueue-key remove fifo 2
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+popped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => could not pop
+popped "kqueue-key" queue => could not pop
 > sleep 1
 > keyqueue kqueue-key push lifo kq-stack-key0 stack-value0
 > sleep 1
@@ -1200,18 +1200,18 @@ poped "kqueue-key" queue => could not pop
 > keyqueue kqueue-key push lifo kq-stack-key4 stack-value4
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+popped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => "kq-stack-key3" : "stack-value3"
+popped "kqueue-key" queue => "kq-stack-key3" : "stack-value3"
 > sleep 1
 > keyqueue kqueue-key remove lifo 2
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+popped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => could not pop
+popped "kqueue-key" queue => could not pop
 > sleep 1
 > echo ######################################################
 ######################################################
@@ -1548,18 +1548,18 @@ SUCCEED
 > queue queue-key push fifo 444
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => "000"
+popped "queue-key" queue => "000"
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => "111"
+popped "queue-key" queue => "111"
 > sleep 1
 > queue queue-key remove fifo 2
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => "444"
+popped "queue-key" queue => "444"
 > sleep 1
 > queue queue-key pop fifo
-poped "queue-key" queue => could not pop
+popped "queue-key" queue => could not pop
 > sleep 1
 > queue queue-key push lifo 000
 > sleep 1
@@ -1572,18 +1572,18 @@ poped "queue-key" queue => could not pop
 > queue queue-key push lifo 444
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => "444"
+popped "queue-key" queue => "444"
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => "333"
+popped "queue-key" queue => "333"
 > sleep 1
 > queue queue-key remove lifo 2
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => "000"
+popped "queue-key" queue => "000"
 > sleep 1
 > queue queue-key pop lifo
-poped "queue-key" queue => could not pop
+popped "queue-key" queue => could not pop
 > sleep 1
 > echo ######################################################
 ######################################################
@@ -1602,18 +1602,18 @@ poped "queue-key" queue => could not pop
 > keyqueue kqueue-key push fifo kq-stack-key4 stack-value4
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+popped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => "kq-stack-key1" : "stack-value1"
+popped "kqueue-key" queue => "kq-stack-key1" : "stack-value1"
 > sleep 1
 > keyqueue kqueue-key remove fifo 2
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+popped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
 > sleep 1
 > keyqueue kqueue-key pop fifo
-poped "kqueue-key" queue => could not pop
+popped "kqueue-key" queue => could not pop
 > sleep 1
 > keyqueue kqueue-key push lifo kq-stack-key0 stack-value0
 > sleep 1
@@ -1626,18 +1626,18 @@ poped "kqueue-key" queue => could not pop
 > keyqueue kqueue-key push lifo kq-stack-key4 stack-value4
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
+popped "kqueue-key" queue => "kq-stack-key4" : "stack-value4"
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => "kq-stack-key3" : "stack-value3"
+popped "kqueue-key" queue => "kq-stack-key3" : "stack-value3"
 > sleep 1
 > keyqueue kqueue-key remove lifo 2
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
+popped "kqueue-key" queue => "kq-stack-key0" : "stack-value0"
 > sleep 1
 > keyqueue kqueue-key pop lifo
-poped "kqueue-key" queue => could not pop
+popped "kqueue-key" queue => could not pop
 > sleep 1
 > echo ######################################################
 ######################################################

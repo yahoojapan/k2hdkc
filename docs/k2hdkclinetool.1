@@ -13,10 +13,10 @@ k2hdkclinetool is interactive tool, this can test almost of K2HDKC library inter
 display help
 .TP
 \fB\-conf\ [file\ path]\fR 15
-specify configration file(.ini .yaml .json).
+specify configuration file(.ini .yaml .json).
 .TP
 \fB\-json\ [json\ string]\fR 15
-specify configration by json string.
+specify configuration by json string.
 .TP
 \fB\-ctlport\fR [port]
 specify slave node chmpx control port
@@ -60,14 +60,14 @@ run command(history) file.
 .SH ENVIRONMENT
 .TP
 \fBK2HDKCCONFFILE\fR
-specify the configration file(.ini .yaml .json) path
+specify the configuration file(.ini .yaml .json) path
 .TP
 \fBK2HDKCJSONCONF\fR
-specify the configration json string
+specify the configuration json string
 .TP
 \fBDKCDBGMODE\fR
 DKCDBGMODE environment sets debugging message level as same as \-d option. The value is set as SILENT, ERR, WAN, INFO or DUMP.
-When k2hlinetool catches SIGUSER1 signal, the debugging message level is bumpup. The level is changed as order by SILENT, ERR, WAN, INFO, SILENT...
+When k2hlinetool catches SIGUSR1 signal, the debugging message level is bumpup. The level is changed as order by SILENT, ERR, WAN, INFO, SILENT...
 .TP
 \fDKCDBGFILE\fR
 DKCDBGFILE environment sets the file which is debugging message, this is as same as \-dlog option.
@@ -76,6 +76,6 @@ DKCDBGFILE environment sets the file which is debugging message, this is as same
 k2hash(1), chmpx(1), k2hdkc(1)
 .SH BUGS
 .TP
-Please report owner and comitter.
+Please report owner and committer.
 .SH AUTHOR
 k2hash has been written by Takeshi Nakatani.

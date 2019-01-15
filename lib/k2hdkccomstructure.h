@@ -33,7 +33,7 @@ DECL_EXTERN_C_START
 // Command types
 //
 // [NOTE]
-// following comand is a collection of other commands
+// following command is a collection of other commands
 // 		DKC_COM_ADD_SUBKEY		This command does not have structure, and calls only other commands.
 //		DKC_COM_DEL				This command has structure, and calls other commands
 //		DKC_COM_DEL_SUBKEY		This command does not have structure, and calls only other commands.
@@ -141,10 +141,10 @@ DECL_EXTERN_C_START
 #define	DKC_RES_LOW_GETMARKER 				0x10						// Failed to get queue marker
 #define	DKC_RES_LOW_SETMARKER 				0x11						// Failed to set queue marker
 #define	DKC_RES_LOW_GETNEWQKEY 				0x12						// Failed to get new queue key name
-#define	DKC_RES_LOW_GETQUQUE 				0x13						// Failed to get queue
-#define	DKC_RES_LOW_PUSHQUEQUE 				0x14						// Failed to push queue
-#define	DKC_RES_LOW_POPQUQUE 				0x15						// Failed to pop queue
-#define	DKC_RES_LOW_GETPOPQUQUENAME 		0x16						// Failed to planned pop queue name
+#define	DKC_RES_LOW_GETQUEUE 				0x13						// Failed to get queue
+#define	DKC_RES_LOW_PUSHQUEUE 				0x14						// Failed to push queue
+#define	DKC_RES_LOW_POPQUEUE 				0x15						// Failed to pop queue
+#define	DKC_RES_LOW_GETPOPQUEUENAME 		0x16						// Failed to planned pop queue name
 #define	DKC_RES_LOW_NOTSAMEVAL 				0x17						// different values
 #define	DKC_RES_LOW_NOTSAMEDATATYPE			0x18						// different value type(length)
 #define	DKC_RES_LOW_GETSLEFSVRCHMPX			0x19						// Failed to get self chmpx information
@@ -172,10 +172,10 @@ DECL_EXTERN_C_START
 #define	DKC_RES_SUBCODE_GETMARKER			(DKC_RES_LOW_GETMARKER)
 #define	DKC_RES_SUBCODE_SETMARKER			(DKC_RES_LOW_SETMARKER)
 #define	DKC_RES_SUBCODE_GETNEWQKEY			(DKC_RES_LOW_GETNEWQKEY)
-#define	DKC_RES_SUBCODE_GETQUQUE			(DKC_RES_LOW_GETQUQUE)
-#define	DKC_RES_SUBCODE_PUSHQUEQUE 			(DKC_RES_LOW_PUSHQUEQUE)
-#define	DKC_RES_SUBCODE_POPQUQUE 			(DKC_RES_LOW_POPQUQUE)
-#define	DKC_RES_SUBCODE_GETPOPQUQUENAME 	(DKC_RES_LOW_GETPOPQUQUENAME)
+#define	DKC_RES_SUBCODE_GETQUEUE			(DKC_RES_LOW_GETQUEUE)
+#define	DKC_RES_SUBCODE_PUSHQUEUE 			(DKC_RES_LOW_PUSHQUEUE)
+#define	DKC_RES_SUBCODE_POPQUEUE 			(DKC_RES_LOW_POPQUEUE)
+#define	DKC_RES_SUBCODE_GETPOPQUEUENAME 	(DKC_RES_LOW_GETPOPQUEUENAME)
 #define	DKC_RES_SUBCODE_NOTSAMEVAL 			(DKC_RES_LOW_NOTSAMEVAL)
 #define	DKC_RES_SUBCODE_NOTSAMEDATATYPE 	(DKC_RES_LOW_NOTSAMEDATATYPE)
 #define	DKC_RES_SUBCODE_GETSLEFSVRCHMPX 	(DKC_RES_LOW_GETSLEFSVRCHMPX)
@@ -228,10 +228,10 @@ DECL_EXTERN_C_START
 												DKC_RES_SUBCODE_GETMARKER		== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_GETMARKER"		: \
 												DKC_RES_SUBCODE_SETMARKER		== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_SETMARKER"		: \
 												DKC_RES_SUBCODE_GETNEWQKEY		== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_GETNEWQKEY"		: \
-												DKC_RES_SUBCODE_GETQUQUE		== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_GETQUQUE"		: \
-												DKC_RES_SUBCODE_PUSHQUEQUE		== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_PUSHQUEQUE"		: \
-												DKC_RES_SUBCODE_POPQUQUE		== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_POPQUQUE"		: \
-												DKC_RES_SUBCODE_GETPOPQUQUENAME	== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_GETPOPQUQUENAME"	: \
+												DKC_RES_SUBCODE_GETQUEUE		== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_GETQUEUE"		: \
+												DKC_RES_SUBCODE_PUSHQUEUE		== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_PUSHQUEUE"		: \
+												DKC_RES_SUBCODE_POPQUEUE		== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_POPQUEUE"		: \
+												DKC_RES_SUBCODE_GETPOPQUEUENAME	== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_GETPOPQUEUENAME"	: \
 												DKC_RES_SUBCODE_NOTSAMEVAL		== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_NOTSAMEVAL"		: \
 												DKC_RES_SUBCODE_NOTSAMEDATATYPE	== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_NOTSAMEDATATYPE"	: \
 												DKC_RES_SUBCODE_GETSLEFSVRCHMPX	== GET_DKC_RES_SUBCODE(restype) ? "DKC_RES_SUBCODE_GETSLEFSVRCHMPX"	: \
@@ -515,7 +515,7 @@ typedef struct k2hdkc_com_cas_set{
 }K2HDKC_ATTR_PACKED DKCCOM_CAS_SET, *PDKCCOM_CAS_SET;
 
 //
-// Increment/Decremnt compare and swap
+// Increment/Decrement compare and swap
 //
 typedef struct k2hdkc_com_cas_incdec{
 	DKCCOM_HEAD		head;

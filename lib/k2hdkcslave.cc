@@ -29,7 +29,7 @@
 using namespace	std;
 
 //---------------------------------------------------------
-// Class Methods - Get Comamnd object
+// Class Methods - Get Command object
 //---------------------------------------------------------
 K2hdkcCommand* K2hdkcSlave::GetSlaveCommandSendObject(dkccom_type_t comtype, K2hdkcSlave* pslaveobj, uint64_t comnum)
 {
@@ -42,14 +42,14 @@ K2hdkcCommand* K2hdkcSlave::GetSlaveCommandSendObject(dkccom_type_t comtype, K2h
 		return NULL;
 	}
 
-	// create comamnd object(do not set slave command object)
+	// create command object(do not set slave command object)
 	K2hdkcCommand*	pComObj = K2hdkcCommand::GetCommandSendObject(NULL, pslaveobj->GetChmCntrlObject(), comtype, pslaveobj->GetMsgid(), comnum);
 	if(!pComObj){
 		ERR_DKCPRN("Could not create command object for slave command.");
 		return NULL;
 	}
 	if(!pComObj->SetPermanentSlave(pslaveobj)){
-		WAN_DKCPRN("Failed to Slave comamnd object to command object, but continue...");
+		WAN_DKCPRN("Failed to Slave command object to command object, but continue...");
 	}
 	return pComObj;
 }

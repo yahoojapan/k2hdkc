@@ -326,14 +326,14 @@ K2hdkcCommand* K2hdkcCommand::GetSlaveCommandSendObject(dkccom_type_t comtype, c
 	// create slave command object
 	K2hdkcSlave*	pslave = new K2hdkcSlave();
 
-	// initialize slave comamnd object
+	// initialize slave command object
 	if(!pslave->Initialize(config, ctlport, is_auto_rejoin)){
 		ERR_DKCPRN("Could not create slave command object.");
 		DKC_DELETE(pslave);
 		return NULL;
 	}
 
-	// open msgid by slave comamnd object
+	// open msgid by slave command object
 	if(!pslave->Open(no_giveup_rejoin)){
 		ERR_DKCPRN("Could not open msgid by slave command object.");
 		pslave->Clean();
@@ -341,7 +341,7 @@ K2hdkcCommand* K2hdkcCommand::GetSlaveCommandSendObject(dkccom_type_t comtype, c
 		return NULL;
 	}
 
-	// create comamnd object
+	// create command object
 	K2hdkcCommand*	pComObj = K2hdkcCommand::GetCommandSendObject(NULL, pslave->GetChmCntrlObject(), comtype, pslave->GetMsgid(), comnum);
 	if(!pComObj){
 		ERR_DKCPRN("Could not create command object for slave command.");
@@ -350,7 +350,7 @@ K2hdkcCommand* K2hdkcCommand::GetSlaveCommandSendObject(dkccom_type_t comtype, c
 		return NULL;
 	}
 
-	// set slave comamnd object to command object
+	// set slave command object to command object
 	pComObj->pSlaveObj		= pslave;
 	pComObj->IsCreateSlave	= true;
 
@@ -587,7 +587,7 @@ K2hdkcCommand::K2hdkcCommand(K2HShm* pk2hash, ChmCntrl* pchmcntrl, uint64_t comn
 		ComNumber = K2hdkcComNumber::Get();
 	}
 
-	// initliaze condition values
+	// initialize condition values
 	pthread_mutex_init(&cond_mutex, NULL);
 	if(0 != pthread_cond_init(&cond_val, NULL)){
 		ERR_DKCPRN("Failed to initialize condition for waiting response.");
@@ -774,9 +774,9 @@ bool K2hdkcCommand::SetReceiveData(PCOMPKT pComPkt, PDKCCOM_ALL pComAll)
 	pRcvComAll		= pComAll;
 	RcvComLength	= pComAll->com_head.length;
 
-	// wakeup thread when wating response
+	// wakeup thread when waiting response
 	if(IsServerNode && IsWaitResOnServer && K2hdkcCommand::WaitFp && K2hdkcCommand::UnWaitFp && !TriggerResponse){
-		// notificate flag
+		// notification flag
 		TriggerResponse = true;
 
 		int		condres;
@@ -815,7 +815,7 @@ bool K2hdkcCommand::SetSendData(PDKCCOM_ALL pComAll, chmhash_t hash)
 bool K2hdkcCommand::SetResponseData(PDKCCOM_ALL pComAll)
 {
 	if(!pRcvComPkt){
-		ERR_DKCPRN("Command ComPkt is NULL, so must set recieve data before setting response data.");
+		ERR_DKCPRN("Command ComPkt is NULL, so must set receive data before setting response data.");
 		return false;
 	}
 	return SetSendData(pComAll, 0L);		// Do not care of hash value for response
@@ -934,7 +934,7 @@ bool K2hdkcCommand::CommandSending(void)
 	// receive command result
 	//
 	// [NOTE]
-	// if the deperture chmpx is server node, the command type must not need to receive
+	// if the departure chmpx is server node, the command type must not need to receive
 	// the response here. because the sending method for server node is not used msgid,
 	// thus it uses common msgid in chmpx.
 	// then you are going to receive the response in MAIN LOOP.
@@ -961,7 +961,7 @@ bool K2hdkcCommand::CommandSending(void)
 		// if has slave command object, set response code into it.
 		if(pSlaveObj){
 			if(!pSlaveObj->SetResponseCode(pRcvComAll->com_head.restype)){
-				ERR_DKCPRN("Failed to set response code(%s - %s(0x%016" PRIx64 ")) to slave command object, but coontinue...", STR_DKCRES_RESULT_TYPE(pRcvComAll->com_head.restype), STR_DKCRES_SUBCODE_TYPE(pRcvComAll->com_head.restype), pRcvComAll->com_head.restype);
+				ERR_DKCPRN("Failed to set response code(%s - %s(0x%016" PRIx64 ")) to slave command object, but continue...", STR_DKCRES_RESULT_TYPE(pRcvComAll->com_head.restype), STR_DKCRES_SUBCODE_TYPE(pRcvComAll->com_head.restype), pRcvComAll->com_head.restype);
 			}
 		}
 
@@ -1025,7 +1025,7 @@ bool K2hdkcCommand::CommandReplicate(const unsigned char* pkey, size_t keylength
 	// get replication datas which are binary
 	ssize_t			vallength	= 0;
 	unsigned char*	pval		= NULL;
-	if(0 > (vallength = pK2hObj->Get(pkey, keylength, &pval, false, NULL)) || !pval){		// not check attributes and no encript pass
+	if(0 > (vallength = pK2hObj->Get(pkey, keylength, &pval, false, NULL)) || !pval){		// not check attributes and no encrypt pass
 		MSG_DKCPRN("There is no value for key(%s).", bin_to_string(pkey, keylength).c_str());
 		DKC_FREE(pval);
 		vallength = 0;
@@ -1033,7 +1033,7 @@ bool K2hdkcCommand::CommandReplicate(const unsigned char* pkey, size_t keylength
 	K2HSubKeys*		pSKeysObj		= NULL;
 	size_t			subkeyslength	= 0;
 	unsigned char*	psubkeys		= NULL;
-	if(NULL == (pSKeysObj = pK2hObj->GetSubKeys(pkey, keylength, false))){					// not check attributes and no encript pass
+	if(NULL == (pSKeysObj = pK2hObj->GetSubKeys(pkey, keylength, false))){					// not check attributes and no encrypt pass
 		MSG_DKCPRN("There is no subkeys list for key(%s).", bin_to_string(pkey, keylength).c_str());
 	}else{
 		if(!pSKeysObj->Serialize(&psubkeys, subkeyslength)){

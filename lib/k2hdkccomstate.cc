@@ -144,7 +144,7 @@ bool K2hdkcComState::CommandSend(void)
 	// Allocate response area for success
 	PDKCCOM_ALL	pComResAll = AllocateResponseData(svrnodemap.size());
 	if(!pComResAll){
-		ERR_DKCPRN("Somthing error occurred during allocation.");
+		ERR_DKCPRN("Something error occurred during allocation.");
 		SetErrorResponseData(DKC_RES_SUBCODE_NOMEM);
 		return false;
 	}
@@ -181,7 +181,7 @@ bool K2hdkcComState::CommandSend(void)
 			continue;
 		}
 		if(IS_DKC_RES_NOTSUCCESS(rescode)){
-			ERR_DKCPRN("Failed to get k2hash state for chmpxid(%016" PRIx64 ") - base hash(%016" PRIx64 ") in DKC_COM_STATE by subcude(%s), but continue...", iter->first, iter->second, STR_DKCRES_SUBCODE_TYPE(rescode));
+			ERR_DKCPRN("Failed to get k2hash state for chmpxid(%016" PRIx64 ") - base hash(%016" PRIx64 ") in DKC_COM_STATE by subcode(%s), but continue...", iter->first, iter->second, STR_DKCRES_SUBCODE_TYPE(rescode));
 			DKC_DELETE(pComK2hState);
 			continue;
 
@@ -245,7 +245,7 @@ bool K2hdkcComState::GetResponseData(const DKC_NODESTATE** ppStates, size_t* pst
 	}
 	PDKCRES_STATE	pComRes = CVT_DKCRES_STATE(pcomall);
 	if(DKC_COM_STATE != pComRes->head.comtype || DKC_NORESTYPE == pComRes->head.restype || RcvComLength != pComRes->head.length){
-		ERR_DKCPRN("Response(received) data is somthing wrong(internal error: data is invalid).");
+		ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 		return false;
 	}
 

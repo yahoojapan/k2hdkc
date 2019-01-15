@@ -142,7 +142,7 @@ bool K2hdkcComRen::CommandProcessing(void)
 		}else if(pEncPass){
 			// [NOTE]
 			// if pEncPass is not NULL, we need raw value which is encrypted.
-			// because we use SetAll function, it reqiures raw value.
+			// because we use SetAll function, it requires raw value.
 			// thus we read value twice, but it is not high costs because reading value from local.
 			//
 			DKC_FREE(pValue);
@@ -218,7 +218,7 @@ bool K2hdkcComRen::CommandProcessing(void)
 		DKC_FREE(pValue);
 
 		if(IS_DKC_RES_NOTSUCCESS(rescode)){
-			ERR_DKCPRN("Failed to set new key(%s) with val(%s), subkeys(%s), attrs(%s) in DKCCOM_REN(%p) by subcude(%s).", bin_to_string(pNewKey, pCom->newkey_length).c_str(), bin_to_string(pValue, ValLen).c_str(), bin_to_string(bySubkeys, subkeys_length).c_str(), bin_to_string(byAttrs, attrs_length).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
+			ERR_DKCPRN("Failed to set new key(%s) with val(%s), subkeys(%s), attrs(%s) in DKCCOM_REN(%p) by subcode(%s).", bin_to_string(pNewKey, pCom->newkey_length).c_str(), bin_to_string(pValue, ValLen).c_str(), bin_to_string(bySubkeys, subkeys_length).c_str(), bin_to_string(byAttrs, attrs_length).c_str(), pRcvComAll, STR_DKCRES_SUBCODE_TYPE(rescode));
 			SetErrorResponseData(GET_DKC_RES_SUBCODE(rescode));
 			return false;
 		}else if(DKC_RES_SUBCODE_NOTHING != GET_DKC_RES_SUBCODE(rescode)){
@@ -277,9 +277,9 @@ bool K2hdkcComRen::CommandSend(const unsigned char* poldkey, size_t oldkeylength
 	// do command
 	// 
 	// [NOTICE] Case of specifying parent key
-	// This command is a collection of other 2 commands which are remoing/adding subkey
+	// This command is a collection of other 2 commands which are removing/adding subkey
 	// after renaming commands.
-	// The if some operation is occuured to key and subkey by other process during
+	// The if some operation is occurred to key and subkey by other process during
 	// from modifying(creating) subkey to adding/removing subkey name to key's subkey
 	// list, maybe there is a possibility that the inconvenience will occur.
 	//
@@ -329,7 +329,7 @@ bool K2hdkcComRen::CommandSend(const unsigned char* poldkey, size_t oldkeylength
 		// check result
 		dkcres_type_t	rescode = GetResponseCode();
 		if(IS_DKC_RES_NOTSUCCESS(rescode)){
-			ERR_DKCPRN("Failed to rename key(%s) by subcude(%s).", bin_to_string(poldkey, oldkeylength).c_str(), STR_DKCRES_SUBCODE_TYPE(rescode));
+			ERR_DKCPRN("Failed to rename key(%s) by subcode(%s).", bin_to_string(poldkey, oldkeylength).c_str(), STR_DKCRES_SUBCODE_TYPE(rescode));
 			return false;
 		}
 
@@ -344,7 +344,7 @@ bool K2hdkcComRen::CommandSend(const unsigned char* poldkey, size_t oldkeylength
 		DKC_DELETE(pComDelSKeyObj);
 
 		if(IS_DKC_RES_NOTSUCCESS(rescode)){
-			ERR_DKCPRN("Failed to remove subkey(%s) from key(%s) by subcude(%s).", bin_to_string(poldkey, oldkeylength).c_str(), bin_to_string(pparentkey, parentkeylength).c_str(), STR_DKCRES_SUBCODE_TYPE(rescode));
+			ERR_DKCPRN("Failed to remove subkey(%s) from key(%s) by subcode(%s).", bin_to_string(poldkey, oldkeylength).c_str(), bin_to_string(pparentkey, parentkeylength).c_str(), STR_DKCRES_SUBCODE_TYPE(rescode));
 			return false;
 		}else if(DKC_RES_SUBCODE_NOTHING != GET_DKC_RES_SUBCODE(rescode)){
 			MSG_DKCPRN("Get result subcode(%s) for removing subkey(%s) from key(%s).", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(poldkey, oldkeylength).c_str(), bin_to_string(pparentkey, parentkeylength).c_str());
@@ -361,7 +361,7 @@ bool K2hdkcComRen::CommandSend(const unsigned char* poldkey, size_t oldkeylength
 		DKC_DELETE(pComAddSKeyObj);
 
 		if(IS_DKC_RES_NOTSUCCESS(rescode)){
-			ERR_DKCPRN("Failed to remove subkey(%s) from key(%s) by subcude(%s).", bin_to_string(pnewkey, newkeylength).c_str(), bin_to_string(pparentkey, parentkeylength).c_str(), STR_DKCRES_SUBCODE_TYPE(rescode));
+			ERR_DKCPRN("Failed to remove subkey(%s) from key(%s) by subcode(%s).", bin_to_string(pnewkey, newkeylength).c_str(), bin_to_string(pparentkey, parentkeylength).c_str(), STR_DKCRES_SUBCODE_TYPE(rescode));
 			return false;
 		}else if(DKC_RES_SUBCODE_NOTHING != GET_DKC_RES_SUBCODE(rescode)){
 			MSG_DKCPRN("Get result subcode(%s) for adding subkey(%s) from key(%s).", STR_DKCRES_SUBCODE_TYPE(rescode), bin_to_string(pnewkey, newkeylength).c_str(), bin_to_string(pparentkey, parentkeylength).c_str());

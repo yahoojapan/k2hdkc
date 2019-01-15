@@ -202,7 +202,7 @@ K2hdkcThread::K2hdkcThread(void* pobj) :
 {
 	assert(pthread_paramobj);
 
-	// initliaze condition values
+	// initialize condition values
 	pthread_mutex_init(&cond_mutex, NULL);
 
 	if(0 != pthread_cond_init(&cond_val, NULL)){
@@ -248,7 +248,7 @@ bool K2hdkcThread::Initialize(size_t minthcnt, size_t maxthcnt, time_t reduce_ti
 bool K2hdkcThread::Uninitialize(void)
 {
 	if(!is_init_cond_vals){
-		WAN_DKCPRN("Sync cond objects variables is not initialized or already destroied, so do not need to uninitialize.");
+		WAN_DKCPRN("Sync cond objects variables is not initialized or already destroyed, so do not need to uninitialize.");
 		return true;
 	}
 	bool	result = true;
@@ -431,7 +431,7 @@ size_t K2hdkcThread::JoinThreads(bool& is_rest_thread)
 				// found already finished thread
 				int	result;
 				if(0 != (result = pthread_join((*iter)->threadid, NULL))){
-					ERR_DKCPRN("Failed to wait exiting thread(return code = %d), so do not retrive this, and continue...", result);
+					ERR_DKCPRN("Failed to wait exiting thread(return code = %d), so do not retrieve this, and continue...", result);
 					++iter;
 				}else{
 					MSG_DKCPRN("Succeed to exit thread.");

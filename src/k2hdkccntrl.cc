@@ -210,7 +210,7 @@ bool K2hdkcCntrl::MergeSetCallback(chmpx_h handle, size_t length, const unsigned
 bool K2hdkcCntrl::K2hdkcCommandReceiveWaitSetFunc(uint64_t comnum, K2hdkcCommand* pobj, void* pparam)
 {
 	if(!pobj || !pparam){
-		ERR_DKCPRN("Parameters are wrong, probabry failed to initialize.");
+		ERR_DKCPRN("Parameters are wrong, probably failed to initialize.");
 		return false;
 	}
 	K2hdkcCntrl*	pCntlObj = reinterpret_cast<K2hdkcCntrl*>(pparam);
@@ -225,7 +225,7 @@ bool K2hdkcCntrl::K2hdkcCommandReceiveWaitSetFunc(uint64_t comnum, K2hdkcCommand
 bool K2hdkcCntrl::K2hdkcCommandReceiveWaitUnsetFunc(uint64_t comnum, K2hdkcCommand* pobj, void* pparam)
 {
 	if(!pobj || !pparam){
-		ERR_DKCPRN("Parameters are wrong, probabry failed to initialize.");
+		ERR_DKCPRN("Parameters are wrong, probably failed to initialize.");
 		return false;
 	}
 	K2hdkcCntrl*	pCntlObj = reinterpret_cast<K2hdkcCntrl*>(pparam);
@@ -251,7 +251,7 @@ bool K2hdkcCntrl::WorkerProc(void* pobj, bool* piswork)
 	// loop as long as data
 	bool			is_work		= false;
 	for(is_work = false; true; is_work = true){
-		// retrive parameter
+		// retrieve parameter
 		PDKC_RCVPROC_DATA	pRcvData = NULL;
 		while(!fullock::flck_trylock_noshared_mutex(&(pCntrlObj->procdatas_lockval)));	// MUTEX LOCK
 		if(!pCntrlObj->rcvprocdatas.empty()){
@@ -266,7 +266,7 @@ bool K2hdkcCntrl::WorkerProc(void* pobj, bool* piswork)
 			break;
 		}
 		if(!pRcvData->pComPkt || !pRcvData->pbody || 0 == pRcvData->length){
-			ERR_DKCPRN("Retrived receiving data from stack has wrong empty pointers...");
+			ERR_DKCPRN("Retrieved receiving data from stack has wrong empty pointers...");
 			CHM_Free(pRcvData->pComPkt);
 			CHM_Free(pRcvData->pbody);
 			DKC_DELETE(pRcvData)
@@ -468,7 +468,7 @@ bool K2hdkcCntrl::Run(void)
 			// check waiting object
 			K2hdkcCommand*	pComObj = NULL;
 			if(DKC_NORESTYPE != restype){
-				// recieved data is resnponse
+				// received data is response
 				pComObj = FindWaitCommandObject(comnum, comtype);
 			}
 			if(pComObj){
