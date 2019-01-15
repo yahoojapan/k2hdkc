@@ -202,6 +202,8 @@ static bool DestoryOpenedMsgidSlaveObject(K2hdkcSlave* pSlave, bool is_clean_bup
 	if(!pSlave->Clean(is_clean_bup)){
 		WAN_DKCPRN("Failed to uninitialize slave chmpx, but continue...");
 	}
+	// cppcheck-suppress unmatchedSuppression
+	// cppcheck-suppress uselessAssignmentPtrArg
 	DKC_DELETE(pSlave);
 	return true;
 }
@@ -895,6 +897,7 @@ bool K2hdkcCvtSubkeysToPack(K2HSubKeys* pSubKeys, PK2HDKCKEYPCK* ppskeypck, int*
 	}
 	// copy
 	int	setpos = 0;
+	// cppcheck-suppress postfixOperator
 	for(K2HSubKeys::iterator iter = pSubKeys->begin(); iter != pSubKeys->end(); iter++){
 		if(0UL == iter->length){
 			WAN_DKCPRN("Subkey is empty.");
@@ -939,6 +942,7 @@ static int K2hdkcCvtSubkeysToStringArray(K2HSubKeys* pSubKeys, char*** ppskeyarr
 
 	// copy
 	int	setpos = 0;
+	// cppcheck-suppress postfixOperator
 	for(K2HSubKeys::iterator iter = pSubKeys->begin(); iter != pSubKeys->end(); iter++){
 		if(0UL == iter->length){
 			WAN_DKCPRN("Subkey is empty.");
@@ -1296,6 +1300,7 @@ bool K2hdkcCvtAttrsToPack(K2HAttrs* pAttrs, PK2HDKCATTRPCK* ppattrspck, int* pat
 	}
 	// copy
 	int	setpos = 0;
+	// cppcheck-suppress postfixOperator
 	for(K2HAttrs::iterator iter = pAttrs->begin(); iter != pAttrs->end(); iter++){
 		if(0UL == iter->keylength){
 			WAN_DKCPRN("Attr key is empty.");

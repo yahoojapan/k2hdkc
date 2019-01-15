@@ -65,7 +65,7 @@ string bin_to_string(const unsigned char* pdata, size_t length, size_t maxlength
 		}
 		pbuff[dlength]	= '\0';
 		strresult		= pbuff;
-		DKC_DELETE(pbuff);
+		delete[] pbuff;
 
 		if(maxlength < length){
 			strresult += "...";

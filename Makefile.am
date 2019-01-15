@@ -19,6 +19,19 @@ SUBDIRS=docs lib src tests buildutils
 
 EXTRA_DIST=RELEASE_VERSION
 
+CPPCHECK_CMD=	cppcheck
+CPPCHECK_OPT=	--quiet \
+				--error-exitcode=1 \
+				--inline-suppr \
+				-j 4 \
+				--std=c++03 \
+				--xml \
+				--enable=warning,style,information,missingInclude
+CPPCHECK_IGN=
+
+cppcheck:
+	$(CPPCHECK_CMD) $(CPPCHECK_OPT) $(CPPCHECK_IGN) $(SUBDIRS)
+
 #
 # VIM modelines
 #
