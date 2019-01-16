@@ -77,8 +77,8 @@ class K2hdkcConfig
 		bool Load(const char* config);
 		bool IsLoaded(void) const { return !dkc_config.empty(); }
 
-		const char* GetServerNodeConfigration(void) const { return (IsLoaded() && !svrnode_config.empty()) ? svrnode_config.c_str() : NULL; }
-		bool GetServerNodeConfigration(std::string& config) const { if(!IsLoaded() || svrnode_config.empty()){ return false; } config = svrnode_config; return true; }
+		const char* GetServerNodeConfiguration(void) const { return (IsLoaded() && !svrnode_config.empty()) ? svrnode_config.c_str() : NULL; }
+		bool GetServerNodeConfiguration(std::string& config) const { if(!IsLoaded() || svrnode_config.empty()){ return false; } config = svrnode_config; return true; }
 		long GetReceiveTimeoutMs(void) const { return rcvtimeout_ms; }
 		size_t GetMinThreadCount(void) const { return min_thread_cnt; }
 		size_t GetMaxThreadCount(void) const { return max_thread_cnt; }

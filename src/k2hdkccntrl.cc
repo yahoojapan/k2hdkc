@@ -330,7 +330,7 @@ bool K2hdkcCntrl::Initialize(const K2hdkcConfig* pk2hdkcconf, short ctlport, boo
 
 	// get chmpx configuration
 	string	ChmpxConfig;
-	if(!pk2hdkcconf->GetServerNodeConfigration(ChmpxConfig)){
+	if(!pk2hdkcconf->GetServerNodeConfiguration(ChmpxConfig)){
 		ERR_DKCPRN("Could not find server node configuration.");
 		k2hobj.Detach();
 		return false;
