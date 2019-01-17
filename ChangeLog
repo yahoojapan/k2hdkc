@@ -1,3 +1,11 @@
+k2hdkc (0.9.27) unstable; urgency=low
+
+  * Fixed misspelling, and etc - #12
+  * Added check using cppcheck - #11
+  * Reflected the spelling check result for all sources - #10
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Thu, 17 Jan 2019 13:20:12 +0900
+
 k2hdkc (0.9.26) unstable; urgency=low
 
   * Changed to strict packaging and changed documents
