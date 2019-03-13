@@ -18,7 +18,7 @@ next_string: Environments
 
 ### [Precondition](#PRECONDITION)
 [About Specification](#SPECIFICATIONS)  
-[Persistance/Non-persistance chmpx connections for C++ API](#PERSISTENT)  
+[Persistence/Non-persistence chmpx connections for C++ API](#PERSISTENT)  
 [About sample codes](#ABOUTSAMPLES)
 
 ### [C API](#CAPI)
@@ -86,14 +86,14 @@ You can create a program to access this k2hdkc cluster using the k2hdkc library.
 
 k2hdkc API(C/C++ API) that accesses cluster data sends and receives communication commands internally via communication middleware(chmpx).
 When each API performs internal communication, use one of the following methods.
-- Connects to chmpx every communication command and disconnects after communication(Not persistance chmpx connection)
-- Permanently connect to chmpx before calling API, use/reuse this connection at least once(Persistance chmpx connection)
+- Connects to chmpx every communication command and disconnects after communication(Not persistence chmpx connection)
+- Permanently connect to chmpx before calling API, use/reuse this connection at least once(Persistence chmpx connection)
 
 Although the internal operation of each API is the same, there is a difference whether to connect/disconnect with chmpx every operation of k2hdkc cluster data.
-Non-persistance chmpx connection is used when the client process can not maintain a persistance connection(ex. the program is implemented as a handler for HTTP process).
-Persistance chmpx connection can be used in a client process for a daemon.
+Non-persistence chmpx connection is used when the client process can not maintain a persistence connection(ex. the program is implemented as a handler for HTTP process).
+Persistence chmpx connection can be used in a client process for a daemon.
 
-### <a name="PERSISTENT"> Persistance/Non-persistance chmpx connections for C++ API
+### <a name="PERSISTENT"> Persistence/Non-persistence chmpx connections for C++ API
 The C++ API has the following procedure differ depending on the case of Persistence/Non-persistence in connection with chmpx.
 However, although the procedure differs, the internal processing is the same except for the connection/disconnection processing to chmpx.
 The only difference is switching the call of global method(Implemented with MACROs) that creates a dedicated communication command class object.
@@ -188,7 +188,7 @@ This function group is a group of functions for controlling message output.
 - k2hdkc_toggle_comlog  
   Toggle the communication log output.
 
-#### Paramaters
+#### Parameters
 - filepath  
   Specify the file path of the debug message output destination.
 
@@ -229,7 +229,7 @@ The handle k2hdkc_chmpx_h returned in this function group is a handle that can b
 - k2hdkc_close_chmpx_ex  
   Disconnect from the chmpx slave node with detailed setting.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -297,7 +297,7 @@ The error code is handled in the same way as errno in C language.
 - k2hdkc_is_res_success  
   When persistent connection to the slave chmpx node, the last result of specified chmpx handle can be acquired.
 
-#### Paramaters
+#### Parameters
 - handle  
   Specify the handle of the chmpx connection used by the k2hdkc library.
 
@@ -401,7 +401,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -493,7 +493,7 @@ Each of the above types has similar functions with differences such as arguments
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -607,7 +607,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -717,7 +717,7 @@ Each of the above types has similar functions with differences such as arguments
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -832,7 +832,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -905,7 +905,7 @@ Each of the above types has similar functions with differences such as arguments
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -974,7 +974,7 @@ Each of the above types has similar functions with differences such as arguments
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -1043,7 +1043,7 @@ Each of the above types has similar functions with differences such as arguments
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -1121,7 +1121,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -1213,7 +1213,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -1303,7 +1303,7 @@ Each of the above types has similar functions with differences such as arguments
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
    Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -1382,7 +1382,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -1409,7 +1409,7 @@ Returns true if it succeeds, false if it fails.
 
 #### Examples
 ```
-bool        result = k2hdkc_ex_remove_subkey(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylen, pbukey, subkeylen, true);
+bool        result = k2hdkc_ex_remove_subkey(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylen, psubkey, subkeylen, true);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -1488,7 +1488,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -1604,7 +1604,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -1628,7 +1628,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - is_fifo  
   Specifies pushing type for FIFO or LIFO.
 - checkattr  
-  When pusing, specify whether to check the attribute(passphrase, expiration date) of the queue.
+  When pushing, specify whether to check the attribute(passphrase, expiration date) of the queue.
 - encpass  
   Specify the passphrase for encrypting the value.
 - expire  
@@ -1710,7 +1710,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -1732,7 +1732,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - pvallength  
   For this argument, specify a pointer to store length of the value as binary retrieved from the queue.
 - is_fifo  
-  Specifies poping type for FIFO or LIFO.
+  Specifies popping type for FIFO or LIFO.
 - encpass  
   Specify the passphrase for encrypting the value.
 - handle  
@@ -1826,7 +1826,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -1867,7 +1867,7 @@ if(!result){
 ***
 
 ### <a name="CASINIT"> CAS(Compare And Swap) Initialize family(C I/F)
-Function group that specifies the key, and initialize the key for operation CAS(Comapre And Swap).
+Function group that specifies the key, and initialize the key for operation CAS(Compare And Swap).
 
 #### Format
 - bool k2hdkc_cas64_init(const char* config, const unsigned char* pkey, size_t keylength, uint64_t val)
@@ -1953,7 +1953,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -1995,7 +1995,7 @@ if(!result){
 ***
 
 ### <a name="CASGET"> CAS(Compare And Swap) Get family(C I/F)
-Function group that specifies the key, and get the value for operation CAS(Comapre And Swap).
+Function group that specifies the key, and get the value for operation CAS(Compare And Swap).
 
 #### Format
 - bool k2hdkc_cas64_get(const char* config, const unsigned char* pkey, size_t keylength, uint64_t* pval)
@@ -2081,7 +2081,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -2124,7 +2124,7 @@ if(!result){
 ***
 
 ### <a name="CASSET"> CAS(Compare And Swap) Set family(C I/F)
-Function group that specifies the key, and when the value is as same as specified value, set the value for operation CAS(Comapre And Swap).
+Function group that specifies the key, and when the value is as same as specified value, set the value for operation CAS(Compare And Swap).
 
 #### Format
 - bool k2hdkc_cas64_set(const char* config, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval)
@@ -2182,9 +2182,9 @@ Function group that specifies the key, and when the value is as same as specifie
 #### Description
 These function groups are classified according to the following rules and classified into 2 types.
 - k2hdkc_cas..._set type  
-  Specify the key as binary and the value. If the value is as same as specified value, set the value for operation CAS(Comapre And Swap).
+  Specify the key as binary and the value. If the value is as same as specified value, set the value for operation CAS(Compare And Swap).
 - k2hdkc_cas..._str_set type  
-  Specify the key as string and the value. If the value is as same as specified value, set the value for operation CAS(Comapre And Swap).
+  Specify the key as string and the value. If the value is as same as specified value, set the value for operation CAS(Compare And Swap).
 
 Depending on the data length of CAS value, the following types of these functions are provided.
 - k2hdkc_cas8_...  
@@ -2210,7 +2210,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -2254,7 +2254,7 @@ if(!result){
 ***
 
 ### <a name="CASINCDEC"> CAS(Compare And Swap) Increment/Decrement family(C I/F)
-Function group that specifies the key, and increment/decrement the value for operation CAS(Comapre And Swap).
+Function group that specifies the key, and increment/decrement the value for operation CAS(Compare And Swap).
 
 #### Format
 - bool k2hdkc_cas_increment(const char* config, const unsigned char* pkey, size_t keylength)
@@ -2288,11 +2288,11 @@ These function groups are classified according to the following rules and classi
 - k2hdkc_cas_increment type  
   Specify the key as binary and increment/decrement the value. It is exclusively controlled during processing and guaranteed to be safely incremented. It is not necessary to specify the data length of the value.
 - k2hdkc_cas_decrement type  
-  Specify the key as binary and increment/decrement the value. It is exclusively controlled during processing and guaranteed to be safely decaremented. It is not necessary to specify the data length of the value.
+  Specify the key as binary and increment/decrement the value. It is exclusively controlled during processing and guaranteed to be safely decremented. It is not necessary to specify the data length of the value.
 - k2hdkc_cas_str_increment type  
   Specify the key as string and increment/decrement the value. It is exclusively controlled during processing and guaranteed to be safely incremented. It is not necessary to specify the data length of the value.
 - k2hdkc_cas_str_decrement type  
-  Specify the key as string and increment/decrement the value. It is exclusively controlled during processing and guaranteed to be safely decaremented. It is not necessary to specify the data length of the value.
+  Specify the key as string and increment/decrement the value. It is exclusively controlled during processing and guaranteed to be safely decremented. It is not necessary to specify the data length of the value.
 
 In addition, the following types are provided for these functions depending on the argument difference.
 - k2hdkc_...  
@@ -2308,7 +2308,7 @@ In addition, depending on the connection type to chmpx slave node, it is divided
 - k2hdkc_pm_...  
   This function processes the command using the persistent chmpx connection handle.
 
-#### Paramaters
+#### Parameters
 - config  
   Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string).
 - ctlport  
@@ -2406,7 +2406,7 @@ This function group is a group of functions for controlling message output on C+
 - DsableK2hdkcComLog  
   Disable the communication log output.
 
-#### Paramaters
+#### Parameters
 - mode  
   Specifies the message output level as non-output / error / warning / information / dump.
 - filepath  
@@ -2536,9 +2536,9 @@ These functions(MACROs) have a prefix of GetPm...().
 - GetPmSlaveK2hdkcComState
   Get the K2hdkcComState class object to get the status of all of k2hdkc nodes.
 
-#### Paramaters
+#### Parameters
 - config  
-  Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string). If NULL is set, loads configration file path(string data) from environments(K2HDKCCONFFILE / K2HDKCJSONCONF).
+  Specify the configuration of the chmpx slave node(INI/YAML/JSON format file path, or JSON character string). If NULL is set, loads configuration file path(string data) from environments(K2HDKCCONFFILE / K2HDKCJSONCONF).
 - ctlport  
   Specify the control port number of the chmpx slave node(It is necessary to specify it when multiple chmpx are running on the same server).
 - is_auto_rejoin  
@@ -2546,7 +2546,7 @@ These functions(MACROs) have a prefix of GetPm...().
 - no_giveup_rejoin  
   Case of specifying to reconnect automatically to the slave node of chmpx, specify the upper limit of retrying.
 - comnum  
-  Specify the sequence number of comminication for k2hdkc cluster. This value is specified only during debugging. Normally you do not need to specify it. 
+  Specify the sequence number of communication for k2hdkc cluster. This value is specified only during debugging. Normally you do not need to specify it. 
 - pslaveobj  
   Specifies the pointer of K2hdkcSlave class instance when Persistence chmpx connection.
 
@@ -2600,7 +2600,7 @@ This class is operation for getting the value for the key.
 - bool K2hdkcComGet::CommandSend(const unsigned char* pkey, size_t keylength, bool checkattr, const char* encpass, const unsigned char** ppval, size_t* pvallength, dkcres_type_t* prescode)
 - bool K2hdkcComGet::GetResponseData(const unsigned char** ppdata, size_t* plength, dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -2638,7 +2638,7 @@ This class is operation for getting the value by specifying the key and offset o
 - bool K2hdkcComGetDirect::CommandSend(const unsigned char* pkey, size_t keylength, off_t val_pos, size_t val_length, const unsigned char** ppval, size_t* pvallength, dkcres_type_t* prescode)
 - bool K2hdkcComGetDirect::GetResponseData(const unsigned char** ppdata, size_t* plength, dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -2677,7 +2677,7 @@ This class is operation for getting the Subkey list for the key.
 - bool K2hdkcComGetSubkeys::CommandSend(const unsigned char* pkey, size_t keylength, bool checkattr, K2HSubKeys** ppSubKeys, dkcres_type_t* prescode)
 - bool K2hdkcComGetSubkeys::GetResponseData(K2HSubKeys** ppSubKeys, dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -2707,14 +2707,14 @@ bool                  result  = pComObj->CommandSend(pkey, keylength, !is_noattr
 ***
 
 ### <a name="GETATTRSCPP"> K2hdkcComGetAttrs class
-This class is operation for getting the attribues for the key.
+This class is operation for getting the attributes for the key.
 
 #### Format
 - bool K2hdkcComGetAttrs::CommandSend(const unsigned char* pkey, size_t keylength)
 - bool K2hdkcComGetAttrs::CommandSend(const unsigned char* pkey, size_t keylength, K2HAttrs** ppAttrsObj, dkcres_type_t* prescode)
 - bool K2hdkcComGetAttrs::GetResponseData(K2HAttrs** ppAttrsObj, dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -2743,14 +2743,14 @@ bool            result = pComObj->CommandSend(reinterpret_cast<const unsigned ch
 ***
 
 ### <a name="GETATTRCPP"> K2hdkcComGetAttr class
-This class is operation for getting the attribue value by specifying the key and attribute name as binary.
+This class is operation for getting the attribute value by specifying the key and attribute name as binary.
 
 #### Format
 - bool K2hdkcComGetAttr::CommandSend(const unsigned char* pkey, size_t keylength, const unsigned char* pattr, size_t attrlength)
 - bool K2hdkcComGetAttr::CommandSend(const unsigned char* pkey, size_t keylength, const unsigned char* pattr, size_t attrlength, const unsigned char** ppattrval, size_t* pattrvallength, dkcres_type_t* prescode)
 - bool K2hdkcComGetAttr::GetResponseData(const unsigned char** ppattrval, size_t* pattrvallength, dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -2789,7 +2789,7 @@ This class is operation for setting/creating the key and value.
 - bool K2hdkcComSet::CommandSend(const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool rm_subkeylist, const char* encpass, const time_t* expire, dkcres_type_t* prescode)
 - bool K2hdkcComSet::GetResponseData(dkcres_type_t* prescode) const;
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -2831,7 +2831,7 @@ This class is operation for setting/creating the key and value with offset.
 - bool K2hdkcComSetDirect::CommandSend(const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const off_t valpos, dkcres_type_t* prescode)
 - bool K2hdkcComSetDirect::GetResponseData(dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -2870,7 +2870,7 @@ This class is operation for adding the Subkey list to the key(and can remove all
 - bool K2hdkcComSetSubkeys::ClearSubkeysCommandSend(const unsigned char* pkey, size_t keylength, dkcres_type_t* prescode)
 - bool K2hdkcComSetSubkeys::GetResponseData(dkcres_type_t* prescode) const;
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -2916,7 +2916,7 @@ This class is operation for set the value and Subkey list and attributes to the 
 - bool K2hdkcComSetAll::CommandSend(const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const unsigned char* psubkeys, size_t subkeyslength, const unsigned char* pattrs, size_t attrslength, dkcres_type_t* prescode)
 - bool K2hdkcComSetAll::GetResponseData(dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -2969,7 +2969,7 @@ This class is operation for adding the Subkey to the key's Subkey list.
 - bool K2hdkcComAddSubkeys::CommandSend(const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool checkattr, dkcres_type_t* prescode)
 - bool K2hdkcComAddSubkeys::GetResponseData(dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -3006,7 +3006,7 @@ This class is operation for creating the Subkey and value and adding it to the k
 - bool K2hdkcComAddSubkey::CommandSend(const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength, bool checkattr, const char* encpass, const time_t* expire, dkcres_type_t* prescode)
 - bool K2hdkcComAddSubkey::GetResponseData(dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -3051,7 +3051,7 @@ This class is operation for removing the key.
 - bool K2hdkcComDel::CommandSend(const unsigned char* pkey, size_t keylength, bool is_subkeys, bool checkattr, dkcres_type_t* prescode)
 - bool K2hdkcComDel::GetResponseData(dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -3084,7 +3084,7 @@ This class is operation for removing the Subkey from the key's Subkey list.
 - bool K2hdkcComDelSubkeys::CommandSend(const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool checkattr, dkcres_type_t* prescode)
 - bool K2hdkcComDelSubkeys::GetResponseData(dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -3121,7 +3121,7 @@ This class is operation for removing the Subkey from the key's Subkey list and r
 - bool K2hdkcComDelSubkey::CommandSend(const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_subkeys, bool checkattr, dkcres_type_t* prescode)
 - bool K2hdkcComDelSubkey::GetResponseData(dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -3161,7 +3161,7 @@ If the parent key is specified, the Subkey name is removed from the parent's Sub
 - bool K2hdkcComRen::CommandSend(const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, bool checkattr, const char* encpass, const time_t* expire, dkcres_type_t* prescode)
 - bool K2hdkcComRen::GetResponseData(dkcres_type_t* prescode) const;
 
-#### Paramaters
+#### Parameters
 - poldkey  
   Specifies a pointer to old key name as binary.
 - oldkeylength  
@@ -3208,7 +3208,7 @@ This class is operation for pushing the value(or key and value) to the queue.
 - bool K2hdkcComQPush::KeyQueueCommandSend(const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo, const unsigned char* pattrs, size_t attrslength, bool checkattr, const char* encpass, const time_t* expire, dkcres_type_t* prescode)
 - bool K2hdkcComQPush::GetResponseData(dkcres_type_t* prescode) const;
 
-#### Paramaters
+#### Parameters
 - pprefix  
   Specifies a pointer to the queue prefix name as binary.
 - prefixlength  
@@ -3252,7 +3252,7 @@ bool            result = pComObj->QueueCommandSend(pName, NameLen, reinterpret_c
 ***
 
 ### <a name="QUEUEPOPCPP"> K2hdkcComQPop class
-This class is operation for poping the value(or key and value) from the queue.
+This class is operation for popping the value(or key and value) from the queue.
 
 #### Format
 - bool K2hdkcComQPop::QueueCommandSend(const unsigned char* pprefix, size_t prefixlength, bool is_fifo, bool checkattr = true, const char* encpass = NULL)
@@ -3262,25 +3262,25 @@ This class is operation for poping the value(or key and value) from the queue.
 - bool K2hdkcComQPop::GetQueueResponseData(const unsigned char** ppval, size_t* pvallength, dkcres_type_t* prescode) const
 - bool K2hdkcComQPop::GetKeyQueueResponseData(const unsigned char** ppkey, size_t* pkeylength, const unsigned char** ppval, size_t* pvallength, dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pprefix  
   Specifies a pointer to the queue prefix name as binary.
 - prefixlength  
   Specifies the length of the queue prefix name.
 - is_fifo  
-  Specifies poping type for FIFO or LIFO.
+  Specifies popping type for FIFO or LIFO.
 - checkattr  
   Specifies whether to check the attribute(passphrase, expiration date) for the queue.
 - encpass  
-  Specify the passphrase for decrypting poping value(and key).
+  Specify the passphrase for decrypting popping value(and key).
 - ppkey  
   Specifies a pointer to the buffer that pops the key as binary.
 - pkeylength  
-  Specifies the buffer length of poping key as binary.
+  Specifies the buffer length of popping key as binary.
 - ppval  
   Specifies a pointer to the buffer that pops the value as binary.
 - pvallength  
-  Specifies the buffer length of poping value as binary.
+  Specifies the buffer length of popping value as binary.
 - prescode  
   Specify a pointer to store the processing result code.
 
@@ -3309,13 +3309,13 @@ This class is operation for removing the value(or key and value) from the queue(
 - bool K2hdkcComQDel::KeyQueueCommandSend(const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, bool checkattr, const char* encpass, dkcres_type_t* prescode)
 - bool K2hdkcComQDel::GetResponseData(dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pprefix  
   Specifies a pointer to the queue prefix name as binary.
 - prefixlength  
   Specifies the length of the queue prefix name.
 - is_fifo  
-  Specifies poping type for FIFO or LIFO.
+  Specifies popping type for FIFO or LIFO.
 - count  
   Specifies count of removing value(or key and value) from the queue.
 - checkattr  
@@ -3341,7 +3341,7 @@ bool            result = pComObj->QueueCommandSend(pName, NameLen, RmCount, is_F
 ***
 
 ### <a name="CASINITCPP"> K2hdkcComCasInit class
-This class is operation for initializing the key for operation CAS(Comapre And Swap). There are methods for the size(8 / 16 / 32 / 64 bits) of the value.
+This class is operation for initializing the key for operation CAS(Compare And Swap). There are methods for the size(8 / 16 / 32 / 64 bits) of the value.
 
 #### Format
 - bool K2hdkcComCasInit::CommandSend(const unsigned char* pkey, size_t keylength, uint8_t val, const char* encpass = NULL, const time_t* expire = NULL)
@@ -3354,7 +3354,7 @@ This class is operation for initializing the key for operation CAS(Comapre And S
 - bool K2hdkcComCasInit::CommandSend(const unsigned char* pkey, size_t keylength, uint64_t val, const char* encpass, const time_t* expire, dkcres_type_t* prescode)
 - bool K2hdkcComCasInit::GetResponseData(dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -3384,7 +3384,7 @@ bool                 result  = pComObj->CommandSend(reinterpret_cast<const unsig
 ***
 
 ### <a name="CASGETCPP"> K2hdkcComCasGet class
-This class is operation for getting the value for operation CAS(Comapre And Swap). There are methods for the size(8 / 16 / 32 / 64 bits) of the value.
+This class is operation for getting the value for operation CAS(Compare And Swap). There are methods for the size(8 / 16 / 32 / 64 bits) of the value.
 
 #### Format
 - bool K2hdkcComCasGet::CommandSend(const unsigned char* pkey, size_t keylength, bool checkattr, const char* encpass, const uint8_t** ppval, dkcres_type_t* prescode)
@@ -3396,7 +3396,7 @@ This class is operation for getting the value for operation CAS(Comapre And Swap
 - bool K2hdkcComCasGet::GetResponseData(const uint32_t** ppval, dkcres_type_t* prescode) const
 - bool K2hdkcComCasGet::GetResponseData(const uint64_t** ppval, dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -3426,7 +3426,7 @@ bool                result = pComObj->CommandSend(reinterpret_cast<const unsigne
 ***
 
 ### <a name="CASSETCPP"> K2hdkcComCasSet class
-This class is operation to setting the value for operation CAS(Comapre And Swap). There are methods for the size(8 / 16 / 32 / 64 bits) of the value.
+This class is operation to setting the value for operation CAS(Compare And Swap). There are methods for the size(8 / 16 / 32 / 64 bits) of the value.
 
 #### Format
 - bool K2hdkcComCasSet::CommandSend(const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval, bool checkattr = true, const char* encpass = NULL, const time_t* expire = NULL)
@@ -3439,7 +3439,7 @@ This class is operation to setting the value for operation CAS(Comapre And Swap)
 - bool K2hdkcComCasSet::CommandSend(const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval, bool checkattr, const char* encpass, const time_t* expire, dkcres_type_t* prescode)
 - bool K2hdkcComCasSet::GetResponseData(dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -3473,7 +3473,7 @@ bool                result  = pComObj->CommandSend(reinterpret_cast<const unsign
 ***
 
 ### <a name="CASINCDECCPP"> K2hdkcComCasIncDec class
-This class is operation to incrementing/decrementing the value for operation CAS(Comapre And Swap). There are methods for the size(8 / 16 / 32 / 64 bits) of the value.
+This class is operation to increment/decrement the value for operation CAS(Compare And Swap). There are methods for the size(8 / 16 / 32 / 64 bits) of the value.
 
 #### Format
 - bool K2hdkcComCasIncDec::IncrementCommandSend(const unsigned char* pkey, size_t keylength, bool checkattr = true, const char* encpass = NULL, const time_t* expire = NULL)
@@ -3482,7 +3482,7 @@ This class is operation to incrementing/decrementing the value for operation CAS
 - bool K2hdkcComCasIncDec::DecrementCommandSend(const unsigned char* pkey, size_t keylength, bool checkattr, const char* encpass, const time_t* expire, dkcres_type_t* prescode)
 - bool K2hdkcComCasIncDec::GetResponseData(dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - pkey  
   For this argument, specify a pointer to a key as binary.
 - keylength  
@@ -3519,7 +3519,7 @@ This class can get the number(chmpxid, hash value, etc) in the k2hdkc cluster of
 - bool K2hdkcComState::CommandSend(const DKC_NODESTATE** ppStates, size_t* pstatecount, dkcres_type_t* prescode)
 - bool K2hdkcComState::GetResponseData(const DKC_NODESTATE** ppStates, size_t* pstatecount, dkcres_type_t* prescode) const
 
-#### Paramaters
+#### Parameters
 - ppStates  
   Specifies a pointer to the buffer that gets the status.
 - pstatecount  
@@ -3543,11 +3543,11 @@ typedef struct k2h_state{
     char            hash_version[K2H_HASH_FUNC_VER_LENGTH]; // Version string as Hash Function
     char            trans_version[K2H_HASH_FUNC_VER_LENGTH];// Version string as Transaction Function
     int             trans_pool_count;                       // Transaction plugin thread pool count
-    k2h_hash_t      max_mask;                               // Muximum value for cur_mask
+    k2h_hash_t      max_mask;                               // Maximum value for cur_mask
     k2h_hash_t      min_mask;                               // Minimum value for cur_mask
     k2h_hash_t      cur_mask;                               // Current mask value for hash(This value is changed automatically)
     k2h_hash_t      collision_mask;                         // Mask value for collision when masked hash value by cur_mask(This value is not changed)
-    unsigned long   max_element_count;                      // Muximum count for elements in collision key index structure(Increasing cur_mask when this value is over)
+    unsigned long   max_element_count;                      // Maximum count for elements in collision key index structure(Increasing cur_mask when this value is over)
     size_t          total_size;                             // Total size of k2hash
     size_t          page_size;                              // Paging size(system)
     size_t          file_size;                              // k2hash file(memory) size

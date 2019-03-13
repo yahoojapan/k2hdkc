@@ -16,7 +16,9 @@ arrow_link_tools: <a href="toolsja.html" class="link-title"><span class="arrow-b
 
 # **K2HDKC**
 **K2HDKC** (**K2H**ash based **D**istributed **K**vs **C**luster) は、Yahoo! JAPANオリジナルのNoSQL（key value store）ライブラリk2hashをベースとしたオープンソースの分散KVS（Key Value Store）です。  
-**K2HDKC** は、Yahoo! JAPANがオープンソースとして公開するプロダクト [AntPickax](https://antpick.ax/indexja.html) のひとつです。
+**K2HDKC** は、Yahoo! JAPANがオープンソースとして公開するプロダクト [AntPickax](https://antpick.ax/indexja.html) のひとつです。  
+
+![K2HDKC](images/top_k2hdkc.png)
 
 ## {{ page.arrow_link_overview }}
 **K2HDKC** の[概要](homeja.html)について説明します。  

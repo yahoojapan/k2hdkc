@@ -79,7 +79,7 @@ The k2hdkc process is the process of configuring the k2hdkc server node, and it 
 Multiple k2hdkc processes connecting to one chmpx process(server node) can be started.
 By loading multiple k2hdkc processes, load balancing of k2hdkc server node processing is realized.
 
-The k2hdkc process(server node) receives a command request from the k2hdkc client throgh the chmpx process(server node), and replies the processing result to the k2hdkc client via the chmpx process(server node).
+The k2hdkc process(server node) receives a command request from the k2hdkc client through the chmpx process(server node), and replies the processing result to the k2hdkc client via the chmpx process(server node).
 The k2hdkc process(server node) reads/writes the k2hash data(memory or file) on the k2hdkc server node directly.
 
 #### Options
@@ -88,13 +88,13 @@ The k2hdkc process can receive the following startup options(**-h** option displ
 ```
 $ k2hdkc -h
 [Usage]
-k2hdkc [-conf <file path> | -json <json string>] [-ctlport <port>] [-comlog] [-no_giveup_rejoin] [-d [slient|err|wan|msg|dump]] [-dfile <file path>]
+k2hdkc [-conf <file path> | -json <json string>] [-ctlport <port>] [-comlog] [-no_giveup_rejoin] [-d [silent|err|wan|msg|dump]] [-dfile <file path>]
 k2hdkc [ -h | -v ]
 [option]
-  -conf <path>         specify the configration file(.ini .yaml .json) path
-  -json <string>       specify the configration json string
-  -ctlport <port>      specify the self contrl port(*)
-  -no_giveup_rejoin    not gitve up rejoining chmpx
+  -conf <path>         specify the configuration file(.ini .yaml .json) path
+  -json <string>       specify the configuration json string
+  -ctlport <port>      specify the self control port(*)
+  -no_giveup_rejoin    not give up rejoining chmpx
   -comlog              enable logging communication command
   -d <param>           specify the debugging output mode:
                         silent - no output
@@ -105,24 +105,24 @@ k2hdkc [ -h | -v ]
   -dfile <path>        specify the file path which is put output
   -h(help)             display this usage.
   -v(version)          display version.
-[environemnt]
-  K2HDKCCONFFILE       specify the configration file(.ini .yaml .json) path
-  K2HDKCJSONCONF       specify the configration json string
+[environment]
+  K2HDKCCONFFILE       specify the configuration file(.ini .yaml .json) path
+  K2HDKCJSONCONF       specify the configuration json string
 (*) you can use environment DKCDBGMODE and DKCDBGFILE instead of -d/-dfile options.
 (*) if ctlport option is specified, chmpx searches same ctlport in configuration
     file and ignores "CTLPORT" directive in "GLOBAL" section. and chmpx will
-    start in the mode indicated by the server entry that has beed detected.
+    start in the mode indicated by the server entry that has been detected.
 ```
 
 Each startup option is explained below.
 ##### -conf <filepath>
 Specifies the path to the configuration file(formatted by INI, YAML, JSON) for k2hdkc process.  
-We recommend that the configuration of the chmpx process(server node) should be described in this configration file.  
+We recommend that the configuration of the chmpx process(server node) should be described in this configuration file.  
 This option is exclusive with the **-json** option.  
 If environment variable (K2HDKCCONFFILE or K2HDKCJSONCONF) is specified, both **-conf** and **-json** options can be omitted.
 ##### -json <json string>
 Specifies the configuration for the k2hdkc process as a string in JSON format.  
-We recommend that the configuration of the chmpx process(server node) should be described in this configration file.  
+We recommend that the configuration of the chmpx process(server node) should be described in this configuration file.  
 This option is exclusive with the **-conf** option.  
 If environment variable (K2HDKCCONFFILE or K2HDKCJSONCONF) is specified, both **-conf** and **-json** options can be omitted.
 ##### -ctlport <port number>
@@ -177,7 +177,7 @@ If the chmpx process(server node) is not running at k2hdkc process startup, the 
 Therefore, make sure to include the configuration of the chmpx process(server node) in the configuration passed to the k2hdkc process.
 If the chmpx process(server node) is already running, only the k2hdkc process will be started.
 
-#### Configration
+#### Configuration
 The configuration(file path or JSON string) specified when starting the k2hdkc process can be described in the same configuration as the chmpx process(server node).  
 For the sample configuration of the k2hdkc process, refer to the following files.
 ##### Configuration file formatted by INI
@@ -201,7 +201,7 @@ $ chmpx -conf test_server.ini -ctlport 8021
 
 Refer to [CHMPX Datails](https://chmpx.antpick.ax/details.html) for the startup options and configuration of the chmpx process.
 
-#### Configration
+#### Configuration
 The configuration(file path or JSON string) specified when starting the chmpx process(server node) can be described in the same configuration as the k2hdkc process.
 For the sample configuration of the chmpx process(Server node), refer to the following files.
 ##### Configuration file formatted by INI
@@ -229,7 +229,7 @@ $ chmpx -conf test_slave.ini -ctlport 8031
 
 Refer to [CHMPX Details](https://chmpx.antpick.ax/details.html) for the startup options and configuration of the chmpx process.
 
-#### Configration
+#### Configuration
 For the sample configuration of the chmpx process(Slave node), refer to the following files.
 ##### Configuration file formatted by INI
 [test_slave.ini]({{ site.github.repository_url }}/blob/master/tests/test_slave.ini)
