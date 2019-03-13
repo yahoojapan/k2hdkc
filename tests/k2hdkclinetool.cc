@@ -1142,11 +1142,6 @@ static bool ReadContentsFromFile(const char* pFile, off_t offset, size_t reqleng
 		DKC_CLOSE(fd);
 		return false;
 	}
-	if(st.st_size <= 0){
-		ERR("file(%s) does not have any contents", pFile);
-		DKC_CLOSE(fd);
-		return false;
-	}
 	if(static_cast<off_t>(st.st_size) <= offset){
 		ERR("file(%s) does not have any contents after %zd offset", pFile, offset);
 		DKC_CLOSE(fd);

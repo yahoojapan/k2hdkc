@@ -272,7 +272,11 @@ static bool K2hdkcFullGetState(K2hdkcComState* pcomobj, PDKC_NODESTATE* ppstates
 	for(size_t cnt = 0; cnt < statecount; ++cnt){
 		memcpy(&(pdststates[cnt]), &(pstates[cnt]), sizeof(DKC_NODESTATE));
 	}
+	// cppcheck-suppress unmatchedSuppression
+	// cppcheck-suppress redundantAssignment
 	*ppstates	= pdststates;
+	// cppcheck-suppress unmatchedSuppression
+	// cppcheck-suppress redundantAssignment
 	*pstatecount= statecount;
 
 	return true;

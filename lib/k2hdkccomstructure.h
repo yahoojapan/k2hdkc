@@ -75,7 +75,10 @@ DECL_EXTERN_C_START
 //
 // Macros for Command type
 //
-#define	IS_SAFE_DKCCOM_TYPE(comtype)	(DKC_COM_MIN <= comtype && comtype <= DKC_COM_MAX)
+// [NOTE] comtype is unsigned and DKC_COM_MIN is 0, then we check only DKC_COM_MAX
+//
+#define	IS_SAFE_DKCCOM_TYPE(comtype)	(comtype <= DKC_COM_MAX)
+
 #define	STR_DKCCOM_TYPE(comtype)		(	DKC_COM_GET				== comtype ? "DKC_COM_GET"			: \
 											DKC_COM_GET_DIRECT		== comtype ? "DKC_COM_GET_DIRECT"	: \
 											DKC_COM_GET_SUBKEYS		== comtype ? "DKC_COM_GET_SUBKEYS"	: \
@@ -250,7 +253,11 @@ DECL_EXTERN_C_START
 #define	DKC_QUEUE_TYPE_QUEUE				(DKC_QUEUE_TYPE_NOTQUEUE	+ 1L)
 #define	DKC_QUEUE_TYPE_KEYQUEUE				(DKC_QUEUE_TYPE_QUEUE		+ 1L)
 #define	DKC_QUEUE_TYPE_MAX					(DKC_QUEUE_TYPE_KEYQUEUE)
-#define IS_SAFE_DKC_QUEUE_TYPE(type)		(DKC_QUEUE_TYPE_MIN <= type && type <= DKC_QUEUE_TYPE_MAX)
+
+//
+// [NOTE] type(dkc_qtype_t) is unsigned and DKC_QUEUE_TYPE_MIN is 0, then we check only DKC_QUEUE_TYPE_MAX
+//
+#define IS_SAFE_DKC_QUEUE_TYPE(type)		(type <= DKC_QUEUE_TYPE_MAX)
 #define IS_DKC_QUEUE_TYPE(type)				(DKC_QUEUE_TYPE_KEYQUEUE == type || DKC_QUEUE_TYPE_QUEUE == type)
 #define	STR_DKC_QUEUE_TYPE(type)			(	DKC_QUEUE_TYPE_NOTQUEUE		== type ? "DKC_QUEUE_TYPE_NOTQUEUE"	: \
 												DKC_QUEUE_TYPE_QUEUE		== type ? "DKC_QUEUE_TYPE_QUEUE"	: \

@@ -435,12 +435,12 @@ bool K2hdkcCntrl::Run(void)
 		return false;
 	}
 
-	PCOMPKT			pComPkt = NULL;
-	unsigned char*	pbody	= NULL;
-	size_t			length	= 0;
-
 	MSG_DKCPRN("Start to loop main.");
 	for(is_loop = true; is_loop; ){
+		PCOMPKT			pComPkt;
+		unsigned char*	pbody;
+		size_t			length;
+
 		// receive (block until receiving any command)
 		pComPkt	= NULL;
 		pbody	= NULL;
