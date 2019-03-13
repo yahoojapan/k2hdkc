@@ -22,7 +22,7 @@ The k2hdkclinetool program can execute data manipulation of the k2hdkc cluster a
 You can also use a text file describing the k2hdkclinetool command as a batch utility that can be loaded and executed.
 
 By using this tool, you can check the status of the k2hdkc cluster after construction, verify operation, debug, change data and so on.
-k2hdkclinetoole is a tool for developers and operators covering almost all functions of the interface of k2hdkc cluster.
+k2hdkclinetool is a tool for developers and operators covering almost all functions of the interface of k2hdkc cluster.
 
 ### Run k2hdkclinetool
 The following explains the startup options of the k2hdkclinetool.
@@ -32,8 +32,8 @@ $ k2hdkclinetool -h
 Usage: lt-k2hdkclinetool [-conf <file> | -json <string>] [-ctlport <port>] [options...]
        lt-k2hdkclinetool -help
 Option -help(h)           help display
-       -conf <filename>   k2hdkc configration file path(.ini .yaml .json)
-       -json <string>     k2hdkc configration by json string
+       -conf <filename>   k2hdkc configuration file path(.ini .yaml .json)
+       -json <string>     k2hdkc configuration by json string
        -ctlport <port>    slave node chmpx control port
        -lap               print lap time after line command
        -capi              use C API for calling internal library
@@ -50,11 +50,11 @@ Option -help(h)           help display
 (*) You can specify "K2HDKCCONFFILE" or "K2HDKCJSONCONF" environment instead of
     "-conf" or "-json" option for configuration.
 (*) You can set debug level by another way which is setting environment as "DKCDBGMODE".
-    "DKCDBGMODE" enviroment is took as "SILENT(SLT)", "ERROR(ERR)", "WARNING(WAN)",
+    "DKCDBGMODE" environment is took as "SILENT(SLT)", "ERROR(ERR)", "WARNING(WAN)",
     "INFO(MSG)" or "DUMP(DMP)" value.
     When this process gets SIGUSER1 signal, the debug level is bumpup.
     (The debug level is changed as "SLT"->"ERR"->"WAN"->"MSG"->"DMP"->...)
-(*) You can set debugging message log file by the envirnment "DKCDBGFILE".
+(*) You can set debugging message log file by the environment "DKCDBGFILE".
 ```
 
 Each startup option is explained below.
@@ -67,7 +67,7 @@ Specify the configuration file(formatted by INI, YAML, JSON) as a string in JSON
 This option is exclusive with the **-conf** option.  
 If environment variable (K2HDKCCONFFILE or K2HDKCJSONCONF) is specified, both **-conf** and **-json** options can be omitted.
 #### -ctlport <port number>
-Specifies the control port number of the chmpx process(slave node) to the k2hdkc claster.  
+Specifies the control port number of the chmpx process(slave node) to the k2hdkc cluster.  
 This option can be omitted if only one chmpx process(slave node) is running on HOST.  
 If more than one chmpx process(slave node) is running on the same HOST, specifying this option is mandatory.
 #### -perm

@@ -32,8 +32,8 @@ $ k2hdkclinetool -h
 Usage: lt-k2hdkclinetool [-conf <file> | -json <string>] [-ctlport <port>] [options...]
        lt-k2hdkclinetool -help
 Option -help(h)           help display
-       -conf <filename>   k2hdkc configration file path(.ini .yaml .json)
-       -json <string>     k2hdkc configration by json string
+       -conf <filename>   k2hdkc configuration file path(.ini .yaml .json)
+       -json <string>     k2hdkc configuration by json string
        -ctlport <port>    slave node chmpx control port
        -lap               print lap time after line command
        -capi              use C API for calling internal library
@@ -50,11 +50,11 @@ Option -help(h)           help display
 (*) You can specify "K2HDKCCONFFILE" or "K2HDKCJSONCONF" environment instead of
     "-conf" or "-json" option for configuration.
 (*) You can set debug level by another way which is setting environment as "DKCDBGMODE".
-    "DKCDBGMODE" enviroment is took as "SILENT(SLT)", "ERROR(ERR)", "WARNING(WAN)",
+    "DKCDBGMODE" environment is took as "SILENT(SLT)", "ERROR(ERR)", "WARNING(WAN)",
     "INFO(MSG)" or "DUMP(DMP)" value.
     When this process gets SIGUSER1 signal, the debug level is bumpup.
     (The debug level is changed as "SLT"->"ERR"->"WAN"->"MSG"->"DMP"->...)
-(*) You can set debugging message log file by the envirnment "DKCDBGFILE".
+(*) You can set debugging message log file by the environment "DKCDBGFILE".
 ```
 
 以下に、各々のオプションについて説明します。

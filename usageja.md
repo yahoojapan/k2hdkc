@@ -91,13 +91,13 @@ k2hdkcプロセスは、以下のような起動オプションを受け取り�
 ```
 $ k2hdkc -h
 [Usage]
-k2hdkc [-conf <file path> | -json <json string>] [-ctlport <port>] [-comlog] [-no_giveup_rejoin] [-d [slient|err|wan|msg|dump]] [-dfile <file path>]
+k2hdkc [-conf <file path> | -json <json string>] [-ctlport <port>] [-comlog] [-no_giveup_rejoin] [-d [silent|err|wan|msg|dump]] [-dfile <file path>]
 k2hdkc [ -h | -v ]
 [option]
-  -conf <path>         specify the configration file(.ini .yaml .json) path
-  -json <string>       specify the configration json string
-  -ctlport <port>      specify the self contrl port(*)
-  -no_giveup_rejoin    not gitve up rejoining chmpx
+  -conf <path>         specify the configuration file(.ini .yaml .json) path
+  -json <string>       specify the configuration json string
+  -ctlport <port>      specify the self control port(*)
+  -no_giveup_rejoin    not give up rejoining chmpx
   -comlog              enable logging communication command
   -d <param>           specify the debugging output mode:
                         silent - no output
@@ -108,13 +108,13 @@ k2hdkc [ -h | -v ]
   -dfile <path>        specify the file path which is put output
   -h(help)             display this usage.
   -v(version)          display version.
-[environemnt]
-  K2HDKCCONFFILE       specify the configration file(.ini .yaml .json) path
-  K2HDKCJSONCONF       specify the configration json string
+[environment]
+  K2HDKCCONFFILE       specify the configuration file(.ini .yaml .json) path
+  K2HDKCJSONCONF       specify the configuration json string
 (*) you can use environment DKCDBGMODE and DKCDBGFILE instead of -d/-dfile options.
 (*) if ctlport option is specified, chmpx searches same ctlport in configuration
     file and ignores "CTLPORT" directive in "GLOBAL" section. and chmpx will
-    start in the mode indicated by the server entry that has beed detected.
+    start in the mode indicated by the server entry that has been detected.
 ```
 
 以下に、各々のオプションについて説明します。

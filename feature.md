@@ -54,7 +54,7 @@ Automatic Scaling is a processing mechanism to relocate the data held by each se
 
 ![Fig.5](images/feature_fig5.png)
 
-**K2HDKC** determines the locations of keys in the cluster by calculaton of keys and the number of nodes in the cluster. **K2HDKC** has no mapping of range and node though **K2HDKC**'s partitioning scheme relies on consistent hashing like Riak or Cassandra. When a new node is added to the cluster, **K2HDKC** detects the keys to be relocated and copies them to their locations.
+**K2HDKC** determines the locations of keys in the cluster by calculator of keys and the number of nodes in the cluster. **K2HDKC** has no mapping of range and node though **K2HDKC**'s partitioning scheme relies on consistent hashing like Riak or Cassandra. When a new node is added to the cluster, **K2HDKC** detects the keys to be relocated and copies them to their locations.
 
 Let's see the flow to move data when increasing nodes in the cluster.
 
@@ -85,7 +85,7 @@ If the target node is already in the down state (or suspended state) at the time
 This means that **K2HDKC** can store a value and a key-value pair in a queue data structure.
 
 # CAS(Compare And Swap)
-**K2HDKC** supports CAS(compare-and-swap) operations by using [K2HASH](https://k2hash.antpick.ax/) and other mutex functionality. **K2HDKC** updates a value of a key after reading the current value of the key to check if it matches the expected one. Typical use cases of CAS operations are incrementing or decrementing a counter, updating a mutex data item and so on.
+**K2HDKC** supports CAS(compare-and-swap) operations by using [K2HASH](https://k2hash.antpick.ax/) and other mutex functionality. **K2HDKC** updates a value of a key after reading the current value of the key to check if it matches the expected one. Typical use cases of CAS operations are increment or decrement a counter, updating a mutex data item and so on.
 
 # Data Encryption
 **K2HDKC** supports data encryption which is also a [K2HASH](https://k2hash.antpick.ax/)'s function.
