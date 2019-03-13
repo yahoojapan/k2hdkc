@@ -11,7 +11,9 @@ K2HDKC
 **K2HDKC** - **K2H**ash based **D**istributed **K**vs **C**luster
 
 ### Overview
-k2hdkc is a high speed automated based on [k2hash](https://github.com/yahoojapan/k2hash), [chmpx](https://github.com/yahoojapan/chmpx) Distributed Key Value Store(KVS).
+k2hdkc is a high speed automated based on [k2hash](https://github.com/yahoojapan/k2hash), [chmpx](https://github.com/yahoojapan/chmpx) Distributed Key Value Store(KVS).  
+
+![K2HDKC](https://k2hdkc.antpick.ax/images/top_k2hdkc.png)
 
 ### Feature
 k2hdkc is a highly available and scalable distributed KVS clustering system with the following features and features.
