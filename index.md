@@ -16,7 +16,9 @@ arrow_link_tools: <a href="tools.html" class="link-title"><span class="arrow-bas
 
 # **K2HDKC**
 **K2HDKC** (**K2H**ash based **D**istributed **K**vs **C**luster) is a free and open-source distributed KVS(Key Value Store) clustering system created in Yahoo! JAPAN.  
-**K2HDKC** is one of [AntPickax](https://antpick.ax/)'s open source product by Yahoo! JAPAN.
+**K2HDKC** is one of [AntPickax](https://antpick.ax/)'s open source product by Yahoo! JAPAN.  
+
+![K2HDKC](images/top_k2hdkc.png)
 
 ## {{ page.arrow_link_overview }}
 [Overview](home.html) about **K2HDKC** library and component.
