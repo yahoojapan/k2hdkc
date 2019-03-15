@@ -1,3 +1,9 @@
+k2hdkc (0.9.28) unstable; urgency=low
+
+  * Fixed codes for cppcheck 1.87 - #15
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Fri, 15 Mar 2019 09:32:16 +0900
+
 k2hdkc (0.9.27) unstable; urgency=low
 
   * Fixed misspelling, and etc - #12
