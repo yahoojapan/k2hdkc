@@ -1,3 +1,9 @@
+k2hdkc (0.9.29) unstable; urgency=low
+
+  * Updated dependencies and codes with CHMPX code update - #18
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Thu, 26 Dec 2019 08:46:15 +0900
+
 k2hdkc (0.9.28) unstable; urgency=low
 
   * Fixed codes for cppcheck 1.87 - #15
