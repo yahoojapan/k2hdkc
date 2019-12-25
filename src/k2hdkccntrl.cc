@@ -297,7 +297,7 @@ bool K2hdkcCntrl::WorkerProc(void* pobj, bool* piswork)
 //---------------------------------------------------------
 // Constructor/Destructor
 //---------------------------------------------------------
-K2hdkcCntrl::K2hdkcCntrl(void) : ThreadManager(this), chmpxctlport(CHM_INVALID_PORT), no_giveup_rejoin(false), is_loop(false), waitmap_lockval(FLCK_NOSHARED_MUTEX_VAL_UNLOCKED), procdatas_lockval(FLCK_NOSHARED_MUTEX_VAL_UNLOCKED)
+K2hdkcCntrl::K2hdkcCntrl(void) : ThreadManager(this), chmpxctlport(CHM_INVALID_PORT), chmpxcuk(""), no_giveup_rejoin(false), is_loop(false), waitmap_lockval(FLCK_NOSHARED_MUTEX_VAL_UNLOCKED), procdatas_lockval(FLCK_NOSHARED_MUTEX_VAL_UNLOCKED)
 {
 }
 
@@ -309,7 +309,7 @@ K2hdkcCntrl::~K2hdkcCntrl(void)
 //---------------------------------------------------------
 // Methods
 //---------------------------------------------------------
-bool K2hdkcCntrl::Initialize(const K2hdkcConfig* pk2hdkcconf, short ctlport, bool nogiveuprejoin)
+bool K2hdkcCntrl::Initialize(const K2hdkcConfig* pk2hdkcconf, short ctlport, const char* cuk, bool nogiveuprejoin)
 {
 	if(!pk2hdkcconf || !pk2hdkcconf->IsLoaded()){
 		ERR_DKCPRN("Parameter is wrong or does not load configuration file.");
@@ -340,7 +340,7 @@ bool K2hdkcCntrl::Initialize(const K2hdkcConfig* pk2hdkcconf, short ctlport, boo
 	{
 		// initialize for duplicated chmpx information
 		ChmCntrl	chmtestobj;
-		if(!chmtestobj.OnlyAttachInitialize(ChmpxConfig.c_str(), ctlport)){
+		if(!chmtestobj.OnlyAttachInitialize(ChmpxConfig.c_str(), ctlport, (DKCEMPTYSTR(cuk) ? NULL : cuk))){
 			ERR_DKCPRN("Could not initialize(attach) chmpx shared memory for testing.");
 			k2hobj.Detach();
 			return false;
@@ -372,12 +372,13 @@ bool K2hdkcCntrl::Initialize(const K2hdkcConfig* pk2hdkcconf, short ctlport, boo
 	no_giveup_rejoin = nogiveuprejoin;
 
 	// join chmpx
-	if(!chmobj.InitializeOnServer(ChmpxConfig.c_str(), true, K2hdkcCntrl::MergeGetCallback, K2hdkcCntrl::MergeSetCallback, K2hdkcCntrl::MergeLastTsCallback, ctlport)){
+	if(!chmobj.InitializeOnServer(ChmpxConfig.c_str(), true, K2hdkcCntrl::MergeGetCallback, K2hdkcCntrl::MergeSetCallback, K2hdkcCntrl::MergeLastTsCallback, ctlport, (DKCEMPTYSTR(cuk) ? NULL : cuk))){
 		ERR_DKCPRN("Could not initialize chmpx object.");
 		k2hobj.Detach();
 		return false;
 	}
 	chmpxctlport= ctlport;
+	chmpxcuk	= DKCEMPTYSTR(cuk) ? "" : cuk;
 	is_loop		= false;
 
 	// set timeout for receiving command
@@ -394,6 +395,7 @@ bool K2hdkcCntrl::Initialize(const K2hdkcConfig* pk2hdkcconf, short ctlport, boo
 		ERR_DKCPRN("Could not initialize processing thread object.");
 		k2hobj.Detach();
 		chmobj.Clean();
+		chmpxcuk.clear();
 		chmpxctlport = CHM_INVALID_PORT;
 		return false;
 	}
@@ -409,6 +411,7 @@ bool K2hdkcCntrl::Clean(void)
 		k2hobj.Detach();
 	}
 	chmobj.Clean();
+	chmpxcuk.clear();
 	chmpxctlport = CHM_INVALID_PORT;
 
 	// cleanup rest data

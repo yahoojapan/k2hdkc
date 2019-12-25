@@ -51,7 +51,7 @@
 // Templates & macros
 //---------------------------------------------------------
 #if defined(__cplusplus)
-template<typename T> inline bool DKCEMPTYSTR(const T& pstr)
+template<typename T> inline bool DKCEMPTYSTR(const T pstr)
 {
 	return (NULL == (pstr) || '\0' == *(pstr)) ? true : false;
 }

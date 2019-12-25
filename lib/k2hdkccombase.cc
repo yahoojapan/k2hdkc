@@ -57,6 +57,48 @@
 using namespace	std;
 
 //---------------------------------------------------------
+// DKC Command type Debugging
+//---------------------------------------------------------
+static const char*	str_dkccom_type[] = {
+	"DKC_COM_GET",
+	"DKC_COM_GET_DIRECT",
+	"DKC_COM_GET_SUBKEYS",
+	"DKC_COM_GET_ATTRS",
+	"DKC_COM_GET_ATTR",
+	"DKC_COM_SET",
+	"DKC_COM_SET_DIRECT",
+	"DKC_COM_SET_SUBKEYS",
+	"DKC_COM_ADD_SUBKEY",
+	"DKC_COM_SET_ALL",
+	"DKC_COM_ADD_SUBKEYS",
+	"DKC_COM_DEL",
+	"DKC_COM_DEL_SUBKEYS",
+	"DKC_COM_DEL_SUBKEY",
+	"DKC_COM_REN",
+	"DKC_COM_QPUSH",
+	"DKC_COM_QPOP",
+	"DKC_COM_QDEL",
+	"DKC_COM_CAS_INIT",
+	"DKC_COM_CAS_GET",
+	"DKC_COM_CAS_SET",
+	"DKC_COM_CAS_INCDEC",
+	"DKC_COM_REPL_KEY",
+	"DKC_COM_K2HSTATE",
+	"DKC_COM_STATE"
+};
+
+const char* STR_DKCCOM_TYPE(dkccom_type_t comtype)
+{
+	if(DKC_COM_MAX < comtype){
+		// [NOTE]
+		// comtype is ungigned, and DKC_COM_GET is zero, then not check minimum value.
+		//
+		return "UNKNOWN_DKC_COM_TYPE";
+	}
+	return str_dkccom_type[comtype];
+}
+
+//---------------------------------------------------------
 // Class Variables
 //---------------------------------------------------------
 const long			K2hdkcCommand::DEFAULT_RCV_TIMEOUT_MS;
@@ -317,7 +359,7 @@ K2hdkcCommand* K2hdkcCommand::GetCommandReceiveObject(K2HShm* pk2hash, ChmCntrl*
 	return pObj;
 }
 
-K2hdkcCommand* K2hdkcCommand::GetSlaveCommandSendObject(dkccom_type_t comtype, const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, uint64_t comnum)
+K2hdkcCommand* K2hdkcCommand::GetSlaveCommandSendObject(dkccom_type_t comtype, const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, uint64_t comnum)
 {
 	if(!IS_SAFE_DKCCOM_TYPE(comtype)){
 		ERR_DKCPRN("Parameter are wrong.");
@@ -327,7 +369,7 @@ K2hdkcCommand* K2hdkcCommand::GetSlaveCommandSendObject(dkccom_type_t comtype, c
 	K2hdkcSlave*	pslave = new K2hdkcSlave();
 
 	// initialize slave command object
-	if(!pslave->Initialize(config, ctlport, is_auto_rejoin)){
+	if(!pslave->Initialize(config, ctlport, cuk, is_auto_rejoin)){
 		ERR_DKCPRN("Could not create slave command object.");
 		DKC_DELETE(pslave);
 		return NULL;

@@ -58,6 +58,7 @@ class K2hdkcCntrl
 		ChmCntrl			chmobj;
 		K2hdkcThread		ThreadManager;
 		short				chmpxctlport;
+		std::string			chmpxcuk;
 		bool				no_giveup_rejoin;
 		volatile bool		is_loop;
 		volatile int		waitmap_lockval;			// lock variable for waitmap used by fullock_mutex
@@ -95,7 +96,7 @@ class K2hdkcCntrl
 	public:
 		static K2hdkcCntrl* Get(void) { return &K2hdkcCntrl::singleton; }
 
-		bool Initialize(const K2hdkcConfig* pk2hdkcconf, short ctlport = CHM_INVALID_PORT, bool nogiveuprejoin = false);
+		bool Initialize(const K2hdkcConfig* pk2hdkcconf, short ctlport = CHM_INVALID_PORT, const char* cuk = NULL, bool nogiveuprejoin = false);
 		bool Run(void);
 };
 

@@ -35,6 +35,7 @@ class K2hdkcSlave
 	protected:
 		std::string		chmpxconfig;
 		short			chmpxctlport;
+		std::string		chmpxcuk;
 		bool			chmpxautorejoin;
 		ChmCntrl		chmobj;
 		msgid_t			msgid;
@@ -50,7 +51,7 @@ class K2hdkcSlave
 		K2hdkcSlave(void);
 		virtual ~K2hdkcSlave(void);
 
-		bool Initialize(const char* config, short ctlport = CHM_INVALID_PORT, bool is_auto_rejoin = false);
+		bool Initialize(const char* config, short ctlport = CHM_INVALID_PORT, const char* cuk = NULL, bool is_auto_rejoin = false);
 		bool Uninitialize(bool is_clean_bup = true) { return Clean(); }
 		bool Clean(bool is_clean_bup = true);
 

@@ -170,13 +170,13 @@ bool k2hdkc_is_res_success(k2hdkc_chmpx_h handle)
 //---------------------------------------------------------
 // Functions - Chmpx slave object
 //---------------------------------------------------------
-static K2hdkcSlave* CreateOpenedMsgidSlaveObject(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, bool is_clean_bup)
+static K2hdkcSlave* CreateOpenedMsgidSlaveObject(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, bool is_clean_bup)
 {
 	if(DKCEMPTYSTR(config)){
 		MSG_DKCPRN("config parameter is empty, thus using environment.");
 	}
 	K2hdkcSlave*	pSlave = new K2hdkcSlave();
-	if(!pSlave->Initialize(config, ctlport, is_auto_rejoin)){
+	if(!pSlave->Initialize(config, ctlport, cuk, is_auto_rejoin)){
 		ERR_DKCPRN("Could not join chmpx slave node.");
 		DKC_DELETE(pSlave);
 		return NULL;
@@ -210,12 +210,18 @@ static bool DestoryOpenedMsgidSlaveObject(K2hdkcSlave* pSlave, bool is_clean_bup
 
 k2hdkc_chmpx_h k2hdkc_open_chmpx(const char* config)
 {
-	return k2hdkc_open_chmpx_ex(config, CHM_INVALID_PORT, false, false, true);
+	return k2hdkc_open_chmpx_full(config, CHM_INVALID_PORT, NULL, false, false, true);
 }
 
 k2hdkc_chmpx_h k2hdkc_open_chmpx_ex(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, bool is_clean_bup)
 {
-	K2hdkcSlave*	pSlave = CreateOpenedMsgidSlaveObject(config, ctlport, is_auto_rejoin, no_giveup_rejoin, is_clean_bup);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_open_chmpx_full()\".");
+	return k2hdkc_open_chmpx_full(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, is_clean_bup);
+}
+
+k2hdkc_chmpx_h k2hdkc_open_chmpx_full(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, bool is_clean_bup)
+{
+	K2hdkcSlave*	pSlave = CreateOpenedMsgidSlaveObject(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, is_clean_bup);
 	if(!pSlave){
 		return K2HDKC_INVALID_HANDLE;
 	}
@@ -284,17 +290,23 @@ static bool K2hdkcFullGetState(K2hdkcComState* pcomobj, PDKC_NODESTATE* ppstates
 
 bool k2hdkc_get_state(const char* config, PDKC_NODESTATE* ppstates, size_t* pstatecount)
 {
-	return k2hdkc_ex_get_state(config, CHM_INVALID_PORT, false, false, ppstates, pstatecount);
+	return k2hdkc_full_get_state(config, CHM_INVALID_PORT, NULL, false, false, ppstates, pstatecount);
 }
 
 PDKC_NODESTATE k2hdkc_get_direct_state(const char* config, size_t* pstatecount)
 {
-	return k2hdkc_ex_get_direct_state(config, CHM_INVALID_PORT, false, false, pstatecount);
+	return k2hdkc_full_get_direct_state(config, CHM_INVALID_PORT, NULL, false, false, pstatecount);
 }
 
 bool k2hdkc_ex_get_state(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, PDKC_NODESTATE* ppstates, size_t* pstatecount)
 {
-	K2hdkcComState*	pComObj = GetOtSlaveK2hdkcComState(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_state()\".");
+	return k2hdkc_full_get_state(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, ppstates, pstatecount);
+}
+
+bool k2hdkc_full_get_state(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, PDKC_NODESTATE* ppstates, size_t* pstatecount)
+{
+	K2hdkcComState*	pComObj = GetOtSlaveK2hdkcComState(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 
 	bool	result = K2hdkcFullGetState(pComObj, ppstates, pstatecount);
 	if(!result){
@@ -307,8 +319,14 @@ bool k2hdkc_ex_get_state(const char* config, short ctlport, bool is_auto_rejoin,
 
 PDKC_NODESTATE k2hdkc_ex_get_direct_state(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, size_t* pstatecount)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_direct_state()\".");
+	return k2hdkc_full_get_direct_state(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pstatecount);
+}
+
+PDKC_NODESTATE k2hdkc_full_get_direct_state(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, size_t* pstatecount)
+{
 	PDKC_NODESTATE	pstates = NULL;
-	if(!k2hdkc_ex_get_state(config, ctlport, is_auto_rejoin, no_giveup_rejoin, &pstates, pstatecount) || !pstates){
+	if(!k2hdkc_full_get_state(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, &pstates, pstatecount) || !pstates){
 		return NULL;
 	}
 	return pstates;
@@ -371,66 +389,72 @@ static bool K2hdkcFullGetValue(K2hdkcComGet* pcomobj, const unsigned char* pkey,
 
 bool k2hdkc_get_value(const char* config, const unsigned char* pkey, size_t keylength, unsigned char** ppval, size_t* pvallength)
 {
-	return k2hdkc_ex_get_value(config, CHM_INVALID_PORT, false, false, pkey, keylength, ppval, pvallength);
+	return k2hdkc_full_get_value(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, ppval, pvallength);
 }
 unsigned char* k2hdkc_get_direct_value(const char* config, const unsigned char* pkey, size_t keylength, size_t* pvallength)
 {
-	return k2hdkc_ex_get_direct_value(config, CHM_INVALID_PORT, false, false, pkey, keylength, pvallength);
+	return k2hdkc_full_get_direct_value(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, pvallength);
 }
 
 bool k2hdkc_get_str_value(const char* config, const char* pkey, char** ppval)
 {
-	return k2hdkc_ex_get_str_value(config, CHM_INVALID_PORT, false, false, pkey, ppval);
+	return k2hdkc_full_get_str_value(config, CHM_INVALID_PORT, NULL, false, false, pkey, ppval);
 }
 
 char* k2hdkc_get_str_direct_value(const char* config, const char* pkey)
 {
-	return k2hdkc_ex_get_str_direct_value(config, CHM_INVALID_PORT, false, false, pkey);
+	return k2hdkc_full_get_str_direct_value(config, CHM_INVALID_PORT, NULL, false, false, pkey);
 }
 
 bool k2hdkc_get_value_wp(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, unsigned char** ppval, size_t* pvallength)
 {
-	return k2hdkc_ex_get_value_wp(config, CHM_INVALID_PORT, false, false, pkey, keylength, encpass, ppval, pvallength);
+	return k2hdkc_full_get_value_wp(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, encpass, ppval, pvallength);
 }
 
 unsigned char* k2hdkc_get_direct_value_wp(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, size_t* pvallength)
 {
-	return k2hdkc_ex_get_direct_value_wp(config, CHM_INVALID_PORT, false, false, pkey, keylength, encpass, pvallength);
+	return k2hdkc_full_get_direct_value_wp(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, encpass, pvallength);
 }
 
 bool k2hdkc_get_str_value_wp(const char* config, const char* pkey, const char* encpass, char** ppval)
 {
-	return k2hdkc_ex_get_str_value_wp(config, CHM_INVALID_PORT, false, false, pkey, encpass, ppval);
+	return k2hdkc_full_get_str_value_wp(config, CHM_INVALID_PORT, NULL, false, false, pkey, encpass, ppval);
 }
 
 char* k2hdkc_get_str_direct_value_wp(const char* config, const char* pkey, const char* encpass)
 {
-	return k2hdkc_ex_get_str_direct_value_wp(config, CHM_INVALID_PORT, false, false, pkey, encpass);
+	return k2hdkc_full_get_str_direct_value_wp(config, CHM_INVALID_PORT, NULL, false, false, pkey, encpass);
 }
 
 bool k2hdkc_get_value_np(const char* config, const unsigned char* pkey, size_t keylength, unsigned char** ppval, size_t* pvallength)
 {
-	return k2hdkc_ex_get_value_np(config, CHM_INVALID_PORT, false, false, pkey, keylength, ppval, pvallength);
+	return k2hdkc_full_get_value_np(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, ppval, pvallength);
 }
 
 unsigned char* k2hdkc_get_direct_value_np(const char* config, const unsigned char* pkey, size_t keylength, size_t* pvallength)
 {
-	return k2hdkc_ex_get_direct_value_np(config, CHM_INVALID_PORT, false, false, pkey, keylength, pvallength);
+	return k2hdkc_full_get_direct_value_np(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, pvallength);
 }
 
 bool k2hdkc_get_str_value_np(const char* config, const char* pkey, char** ppval)
 {
-	return k2hdkc_ex_get_str_value_np(config, CHM_INVALID_PORT, false, false, pkey, ppval);
+	return k2hdkc_full_get_str_value_np(config, CHM_INVALID_PORT, NULL, false, false, pkey, ppval);
 }
 
 char* k2hdkc_get_str_direct_value_np(const char* config, const char* pkey)
 {
-	return k2hdkc_ex_get_str_direct_value_np(config, CHM_INVALID_PORT, false, false, pkey);
+	return k2hdkc_full_get_str_direct_value_np(config, CHM_INVALID_PORT, NULL, false, false, pkey);
 }
 
 bool k2hdkc_ex_get_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, unsigned char** ppval, size_t* pvallength)
 {
-	K2hdkcComGet*	pComObj = GetOtSlaveK2hdkcComGet(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_value()\".");
+	return k2hdkc_full_get_value(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, ppval, pvallength);
+}
+
+bool k2hdkc_full_get_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, unsigned char** ppval, size_t* pvallength)
+{
+	K2hdkcComGet*	pComObj = GetOtSlaveK2hdkcComGet(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 
 	bool	result = K2hdkcFullGetValue(pComObj, pkey, keylength, true, NULL, ppval, pvallength);
 	if(!result){
@@ -443,8 +467,14 @@ bool k2hdkc_ex_get_value(const char* config, short ctlport, bool is_auto_rejoin,
 
 unsigned char* k2hdkc_ex_get_direct_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, size_t* pvallength)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_direct_value()\".");
+	return k2hdkc_full_get_direct_value(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pvallength);
+}
+
+unsigned char* k2hdkc_full_get_direct_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, size_t* pvallength)
+{
 	unsigned char*	pval = NULL;
-	if(!k2hdkc_ex_get_value(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, &pval, pvallength) || !pval){
+	if(!k2hdkc_full_get_value(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, &pval, pvallength) || !pval){
 		return NULL;
 	}
 	return pval;
@@ -452,9 +482,15 @@ unsigned char* k2hdkc_ex_get_direct_value(const char* config, short ctlport, boo
 
 bool k2hdkc_ex_get_str_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char** ppval)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_str_value()\".");
+	return k2hdkc_full_get_str_value(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, ppval);
+}
+
+bool k2hdkc_full_get_str_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char** ppval)
+{
 	unsigned char*	pval		= NULL;
 	size_t			vallength	= 0L;
-	if(!k2hdkc_ex_get_value(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), &pval, &vallength) || !pval || 0 == vallength){
+	if(!k2hdkc_full_get_value(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), &pval, &vallength) || !pval || 0 == vallength){
 		DKC_FREE(pval);
 		return false;
 	}
@@ -464,9 +500,15 @@ bool k2hdkc_ex_get_str_value(const char* config, short ctlport, bool is_auto_rej
 
 char* k2hdkc_ex_get_str_direct_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_str_direct_value()\".");
+	return k2hdkc_full_get_str_direct_value(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey);
+}
+
+char* k2hdkc_full_get_str_direct_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+{
 	unsigned char*	pval		= NULL;
 	size_t			vallength	= 0L;
-	if(!k2hdkc_ex_get_value(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), &pval, &vallength) || !pval || 0 == vallength){
+	if(!k2hdkc_full_get_value(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), &pval, &vallength) || !pval || 0 == vallength){
 		DKC_FREE(pval);
 		return NULL;
 	}
@@ -475,7 +517,13 @@ char* k2hdkc_ex_get_str_direct_value(const char* config, short ctlport, bool is_
 
 bool k2hdkc_ex_get_value_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, unsigned char** ppval, size_t* pvallength)
 {
-	K2hdkcComGet*	pComObj = GetOtSlaveK2hdkcComGet(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_value_wp()\".");
+	return k2hdkc_full_get_value_wp(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, encpass, ppval, pvallength);
+}
+
+bool k2hdkc_full_get_value_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, unsigned char** ppval, size_t* pvallength)
+{
+	K2hdkcComGet*	pComObj = GetOtSlaveK2hdkcComGet(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 
 	bool	result = K2hdkcFullGetValue(pComObj, pkey, keylength, true, encpass, ppval, pvallength);
 	if(!result){
@@ -488,8 +536,14 @@ bool k2hdkc_ex_get_value_wp(const char* config, short ctlport, bool is_auto_rejo
 
 unsigned char* k2hdkc_ex_get_direct_value_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, size_t* pvallength)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_direct_value_wp()\".");
+	return k2hdkc_full_get_direct_value_wp(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, encpass, pvallength);
+}
+
+unsigned char* k2hdkc_full_get_direct_value_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, size_t* pvallength)
+{
 	unsigned char*	pval = NULL;
-	if(!k2hdkc_ex_get_value_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, encpass, &pval, pvallength) || !pval){
+	if(!k2hdkc_full_get_value_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, encpass, &pval, pvallength) || !pval){
 		return NULL;
 	}
 	return pval;
@@ -497,9 +551,15 @@ unsigned char* k2hdkc_ex_get_direct_value_wp(const char* config, short ctlport, 
 
 bool k2hdkc_ex_get_str_value_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, char** ppval)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_str_value_wp()\".");
+	return k2hdkc_full_get_str_value_wp(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, encpass, ppval);
+}
+
+bool k2hdkc_full_get_str_value_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, char** ppval)
+{
 	unsigned char*	pval		= NULL;
 	size_t			vallength	= 0L;
-	if(!k2hdkc_ex_get_value_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, &pval, &vallength) || !pval || 0 == vallength){
+	if(!k2hdkc_full_get_value_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, &pval, &vallength) || !pval || 0 == vallength){
 		DKC_FREE(pval);
 		return false;
 	}
@@ -509,9 +569,15 @@ bool k2hdkc_ex_get_str_value_wp(const char* config, short ctlport, bool is_auto_
 
 char* k2hdkc_ex_get_str_direct_value_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_str_direct_value_wp()\".");
+	return k2hdkc_full_get_str_direct_value_wp(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, encpass);
+}
+
+char* k2hdkc_full_get_str_direct_value_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass)
+{
 	unsigned char*	pval		= NULL;
 	size_t			vallength	= 0L;
-	if(!k2hdkc_ex_get_value_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, &pval, &vallength) || !pval || 0 == vallength){
+	if(!k2hdkc_full_get_value_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, &pval, &vallength) || !pval || 0 == vallength){
 		DKC_FREE(pval);
 		return NULL;
 	}
@@ -520,7 +586,13 @@ char* k2hdkc_ex_get_str_direct_value_wp(const char* config, short ctlport, bool 
 
 bool k2hdkc_ex_get_value_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, unsigned char** ppval, size_t* pvallength)
 {
-	K2hdkcComGet*	pComObj = GetOtSlaveK2hdkcComGet(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_value_np()\".");
+	return k2hdkc_full_get_value_np(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, ppval, pvallength);
+}
+
+bool k2hdkc_full_get_value_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, unsigned char** ppval, size_t* pvallength)
+{
+	K2hdkcComGet*	pComObj = GetOtSlaveK2hdkcComGet(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 
 	bool	result = K2hdkcFullGetValue(pComObj, pkey, keylength, false, NULL, ppval, pvallength);
 	if(!result){
@@ -530,10 +602,17 @@ bool k2hdkc_ex_get_value_np(const char* config, short ctlport, bool is_auto_rejo
 
 	return result;
 }
+
 unsigned char* k2hdkc_ex_get_direct_value_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, size_t* pvallength)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_direct_value_np()\".");
+	return k2hdkc_full_get_direct_value_np(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pvallength);
+}
+
+unsigned char* k2hdkc_full_get_direct_value_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, size_t* pvallength)
+{
 	unsigned char*	pval = NULL;
-	if(!k2hdkc_ex_get_value_np(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, &pval, pvallength) || !pval){
+	if(!k2hdkc_full_get_value_np(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, &pval, pvallength) || !pval){
 		return NULL;
 	}
 	return pval;
@@ -541,9 +620,15 @@ unsigned char* k2hdkc_ex_get_direct_value_np(const char* config, short ctlport, 
 
 bool k2hdkc_ex_get_str_value_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char** ppval)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_str_value_np()\".");
+	return k2hdkc_full_get_str_value_np(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, ppval);
+}
+
+bool k2hdkc_full_get_str_value_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char** ppval)
+{
 	unsigned char*	pval		= NULL;
 	size_t			vallength	= 0L;
-	if(!k2hdkc_ex_get_value_np(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), &pval, &vallength) || !pval || 0 == vallength){
+	if(!k2hdkc_full_get_value_np(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), &pval, &vallength) || !pval || 0 == vallength){
 		DKC_FREE(pval);
 		return false;
 	}
@@ -553,9 +638,15 @@ bool k2hdkc_ex_get_str_value_np(const char* config, short ctlport, bool is_auto_
 
 char* k2hdkc_ex_get_str_direct_value_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_str_direct_value_np()\".");
+	return k2hdkc_full_get_str_direct_value_np(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey);
+}
+
+char* k2hdkc_full_get_str_direct_value_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+{
 	unsigned char*	pval		= NULL;
 	size_t			vallength	= 0L;
-	if(!k2hdkc_ex_get_value_np(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), &pval, &vallength) || !pval || 0 == vallength){
+	if(!k2hdkc_full_get_value_np(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), &pval, &vallength) || !pval || 0 == vallength){
 		DKC_FREE(pval);
 		return NULL;
 	}
@@ -750,27 +841,33 @@ static bool K2hdkcFullGetDirect(K2hdkcComGetDirect* pcomobj, const unsigned char
 
 bool k2hdkc_da_get_value(const char* config, const unsigned char* pkey, size_t keylength, off_t getpos, size_t val_length, unsigned char** ppval, size_t* pvallength)
 {
-	return k2hdkc_ex_da_get_value(config, CHM_INVALID_PORT, false, false, pkey, keylength, getpos, val_length, ppval, pvallength);
+	return k2hdkc_full_da_get_value(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, getpos, val_length, ppval, pvallength);
 }
 
 unsigned char* k2hdkc_da_get_direct_value(const char* config, const unsigned char* pkey, size_t keylength, off_t getpos, size_t val_length, size_t* pvallength)
 {
-	return k2hdkc_ex_da_get_direct_value(config, CHM_INVALID_PORT, false, false, pkey, keylength, getpos, val_length, pvallength);
+	return k2hdkc_full_da_get_direct_value(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, getpos, val_length, pvallength);
 }
 
 bool k2hdkc_da_get_str_value(const char* config, const char* pkey, off_t getpos, size_t val_length, char** ppval)
 {
-	return k2hdkc_ex_da_get_str_value(config, CHM_INVALID_PORT, false, false, pkey, getpos, val_length, ppval);
+	return k2hdkc_full_da_get_str_value(config, CHM_INVALID_PORT, NULL, false, false, pkey, getpos, val_length, ppval);
 }
 
 char* k2hdkc_da_get_str_direct_value(const char* config, const char* pkey, off_t getpos, size_t val_length)
 {
-	return k2hdkc_ex_da_get_str_direct_value(config, CHM_INVALID_PORT, false, false, pkey, getpos, val_length);
+	return k2hdkc_full_da_get_str_direct_value(config, CHM_INVALID_PORT, NULL, false, false, pkey, getpos, val_length);
 }
 
 bool k2hdkc_ex_da_get_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, off_t getpos, size_t val_length, unsigned char** ppval, size_t* pvallength)
 {
-	K2hdkcComGetDirect*	pComObj	= GetOtSlaveK2hdkcComGetDirect(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_da_get_value()\".");
+	return k2hdkc_full_da_get_value(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, getpos, val_length, ppval, pvallength);
+}
+
+bool k2hdkc_full_da_get_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, off_t getpos, size_t val_length, unsigned char** ppval, size_t* pvallength)
+{
+	K2hdkcComGetDirect*	pComObj	= GetOtSlaveK2hdkcComGetDirect(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullGetDirect(pComObj, pkey, keylength, getpos, val_length, ppval, pvallength);
 	if(!result){
 		ERR_DKCPRN("Failed to get value.");
@@ -782,8 +879,14 @@ bool k2hdkc_ex_da_get_value(const char* config, short ctlport, bool is_auto_rejo
 
 unsigned char* k2hdkc_ex_da_get_direct_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, off_t getpos, size_t val_length, size_t* pvallength)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_da_get_direct_value()\".");
+	return k2hdkc_full_da_get_direct_value(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, getpos, val_length, pvallength);
+}
+
+unsigned char* k2hdkc_full_da_get_direct_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, off_t getpos, size_t val_length, size_t* pvallength)
+{
 	unsigned char*	pval = NULL;
-	if(!k2hdkc_ex_da_get_value(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, getpos, val_length, &pval, pvallength)){
+	if(!k2hdkc_full_da_get_value(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, getpos, val_length, &pval, pvallength)){
 		return NULL;
 	}
 	return pval;
@@ -791,9 +894,15 @@ unsigned char* k2hdkc_ex_da_get_direct_value(const char* config, short ctlport, 
 
 bool k2hdkc_ex_da_get_str_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, off_t getpos, size_t val_length, char** ppval)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_da_get_str_value()\".");
+	return k2hdkc_full_da_get_str_value(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, getpos, val_length, ppval);
+}
+
+bool k2hdkc_full_da_get_str_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, off_t getpos, size_t val_length, char** ppval)
+{
 	unsigned char*	pval		= NULL;
 	size_t			vallength	= 0L;
-	if(!k2hdkc_ex_da_get_value(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), getpos, val_length, &pval, &vallength) || !pval || 0 == vallength){
+	if(!k2hdkc_full_da_get_value(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), getpos, val_length, &pval, &vallength) || !pval || 0 == vallength){
 		DKC_FREE(pval);
 		return false;
 	}
@@ -803,9 +912,15 @@ bool k2hdkc_ex_da_get_str_value(const char* config, short ctlport, bool is_auto_
 
 char* k2hdkc_ex_da_get_str_direct_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, off_t getpos, size_t val_length)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_da_get_str_direct_value()\".");
+	return k2hdkc_full_da_get_str_direct_value(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, getpos, val_length);
+}
+
+char* k2hdkc_full_da_get_str_direct_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, off_t getpos, size_t val_length)
+{
 	unsigned char*	pval		= NULL;
 	size_t			vallength	= 0L;
-	if(!k2hdkc_ex_da_get_value(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), getpos, val_length, &pval, &vallength) || !pval || 0 == vallength){
+	if(!k2hdkc_full_da_get_value(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), getpos, val_length, &pval, &vallength) || !pval || 0 == vallength){
 		DKC_FREE(pval);
 		return NULL;
 	}
@@ -972,47 +1087,53 @@ static int K2hdkcCvtSubkeysToStringArray(K2HSubKeys* pSubKeys, char*** ppskeyarr
 
 bool k2hdkc_get_subkeys(const char* config, const unsigned char* pkey, size_t keylength, PK2HDKCKEYPCK* ppskeypck, int* pskeypckcnt)
 {
-	return k2hdkc_ex_get_subkeys(config, CHM_INVALID_PORT, false, false, pkey, keylength, ppskeypck, pskeypckcnt);
+	return k2hdkc_full_get_subkeys(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, ppskeypck, pskeypckcnt);
 }
 
 PK2HDKCKEYPCK k2hdkc_get_direct_subkeys(const char* config, const unsigned char* pkey, size_t keylength, int* pskeypckcnt)
 {
-	return k2hdkc_ex_get_direct_subkeys(config, CHM_INVALID_PORT, false, false, pkey, keylength, pskeypckcnt);
+	return k2hdkc_full_get_direct_subkeys(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, pskeypckcnt);
 }
 
 int k2hdkc_get_str_subkeys(const char* config, const char* pkey, char*** ppskeyarray)
 {
-	return k2hdkc_ex_get_str_subkeys(config, CHM_INVALID_PORT, false, false, pkey, ppskeyarray);
+	return k2hdkc_full_get_str_subkeys(config, CHM_INVALID_PORT, NULL, false, false, pkey, ppskeyarray);
 }
 
 char** k2hdkc_get_str_direct_subkeys(const char* config, const char* pkey)
 {
-	return k2hdkc_ex_get_str_direct_subkeys(config, CHM_INVALID_PORT, false, false, pkey);
+	return k2hdkc_full_get_str_direct_subkeys(config, CHM_INVALID_PORT, NULL, false, false, pkey);
 }
 
 bool k2hdkc_get_subkeys_np(const char* config, const unsigned char* pkey, size_t keylength, PK2HDKCKEYPCK* ppskeypck, int* pskeypckcnt)
 {
-	return k2hdkc_ex_get_subkeys_np(config, CHM_INVALID_PORT, false, false, pkey, keylength, ppskeypck, pskeypckcnt);
+	return k2hdkc_full_get_subkeys_np(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, ppskeypck, pskeypckcnt);
 }
 
 PK2HDKCKEYPCK k2hdkc_get_direct_subkeys_np(const char* config, const unsigned char* pkey, size_t keylength, int* pskeypckcnt)
 {
-	return k2hdkc_ex_get_direct_subkeys_np(config, CHM_INVALID_PORT, false, false, pkey, keylength, pskeypckcnt);
+	return k2hdkc_full_get_direct_subkeys_np(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, pskeypckcnt);
 }
 
 int k2hdkc_get_str_subkeys_np(const char* config, const char* pkey, char*** ppskeyarray)
 {
-	return k2hdkc_ex_get_str_subkeys_np(config, CHM_INVALID_PORT, false, false, pkey, ppskeyarray);
+	return k2hdkc_full_get_str_subkeys_np(config, CHM_INVALID_PORT, NULL, false, false, pkey, ppskeyarray);
 }
 
 char** k2hdkc_get_str_direct_subkeys_np(const char* config, const char* pkey)
 {
-	return k2hdkc_ex_get_str_direct_subkeys_np(config, CHM_INVALID_PORT, false, false, pkey);
+	return k2hdkc_full_get_str_direct_subkeys_np(config, CHM_INVALID_PORT, NULL, false, false, pkey);
 }
 
 bool k2hdkc_ex_get_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, PK2HDKCKEYPCK* ppskeypck, int* pskeypckcnt)
 {
-	K2hdkcComGetSubkeys*	pComObj = GetOtSlaveK2hdkcComGetSubkeys(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_subkeys()\".");
+	return k2hdkc_full_get_subkeys(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, ppskeypck, pskeypckcnt);
+}
+
+bool k2hdkc_full_get_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, PK2HDKCKEYPCK* ppskeypck, int* pskeypckcnt)
+{
+	K2hdkcComGetSubkeys*	pComObj = GetOtSlaveK2hdkcComGetSubkeys(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	K2HSubKeys*				pSubKeys= NULL;
 	bool					result	= K2hdkcFullGetSubkeys(pComObj, pkey, keylength, true, &pSubKeys);
 	if(!result){
@@ -1031,8 +1152,14 @@ bool k2hdkc_ex_get_subkeys(const char* config, short ctlport, bool is_auto_rejoi
 
 PK2HDKCKEYPCK k2hdkc_ex_get_direct_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, int* pskeypckcnt)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_direct_subkeys()\".");
+	return k2hdkc_full_get_direct_subkeys(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pskeypckcnt);
+}
+
+PK2HDKCKEYPCK k2hdkc_full_get_direct_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, int* pskeypckcnt)
+{
 	PK2HDKCKEYPCK	pskeypck = NULL;
-	if(!k2hdkc_ex_get_subkeys(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, &pskeypck, pskeypckcnt)){
+	if(!k2hdkc_full_get_subkeys(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, &pskeypck, pskeypckcnt)){
 		return NULL;
 	}
 	return pskeypck;
@@ -1040,7 +1167,13 @@ PK2HDKCKEYPCK k2hdkc_ex_get_direct_subkeys(const char* config, short ctlport, bo
 
 int k2hdkc_ex_get_str_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char*** ppskeyarray)
 {
-	K2hdkcComGetSubkeys*	pComObj = GetOtSlaveK2hdkcComGetSubkeys(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_str_subkeys()\".");
+	return k2hdkc_full_get_str_subkeys(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, ppskeyarray);
+}
+
+int k2hdkc_full_get_str_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char*** ppskeyarray)
+{
+	K2hdkcComGetSubkeys*	pComObj = GetOtSlaveK2hdkcComGetSubkeys(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	K2HSubKeys*				pSubKeys= NULL;
 	int						rescnt	= -1;
 	bool					result	= K2hdkcFullGetSubkeys(pComObj, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), true, &pSubKeys);
@@ -1059,8 +1192,14 @@ int k2hdkc_ex_get_str_subkeys(const char* config, short ctlport, bool is_auto_re
 
 char** k2hdkc_ex_get_str_direct_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_str_direct_subkeys()\".");
+	return k2hdkc_full_get_str_direct_subkeys(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey);
+}
+
+char** k2hdkc_full_get_str_direct_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+{
 	char**	pskeyarray = NULL;
-	if(-1 == k2hdkc_ex_get_str_subkeys(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, &pskeyarray)){
+	if(-1 == k2hdkc_full_get_str_subkeys(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, &pskeyarray)){
 		return NULL;
 	}
 	return pskeyarray;
@@ -1068,7 +1207,13 @@ char** k2hdkc_ex_get_str_direct_subkeys(const char* config, short ctlport, bool 
 
 bool k2hdkc_ex_get_subkeys_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, PK2HDKCKEYPCK* ppskeypck, int* pskeypckcnt)
 {
-	K2hdkcComGetSubkeys*	pComObj = GetOtSlaveK2hdkcComGetSubkeys(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_subkeys_np()\".");
+	return k2hdkc_full_get_subkeys_np(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, ppskeypck, pskeypckcnt);
+}
+
+bool k2hdkc_full_get_subkeys_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, PK2HDKCKEYPCK* ppskeypck, int* pskeypckcnt)
+{
+	K2hdkcComGetSubkeys*	pComObj = GetOtSlaveK2hdkcComGetSubkeys(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	K2HSubKeys*				pSubKeys= NULL;
 	bool					result	= K2hdkcFullGetSubkeys(pComObj, pkey, keylength, false, &pSubKeys);
 	if(!result){
@@ -1087,8 +1232,14 @@ bool k2hdkc_ex_get_subkeys_np(const char* config, short ctlport, bool is_auto_re
 
 PK2HDKCKEYPCK k2hdkc_ex_get_direct_subkeys_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, int* pskeypckcnt)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_direct_subkeys_np()\".");
+	return k2hdkc_full_get_direct_subkeys_np(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pskeypckcnt);
+}
+
+PK2HDKCKEYPCK k2hdkc_full_get_direct_subkeys_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, int* pskeypckcnt)
+{
 	PK2HDKCKEYPCK	pskeypck = NULL;
-	if(!k2hdkc_ex_get_subkeys_np(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, &pskeypck, pskeypckcnt)){
+	if(!k2hdkc_full_get_subkeys_np(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, &pskeypck, pskeypckcnt)){
 		return NULL;
 	}
 	return pskeypck;
@@ -1096,7 +1247,13 @@ PK2HDKCKEYPCK k2hdkc_ex_get_direct_subkeys_np(const char* config, short ctlport,
 
 int k2hdkc_ex_get_str_subkeys_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char*** ppskeyarray)
 {
-	K2hdkcComGetSubkeys*	pComObj = GetOtSlaveK2hdkcComGetSubkeys(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_str_subkeys_np()\".");
+	return k2hdkc_full_get_str_subkeys_np(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, ppskeyarray);
+}
+
+int k2hdkc_full_get_str_subkeys_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char*** ppskeyarray)
+{
+	K2hdkcComGetSubkeys*	pComObj = GetOtSlaveK2hdkcComGetSubkeys(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	K2HSubKeys*				pSubKeys= NULL;
 	int						rescnt	= -1;
 	bool					result	= K2hdkcFullGetSubkeys(pComObj, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), false, &pSubKeys);
@@ -1115,8 +1272,14 @@ int k2hdkc_ex_get_str_subkeys_np(const char* config, short ctlport, bool is_auto
 
 char** k2hdkc_ex_get_str_direct_subkeys_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_str_direct_subkeys_np()\".");
+	return k2hdkc_full_get_str_direct_subkeys_np(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey);
+}
+
+char** k2hdkc_full_get_str_direct_subkeys_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+{
 	char**	pskeyarray = NULL;
-	if(-1 == k2hdkc_ex_get_str_subkeys_np(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, &pskeyarray)){
+	if(-1 == k2hdkc_full_get_str_subkeys_np(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, &pskeyarray)){
 		return NULL;
 	}
 	return pskeyarray;
@@ -1340,22 +1503,28 @@ bool K2hdkcCvtAttrsToPack(K2HAttrs* pAttrs, PK2HDKCATTRPCK* ppattrspck, int* pat
 
 bool k2hdkc_get_attrs(const char* config, const unsigned char* pkey, size_t keylength, PK2HDKCATTRPCK* ppattrspck, int* pattrspckcnt)
 {
-	return k2hdkc_ex_get_attrs(config, CHM_INVALID_PORT, false, false, pkey, keylength, ppattrspck, pattrspckcnt);
+	return k2hdkc_full_get_attrs(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, ppattrspck, pattrspckcnt);
 }
 
 PK2HDKCATTRPCK k2hdkc_get_direct_attrs(const char* config, const unsigned char* pkey, size_t keylength, int* pattrspckcnt)
 {
-	return k2hdkc_ex_get_direct_attrs(config, CHM_INVALID_PORT, false, false, pkey, keylength, pattrspckcnt);
+	return k2hdkc_full_get_direct_attrs(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, pattrspckcnt);
 }
 
 PK2HDKCATTRPCK k2hdkc_get_str_direct_attrs(const char* config, const char* pkey, int* pattrspckcnt)
 {
-	return k2hdkc_ex_get_str_direct_attrs(config, CHM_INVALID_PORT, false, false, pkey, pattrspckcnt);
+	return k2hdkc_full_get_str_direct_attrs(config, CHM_INVALID_PORT, NULL, false, false, pkey, pattrspckcnt);
 }
 
 bool k2hdkc_ex_get_attrs(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, PK2HDKCATTRPCK* ppattrspck, int* pattrspckcnt)
 {
-	K2hdkcComGetAttrs*	pComObj = GetOtSlaveK2hdkcComGetAttrs(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_attrs()\".");
+	return k2hdkc_full_get_attrs(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, ppattrspck, pattrspckcnt);
+}
+
+bool k2hdkc_full_get_attrs(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, PK2HDKCATTRPCK* ppattrspck, int* pattrspckcnt)
+{
+	K2hdkcComGetAttrs*	pComObj = GetOtSlaveK2hdkcComGetAttrs(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	K2HAttrs*			pAttrs	= NULL;
 	bool				result	= K2hdkcFullGetAttrs(pComObj, pkey, keylength, &pAttrs);
 	if(!result){
@@ -1373,8 +1542,14 @@ bool k2hdkc_ex_get_attrs(const char* config, short ctlport, bool is_auto_rejoin,
 
 PK2HDKCATTRPCK k2hdkc_ex_get_direct_attrs(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, int* pattrspckcnt)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_direct_attrs()\".");
+	return k2hdkc_full_get_direct_attrs(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pattrspckcnt);
+}
+
+PK2HDKCATTRPCK k2hdkc_full_get_direct_attrs(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, int* pattrspckcnt)
+{
 	PK2HDKCATTRPCK	pattrspck = NULL;
-	if(!k2hdkc_ex_get_attrs(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, &pattrspck, pattrspckcnt)){
+	if(!k2hdkc_full_get_attrs(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, &pattrspck, pattrspckcnt)){
 		return NULL;
 	}
 	return pattrspck;
@@ -1382,8 +1557,14 @@ PK2HDKCATTRPCK k2hdkc_ex_get_direct_attrs(const char* config, short ctlport, boo
 
 PK2HDKCATTRPCK k2hdkc_ex_get_str_direct_attrs(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, int* pattrspckcnt)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_get_str_direct_attrs()\".");
+	return k2hdkc_full_get_str_direct_attrs(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, pattrspckcnt);
+}
+
+PK2HDKCATTRPCK k2hdkc_full_get_str_direct_attrs(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, int* pattrspckcnt)
+{
 	PK2HDKCATTRPCK	pattrspck = NULL;
-	if(!k2hdkc_ex_get_attrs(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), &pattrspck, pattrspckcnt)){
+	if(!k2hdkc_full_get_attrs(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), &pattrspck, pattrspckcnt)){
 		return NULL;
 	}
 	return pattrspck;
@@ -1459,12 +1640,24 @@ bool k2hdkc_set_str_value(const char* config, const char* pkey, const char* pval
 
 bool k2hdkc_ex_set_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength)
 {
-	return k2hdkc_ex_set_value_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pval, vallength, false, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_value()\".");
+	return k2hdkc_full_set_value(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pval, vallength);
+}
+
+bool k2hdkc_full_set_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength)
+{
+	return k2hdkc_full_set_value_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pval, vallength, false, NULL, NULL);
 }
 
 bool k2hdkc_ex_set_str_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval)
 {
-	return k2hdkc_ex_set_str_value_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, pval, false, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_str_value()\".");
+	return k2hdkc_full_set_str_value(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, pval);
+}
+
+bool k2hdkc_full_set_str_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval)
+{
+	return k2hdkc_full_set_str_value_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, pval, false, NULL, NULL);
 }
 
 bool k2hdkc_pm_set_value(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength)
@@ -1479,17 +1672,23 @@ bool k2hdkc_pm_set_str_value(k2hdkc_chmpx_h handle, const char* pkey, const char
 
 bool k2hdkc_set_value_wa(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool rmsubkeylist, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_set_value_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, pval, vallength, rmsubkeylist, encpass, expire);
+	return k2hdkc_full_set_value_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, pval, vallength, rmsubkeylist, encpass, expire);
 }
 
 bool k2hdkc_set_str_value_wa(const char* config, const char* pkey, const char* pval, bool rmsubkeylist, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_set_str_value_wa(config, CHM_INVALID_PORT, false, false, pkey, pval, rmsubkeylist, encpass, expire);
+	return k2hdkc_full_set_str_value_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, pval, rmsubkeylist, encpass, expire);
 }
 
 bool k2hdkc_ex_set_value_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool rmsubkeylist, const char* encpass, const time_t* expire)
 {
-	K2hdkcComSet*	pComObj = GetOtSlaveK2hdkcComSet(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_value_wa()\".");
+	return k2hdkc_full_set_value_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pval, vallength, rmsubkeylist, encpass, expire);
+}
+
+bool k2hdkc_full_set_value_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool rmsubkeylist, const char* encpass, const time_t* expire)
+{
+	K2hdkcComSet*	pComObj = GetOtSlaveK2hdkcComSet(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool			result	= K2hdkcFullSet(pComObj, pkey, keylength, pval, vallength, rmsubkeylist, encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to set value.");
@@ -1500,7 +1699,13 @@ bool k2hdkc_ex_set_value_wa(const char* config, short ctlport, bool is_auto_rejo
 
 bool k2hdkc_ex_set_str_value_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, bool rmsubkeylist, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_set_value_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pval), (pval ? strlen(pval) + 1 : 0), rmsubkeylist, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_str_value_wa()\".");
+	return k2hdkc_full_set_str_value_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, pval, rmsubkeylist, encpass, expire);
+}
+
+bool k2hdkc_full_set_str_value_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, bool rmsubkeylist, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_set_value_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pval), (pval ? strlen(pval) + 1 : 0), rmsubkeylist, encpass, expire);
 }
 
 bool k2hdkc_pm_set_value_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool rmsubkeylist, const char* encpass, const time_t* expire)
@@ -1542,17 +1747,23 @@ static bool K2hdkcFullSetDirect(K2hdkcComSetDirect* pcomobj, const unsigned char
 
 bool k2hdkc_da_set_value(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const off_t setpos)
 {
-	return k2hdkc_ex_da_set_value(config, CHM_INVALID_PORT, false, false, pkey, keylength, pval, vallength, setpos);
+	return k2hdkc_full_da_set_value(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, pval, vallength, setpos);
 }
 
 bool k2hdkc_da_set_str_value(const char* config, const char* pkey, const char* pval, const off_t setpos)
 {
-	return k2hdkc_ex_da_set_str_value(config, CHM_INVALID_PORT, false, false, pkey, pval, setpos);
+	return k2hdkc_full_da_set_str_value(config, CHM_INVALID_PORT, NULL, false, false, pkey, pval, setpos);
 }
 
 bool k2hdkc_ex_da_set_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const off_t setpos)
 {
-	K2hdkcComSetDirect*	pComObj = GetOtSlaveK2hdkcComSetDirect(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_da_set_value()\".");
+	return k2hdkc_full_da_set_value(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pval, vallength, setpos);
+}
+
+bool k2hdkc_full_da_set_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const off_t setpos)
+{
+	K2hdkcComSetDirect*	pComObj = GetOtSlaveK2hdkcComSetDirect(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullSetDirect(pComObj, pkey, keylength, pval, vallength, setpos);
 	if(!result){
 		ERR_DKCPRN("Failed to set value directly.");
@@ -1563,7 +1774,13 @@ bool k2hdkc_ex_da_set_value(const char* config, short ctlport, bool is_auto_rejo
 
 bool k2hdkc_ex_da_set_str_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, const off_t setpos)
 {
-	return k2hdkc_ex_da_set_value(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pval), (pval ? strlen(pval) + 1 : 0), setpos);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_da_set_str_value()\".");
+	return k2hdkc_full_da_set_str_value(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, pval, setpos);
+}
+
+bool k2hdkc_full_da_set_str_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, const off_t setpos)
+{
+	return k2hdkc_full_da_set_value(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pval), (pval ? strlen(pval) + 1 : 0), setpos);
 }
 
 bool k2hdkc_pm_da_set_value(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const off_t setpos)
@@ -1670,15 +1887,21 @@ static bool K2hdkcCvtStringArrayToSubkeys(const char** pskeyarray, unsigned char
 
 bool k2hdkc_set_subkeys(const char* config, const unsigned char* pkey, size_t keylength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
 {
-	return k2hdkc_ex_set_subkeys(config, CHM_INVALID_PORT, false, false, pkey, keylength, pskeypck, skeypckcnt);
+	return k2hdkc_full_set_subkeys(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, pskeypck, skeypckcnt);
 }
 
 bool k2hdkc_set_str_subkeys(const char* config, const char* pkey, const char** pskeyarray)
 {
-	return k2hdkc_ex_set_str_subkeys(config, CHM_INVALID_PORT, false, false, pkey, pskeyarray);
+	return k2hdkc_full_set_str_subkeys(config, CHM_INVALID_PORT, NULL, false, false, pkey, pskeyarray);
 }
 
 bool k2hdkc_ex_set_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
+{
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_subkeys()\".");
+	return k2hdkc_full_set_subkeys(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pskeypck, skeypckcnt);
+}
+
+bool k2hdkc_full_set_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
 {
 	unsigned char*	psubkeys		= NULL;
 	size_t			subkeyslength	= 0UL;
@@ -1686,7 +1909,7 @@ bool k2hdkc_ex_set_subkeys(const char* config, short ctlport, bool is_auto_rejoi
 		ERR_DKCPRN("Could not convert subkey pack to binary data.");
 		return false;
 	}
-	K2hdkcComSetSubkeys*	pComObj = GetOtSlaveK2hdkcComSetSubkeys(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	K2hdkcComSetSubkeys*	pComObj = GetOtSlaveK2hdkcComSetSubkeys(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool					result	= K2hdkcFullSetSubkeys(pComObj, pkey, keylength, psubkeys, subkeyslength);
 	if(!result){
 		ERR_DKCPRN("Failed to set subkeys.");
@@ -1698,13 +1921,19 @@ bool k2hdkc_ex_set_subkeys(const char* config, short ctlport, bool is_auto_rejoi
 
 bool k2hdkc_ex_set_str_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char** pskeyarray)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_str_subkeys()\".");
+	return k2hdkc_full_set_str_subkeys(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, pskeyarray);
+}
+
+bool k2hdkc_full_set_str_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char** pskeyarray)
+{
 	unsigned char*	psubkeys		= NULL;
 	size_t			subkeyslength	= 0UL;
 	if(!K2hdkcCvtStringArrayToSubkeys(pskeyarray, &psubkeys, &subkeyslength)){
 		ERR_DKCPRN("Could not convert subkey pack to binary data.");
 		return false;
 	}
-	K2hdkcComSetSubkeys*	pComObj = GetOtSlaveK2hdkcComSetSubkeys(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	K2hdkcComSetSubkeys*	pComObj = GetOtSlaveK2hdkcComSetSubkeys(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool					result	= K2hdkcFullSetSubkeys(pComObj, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), psubkeys, subkeyslength);
 	if(!result){
 		ERR_DKCPRN("Failed to set subkeys.");
@@ -1782,12 +2011,24 @@ bool k2hdkc_clear_str_subkeys(const char* config, const char* pkey)
 
 bool k2hdkc_ex_clear_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
 {
-	return k2hdkc_ex_set_subkeys(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, 0);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_clear_subkeys()\".");
+	return k2hdkc_full_clear_subkeys(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength);
+}
+
+bool k2hdkc_full_clear_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
+{
+	return k2hdkc_full_set_subkeys(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, 0);
 }
 
 bool k2hdkc_ex_clear_str_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
 {
-	return k2hdkc_ex_set_str_subkeys(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_clear_str_subkeys()\".");
+	return k2hdkc_full_clear_str_subkeys(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey);
+}
+
+bool k2hdkc_full_clear_str_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+{
+	return k2hdkc_full_set_str_subkeys(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, NULL);
 }
 
 bool k2hdkc_pm_clear_subkeys(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength)
@@ -1824,12 +2065,24 @@ bool k2hdkc_set_str_subkey(const char* config, const char* pkey, const char* psu
 
 bool k2hdkc_ex_set_subkey(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength)
 {
-	return k2hdkc_ex_set_subkey_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, psubkey, subkeylength, pskeyval, skeyvallength, true, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_subkey()\".");
+	return k2hdkc_full_set_subkey(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, psubkey, subkeylength, pskeyval, skeyvallength);
+}
+
+bool k2hdkc_full_set_subkey(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength)
+{
+	return k2hdkc_full_set_subkey_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, psubkey, subkeylength, pskeyval, skeyvallength, true, NULL, NULL);
 }
 
 bool k2hdkc_ex_set_str_subkey(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, const char* pskeyval)
 {
-	return k2hdkc_ex_set_str_subkey_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, psubkey, pskeyval, true, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_str_subkey()\".");
+	return k2hdkc_full_set_str_subkey(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, psubkey, pskeyval);
+}
+
+bool k2hdkc_full_set_str_subkey(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, const char* pskeyval)
+{
+	return k2hdkc_full_set_str_subkey_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, psubkey, pskeyval, true, NULL, NULL);
 }
 
 bool k2hdkc_pm_set_subkey(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength)
@@ -1844,17 +2097,23 @@ bool k2hdkc_pm_set_str_subkey(k2hdkc_chmpx_h handle, const char* pkey, const cha
 
 bool k2hdkc_set_subkey_wa(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_set_subkey_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, psubkey, subkeylength, pskeyval, skeyvallength, checkattr, encpass, expire);
+	return k2hdkc_full_set_subkey_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, psubkey, subkeylength, pskeyval, skeyvallength, checkattr, encpass, expire);
 }
 
 bool k2hdkc_set_str_subkey_wa(const char* config, const char* pkey, const char* psubkey, const char* pskeyval, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_set_str_subkey_wa(config, CHM_INVALID_PORT, false, false, pkey, psubkey, pskeyval, checkattr, encpass, expire);
+	return k2hdkc_full_set_str_subkey_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, psubkey, pskeyval, checkattr, encpass, expire);
 }
 
 bool k2hdkc_ex_set_subkey_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength, bool checkattr, const char* encpass, const time_t* expire)
 {
-	K2hdkcComAddSubkey*	pComObj = GetOtSlaveK2hdkcComAddSubkey(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_subkey_wa()\".");
+	return k2hdkc_full_set_subkey_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, psubkey, subkeylength, pskeyval, skeyvallength, checkattr, encpass, expire);
+}
+
+bool k2hdkc_full_set_subkey_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength, bool checkattr, const char* encpass, const time_t* expire)
+{
+	K2hdkcComAddSubkey*	pComObj = GetOtSlaveK2hdkcComAddSubkey(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullAddSubkey(pComObj, pkey, keylength, psubkey, subkeylength, pskeyval, skeyvallength, checkattr, encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to set subkey with value.");
@@ -1865,7 +2124,13 @@ bool k2hdkc_ex_set_subkey_wa(const char* config, short ctlport, bool is_auto_rej
 
 bool k2hdkc_ex_set_str_subkey_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, const char* pskeyval, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_set_subkey_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(psubkey), (psubkey ? strlen(psubkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pskeyval), (pskeyval ? strlen(pskeyval) + 1 : 0), checkattr, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_str_subkey_wa()\".");
+	return k2hdkc_full_set_str_subkey_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, psubkey, pskeyval, checkattr, encpass, expire);
+}
+
+bool k2hdkc_full_set_str_subkey_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, const char* pskeyval, bool checkattr, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_set_subkey_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(psubkey), (psubkey ? strlen(psubkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pskeyval), (pskeyval ? strlen(pskeyval) + 1 : 0), checkattr, encpass, expire);
 }
 
 bool k2hdkc_pm_set_subkey_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength, bool checkattr, const char* encpass, const time_t* expire)
@@ -1907,15 +2172,21 @@ static bool K2hdkcFullSetAll(K2hdkcComSetAll* pcomobj, const unsigned char* pkey
 
 bool k2hdkc_set_all(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
 {
-	return k2hdkc_ex_set_all(config, CHM_INVALID_PORT, false, false, pkey, keylength, pval, vallength, pskeypck, skeypckcnt);
+	return k2hdkc_full_set_all(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, pval, vallength, pskeypck, skeypckcnt);
 }
 
 bool k2hdkc_set_str_all(const char* config, const char* pkey, const char* pval, const char** pskeyarray)
 {
-	return k2hdkc_ex_set_str_all(config, CHM_INVALID_PORT, false, false, pkey, pval, pskeyarray);
+	return k2hdkc_full_set_str_all(config, CHM_INVALID_PORT, NULL, false, false, pkey, pval, pskeyarray);
 }
 
 bool k2hdkc_ex_set_all(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
+{
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_all()\".");
+	return k2hdkc_full_set_all(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pval, vallength, pskeypck, skeypckcnt);
+}
+
+bool k2hdkc_full_set_all(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
 {
 	unsigned char*	psubkeys		= NULL;
 	size_t			subkeyslength	= 0UL;
@@ -1923,7 +2194,7 @@ bool k2hdkc_ex_set_all(const char* config, short ctlport, bool is_auto_rejoin, b
 		ERR_DKCPRN("Could not convert subkey pack to binary data.");
 		return false;
 	}
-	K2hdkcComSetAll*	pComObj = GetOtSlaveK2hdkcComSetAll(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	K2hdkcComSetAll*	pComObj = GetOtSlaveK2hdkcComSetAll(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullSetAll(pComObj, pkey, keylength, pval, vallength, psubkeys, subkeyslength);
 	if(!result){
 		ERR_DKCPRN("Failed to set subkeys.");
@@ -1935,13 +2206,19 @@ bool k2hdkc_ex_set_all(const char* config, short ctlport, bool is_auto_rejoin, b
 
 bool k2hdkc_ex_set_str_all(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, const char** pskeyarray)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_str_all()\".");
+	return k2hdkc_full_set_str_all(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, pval, pskeyarray);
+}
+
+bool k2hdkc_full_set_str_all(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, const char** pskeyarray)
+{
 	unsigned char*	psubkeys		= NULL;
 	size_t			subkeyslength	= 0UL;
 	if(!K2hdkcCvtStringArrayToSubkeys(pskeyarray, &psubkeys, &subkeyslength)){
 		ERR_DKCPRN("Could not convert subkey pack to binary data.");
 		return false;
 	}
-	K2hdkcComSetAll*	pComObj = GetOtSlaveK2hdkcComSetAll(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	K2hdkcComSetAll*	pComObj = GetOtSlaveK2hdkcComSetAll(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullSetAll(pComObj, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pval), (pval ? strlen(pval) + 1 : 0), psubkeys, subkeyslength);
 	if(!result){
 		ERR_DKCPRN("Failed to set subkeys.");
@@ -2009,17 +2286,23 @@ bool k2hdkc_pm_set_str_all(k2hdkc_chmpx_h handle, const char* pkey, const char* 
 
 bool k2hdkc_set_all_wa(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_set_all_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, pval, vallength, pskeypck, skeypckcnt, encpass, expire);
+	return k2hdkc_full_set_all_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, pval, vallength, pskeypck, skeypckcnt, encpass, expire);
 }
 
 bool k2hdkc_set_str_all_wa(const char* config, const char* pkey, const char* pval, const char** pskeyarray, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_set_str_all_wa(config, CHM_INVALID_PORT, false, false, pkey, pval, pskeyarray, encpass, expire);
+	return k2hdkc_full_set_str_all_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, pval, pskeyarray, encpass, expire);
 }
 
 bool k2hdkc_ex_set_all_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt, const char* encpass, const time_t* expire)
 {
-	k2hdkc_chmpx_h	handle = k2hdkc_open_chmpx_ex(config, ctlport, is_auto_rejoin, no_giveup_rejoin, true);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_all_wa()\".");
+	return k2hdkc_full_set_all_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pval, vallength, pskeypck, skeypckcnt, encpass, expire);
+}
+
+bool k2hdkc_full_set_all_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt, const char* encpass, const time_t* expire)
+{
+	k2hdkc_chmpx_h	handle = k2hdkc_open_chmpx_full(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, true);
 	if(K2HDKC_INVALID_HANDLE == handle){
 		ERR_DKCPRN("Could not open(join) chmpx msgid on slave node.");
 		return false;
@@ -2036,7 +2319,13 @@ bool k2hdkc_ex_set_all_wa(const char* config, short ctlport, bool is_auto_rejoin
 
 bool k2hdkc_ex_set_str_all_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, const char** pskeyarray, const char* encpass, const time_t* expire)
 {
-	k2hdkc_chmpx_h	handle = k2hdkc_open_chmpx_ex(config, ctlport, is_auto_rejoin, no_giveup_rejoin, true);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_set_str_all_wa()\".");
+	return k2hdkc_full_set_str_all_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, pval, pskeyarray, encpass, expire);
+}
+
+bool k2hdkc_full_set_str_all_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, const char** pskeyarray, const char* encpass, const time_t* expire)
+{
+	k2hdkc_chmpx_h	handle = k2hdkc_open_chmpx_full(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, true);
 	if(K2HDKC_INVALID_HANDLE == handle){
 		ERR_DKCPRN("Could not open(join) chmpx msgid on slave node.");
 		return false;
@@ -2091,17 +2380,23 @@ static bool K2hdkcFullDel(K2hdkcComDel* pcomobj, const unsigned char* pkey, size
 
 bool k2hdkc_remove_all(const char* config, const unsigned char* pkey, size_t keylength)
 {
-	return k2hdkc_ex_remove_all(config, CHM_INVALID_PORT, false, false, pkey, keylength);
+	return k2hdkc_full_remove_all(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength);
 }
 
 bool k2hdkc_remove_str_all(const char* config, const char* pkey)
 {
-	return k2hdkc_ex_remove_str_all(config, CHM_INVALID_PORT, false, false, pkey);
+	return k2hdkc_full_remove_str_all(config, CHM_INVALID_PORT, NULL, false, false, pkey);
 }
 
 bool k2hdkc_ex_remove_all(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
 {
-	K2hdkcComDel*	pComObj = GetOtSlaveK2hdkcComDel(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_remove_all()\".");
+	return k2hdkc_full_remove_all(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength);
+}
+
+bool k2hdkc_full_remove_all(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
+{
+	K2hdkcComDel*	pComObj = GetOtSlaveK2hdkcComDel(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool			result	= K2hdkcFullDel(pComObj, pkey, keylength, true);
 	if(!result){
 		ERR_DKCPRN("Failed to remove all.");
@@ -2112,7 +2407,13 @@ bool k2hdkc_ex_remove_all(const char* config, short ctlport, bool is_auto_rejoin
 
 bool k2hdkc_ex_remove_str_all(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
 {
-	return k2hdkc_ex_remove_all(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0));
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_remove_str_all()\".");
+	return k2hdkc_full_remove_str_all(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey);
+}
+
+bool k2hdkc_full_remove_str_all(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+{
+	return k2hdkc_full_remove_all(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0));
 }
 
 bool k2hdkc_pm_remove_all(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength)
@@ -2143,17 +2444,23 @@ bool k2hdkc_pm_remove_str_all(k2hdkc_chmpx_h handle, const char* pkey)
 
 bool k2hdkc_remove(const char* config, const unsigned char* pkey, size_t keylength)
 {
-	return k2hdkc_ex_remove(config, CHM_INVALID_PORT, false, false, pkey, keylength);
+	return k2hdkc_full_remove(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength);
 }
 
 bool k2hdkc_remove_str(const char* config, const char* pkey)
 {
-	return k2hdkc_ex_remove_str(config, CHM_INVALID_PORT, false, false, pkey);
+	return k2hdkc_full_remove_str(config, CHM_INVALID_PORT, NULL, false, false, pkey);
 }
 
 bool k2hdkc_ex_remove(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
 {
-	K2hdkcComDel*	pComObj = GetOtSlaveK2hdkcComDel(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_remove()\".");
+	return k2hdkc_full_remove(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength);
+}
+
+bool k2hdkc_full_remove(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
+{
+	K2hdkcComDel*	pComObj = GetOtSlaveK2hdkcComDel(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool			result	= K2hdkcFullDel(pComObj, pkey, keylength, false);
 	if(!result){
 		ERR_DKCPRN("Failed to remove key.");
@@ -2164,7 +2471,13 @@ bool k2hdkc_ex_remove(const char* config, short ctlport, bool is_auto_rejoin, bo
 
 bool k2hdkc_ex_remove_str(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
 {
-	return k2hdkc_ex_remove(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0));
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_remove_str()\".");
+	return k2hdkc_full_remove_str(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey);
+}
+
+bool k2hdkc_full_remove_str(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+{
+	return k2hdkc_full_remove(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0));
 }
 
 bool k2hdkc_pm_remove(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength)
@@ -2207,17 +2520,23 @@ static bool K2hdkcFullDelSubkey(K2hdkcComDelSubkey* pcomobj, const unsigned char
 
 bool k2hdkc_remove_subkey(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
 {
-	return k2hdkc_ex_remove_subkey(config, CHM_INVALID_PORT, false, false, pkey, keylength, psubkey, subkeylength, is_nest);
+	return k2hdkc_full_remove_subkey(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, psubkey, subkeylength, is_nest);
 }
 
 bool k2hdkc_remove_str_subkey(const char* config, const char* pkey, const char* psubkey, bool is_nest)
 {
-	return k2hdkc_ex_remove_str_subkey(config, CHM_INVALID_PORT, false, false, pkey, psubkey, is_nest);
+	return k2hdkc_full_remove_str_subkey(config, CHM_INVALID_PORT, NULL, false, false, pkey, psubkey, is_nest);
 }
 
 bool k2hdkc_ex_remove_subkey(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
 {
-	K2hdkcComDelSubkey*	pComObj = GetOtSlaveK2hdkcComDelSubkey(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_remove_subkey()\".");
+	return k2hdkc_full_remove_subkey(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, psubkey, subkeylength, is_nest);
+}
+
+bool k2hdkc_full_remove_subkey(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
+{
+	K2hdkcComDelSubkey*	pComObj = GetOtSlaveK2hdkcComDelSubkey(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullDelSubkey(pComObj, pkey, keylength, psubkey, subkeylength, is_nest, true);
 	if(!result){
 		ERR_DKCPRN("Failed to remove subkey.");
@@ -2228,7 +2547,13 @@ bool k2hdkc_ex_remove_subkey(const char* config, short ctlport, bool is_auto_rej
 
 bool k2hdkc_ex_remove_str_subkey(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, bool is_nest)
 {
-	return k2hdkc_ex_remove_subkey(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(psubkey), (psubkey ? strlen(psubkey) + 1 : 0), is_nest);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_remove_str_subkey()\".");
+	return k2hdkc_full_remove_str_subkey(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, psubkey, is_nest);
+}
+
+bool k2hdkc_full_remove_str_subkey(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, bool is_nest)
+{
+	return k2hdkc_full_remove_subkey(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(psubkey), (psubkey ? strlen(psubkey) + 1 : 0), is_nest);
 }
 
 bool k2hdkc_pm_remove_subkey(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
@@ -2259,17 +2584,23 @@ bool k2hdkc_pm_remove_str_subkey(k2hdkc_chmpx_h handle, const char* pkey, const 
 
 bool k2hdkc_remove_subkey_np(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
 {
-	return k2hdkc_ex_remove_subkey_np(config, CHM_INVALID_PORT, false, false, pkey, keylength, psubkey, subkeylength, is_nest);
+	return k2hdkc_full_remove_subkey_np(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, psubkey, subkeylength, is_nest);
 }
 
 bool k2hdkc_remove_str_subkey_np(const char* config, const char* pkey, const char* psubkey, bool is_nest)
 {
-	return k2hdkc_ex_remove_str_subkey_np(config, CHM_INVALID_PORT, false, false, pkey, psubkey, is_nest);
+	return k2hdkc_full_remove_str_subkey_np(config, CHM_INVALID_PORT, NULL, false, false, pkey, psubkey, is_nest);
 }
 
 bool k2hdkc_ex_remove_subkey_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
 {
-	K2hdkcComDelSubkey*	pComObj = GetOtSlaveK2hdkcComDelSubkey(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_remove_subkey_np()\".");
+	return k2hdkc_full_remove_subkey_np(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, psubkey, subkeylength, is_nest);
+}
+
+bool k2hdkc_full_remove_subkey_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
+{
+	K2hdkcComDelSubkey*	pComObj = GetOtSlaveK2hdkcComDelSubkey(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullDelSubkey(pComObj, pkey, keylength, psubkey, subkeylength, is_nest, false);
 	if(!result){
 		ERR_DKCPRN("Failed to remove subkey.");
@@ -2280,7 +2611,13 @@ bool k2hdkc_ex_remove_subkey_np(const char* config, short ctlport, bool is_auto_
 
 bool k2hdkc_ex_remove_str_subkey_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, bool is_nest)
 {
-	return k2hdkc_ex_remove_subkey_np(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(psubkey), (psubkey ? strlen(psubkey) + 1 : 0), is_nest);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_remove_str_subkey_np()\".");
+	return k2hdkc_full_remove_str_subkey_np(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, psubkey, is_nest);
+}
+
+bool k2hdkc_full_remove_str_subkey_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, bool is_nest)
+{
+	return k2hdkc_full_remove_subkey_np(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(psubkey), (psubkey ? strlen(psubkey) + 1 : 0), is_nest);
 }
 
 bool k2hdkc_pm_remove_subkey_np(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
@@ -2333,12 +2670,24 @@ bool k2hdkc_rename_str(const char* config, const char* poldkey, const char* pnew
 
 bool k2hdkc_ex_rename(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength)
 {
-	return k2hdkc_ex_rename_with_parent(config, ctlport, is_auto_rejoin, no_giveup_rejoin, poldkey, oldkeylength, pnewkey, newkeylength, NULL, 0UL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_rename()\".");
+	return k2hdkc_full_rename(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, poldkey, oldkeylength, pnewkey, newkeylength);
+}
+
+bool k2hdkc_full_rename(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength)
+{
+	return k2hdkc_full_rename_with_parent(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, poldkey, oldkeylength, pnewkey, newkeylength, NULL, 0UL);
 }
 
 bool k2hdkc_ex_rename_str(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey)
 {
-	return k2hdkc_ex_rename_with_parent_str(config, ctlport, is_auto_rejoin, no_giveup_rejoin, poldkey, pnewkey, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_rename_str()\".");
+	return k2hdkc_full_rename_str(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, poldkey, pnewkey);
+}
+
+bool k2hdkc_full_rename_str(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey)
+{
+	return k2hdkc_full_rename_with_parent_str(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, poldkey, pnewkey, NULL);
 }
 
 bool k2hdkc_pm_rename(k2hdkc_chmpx_h handle, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength)
@@ -2363,12 +2712,24 @@ bool k2hdkc_rename_str_wa(const char* config, const char* poldkey, const char* p
 
 bool k2hdkc_ex_rename_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_rename_with_parent_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, poldkey, oldkeylength, pnewkey, newkeylength, NULL, 0UL, checkattr, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_rename_wa()\".");
+	return k2hdkc_full_rename_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, poldkey, oldkeylength, pnewkey, newkeylength, checkattr, encpass, expire);
+}
+
+bool k2hdkc_full_rename_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, bool checkattr, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_rename_with_parent_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, poldkey, oldkeylength, pnewkey, newkeylength, NULL, 0UL, checkattr, encpass, expire);
 }
 
 bool k2hdkc_ex_rename_str_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_rename_with_parent_str_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, poldkey, pnewkey, NULL, checkattr, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_rename_str_wa()\".");
+	return k2hdkc_full_rename_str_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, poldkey, pnewkey, checkattr, encpass, expire);
+}
+
+bool k2hdkc_full_rename_str_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey, bool checkattr, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_rename_with_parent_str_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, poldkey, pnewkey, NULL, checkattr, encpass, expire);
 }
 
 bool k2hdkc_pm_rename_wa(k2hdkc_chmpx_h handle, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, bool checkattr, const char* encpass, const time_t* expire)
@@ -2394,12 +2755,24 @@ bool k2hdkc_rename_with_parent_str(const char* config, const char* poldkey, cons
 
 bool k2hdkc_ex_rename_with_parent(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength)
 {
-	return k2hdkc_ex_rename_with_parent_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, poldkey, oldkeylength, pnewkey, newkeylength, pparentkey, parentkeylength, true, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_rename_with_parent()\".");
+	return k2hdkc_full_rename_with_parent(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, poldkey, oldkeylength, pnewkey, newkeylength, pparentkey, parentkeylength);
+}
+
+bool k2hdkc_full_rename_with_parent(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength)
+{
+	return k2hdkc_full_rename_with_parent_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, poldkey, oldkeylength, pnewkey, newkeylength, pparentkey, parentkeylength, true, NULL, NULL);
 }
 
 bool k2hdkc_ex_rename_with_parent_str(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey, const char* pparentkey)
 {
-	return k2hdkc_ex_rename_with_parent_str_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, poldkey, pnewkey, pparentkey, true, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_rename_with_parent_str()\".");
+	return k2hdkc_full_rename_with_parent_str(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, poldkey, pnewkey, pparentkey);
+}
+
+bool k2hdkc_full_rename_with_parent_str(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey, const char* pparentkey)
+{
+	return k2hdkc_full_rename_with_parent_str_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, poldkey, pnewkey, pparentkey, true, NULL, NULL);
 }
 
 bool k2hdkc_pm_rename_with_parent(k2hdkc_chmpx_h handle, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength)
@@ -2414,17 +2787,23 @@ bool k2hdkc_pm_rename_with_parent_str(k2hdkc_chmpx_h handle, const char* poldkey
 
 bool k2hdkc_rename_with_parent_wa(const char* config, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_rename_with_parent_wa(config, CHM_INVALID_PORT, false, false, poldkey, oldkeylength, pnewkey, newkeylength, pparentkey, parentkeylength, checkattr, encpass, expire);
+	return k2hdkc_full_rename_with_parent_wa(config, CHM_INVALID_PORT, NULL, false, false, poldkey, oldkeylength, pnewkey, newkeylength, pparentkey, parentkeylength, checkattr, encpass, expire);
 }
 
 bool k2hdkc_rename_with_parent_str_wa(const char* config, const char* poldkey, const char* pnewkey, const char* pparentkey, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_rename_with_parent_str_wa(config, CHM_INVALID_PORT, false, false, poldkey, pnewkey, pparentkey, checkattr, encpass, expire);
+	return k2hdkc_full_rename_with_parent_str_wa(config, CHM_INVALID_PORT, NULL, false, false, poldkey, pnewkey, pparentkey, checkattr, encpass, expire);
 }
 
 bool k2hdkc_ex_rename_with_parent_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength, bool checkattr, const char* encpass, const time_t* expire)
 {
-	K2hdkcComRen*	pComObj = GetOtSlaveK2hdkcComRen(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_rename_with_parent_wa()\".");
+	return k2hdkc_full_rename_with_parent_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, poldkey, oldkeylength, pnewkey, newkeylength, pparentkey, parentkeylength, checkattr, encpass, expire);
+}
+
+bool k2hdkc_full_rename_with_parent_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength, bool checkattr, const char* encpass, const time_t* expire)
+{
+	K2hdkcComRen*	pComObj = GetOtSlaveK2hdkcComRen(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool			result	= K2hdkcFullRen(pComObj, poldkey, oldkeylength, pnewkey, newkeylength, pparentkey, parentkeylength, checkattr, encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to rename key.");
@@ -2435,7 +2814,13 @@ bool k2hdkc_ex_rename_with_parent_wa(const char* config, short ctlport, bool is_
 
 bool k2hdkc_ex_rename_with_parent_str_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey, const char* pparentkey, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_rename_with_parent_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(poldkey), (poldkey ? strlen(poldkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pnewkey), (pnewkey ? strlen(pnewkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pparentkey), (pparentkey ? strlen(pparentkey) + 1 : 0), checkattr, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_rename_with_parent_str_wa()\".");
+	return k2hdkc_full_rename_with_parent_str_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, poldkey, pnewkey, pparentkey, checkattr, encpass, expire);
+}
+
+bool k2hdkc_full_rename_with_parent_str_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey, const char* pparentkey, bool checkattr, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_rename_with_parent_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(poldkey), (poldkey ? strlen(poldkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pnewkey), (pnewkey ? strlen(pnewkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pparentkey), (pparentkey ? strlen(pparentkey) + 1 : 0), checkattr, encpass, expire);
 }
 
 bool k2hdkc_pm_rename_with_parent_wa(k2hdkc_chmpx_h handle, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength, bool checkattr, const char* encpass, const time_t* expire)
@@ -2500,12 +2885,24 @@ bool k2hdkc_q_str_push(const char* config, const char* pprefix, const char* pval
 
 bool k2hdkc_ex_q_push(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo)
 {
-	return k2hdkc_ex_q_push_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, pval, vallength, is_fifo, true, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_q_push()\".");
+	return k2hdkc_full_q_push(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, pval, vallength, is_fifo);
+}
+
+bool k2hdkc_full_q_push(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo)
+{
+	return k2hdkc_full_q_push_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, pval, vallength, is_fifo, true, NULL, NULL);
 }
 
 bool k2hdkc_ex_q_str_push(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pval, bool is_fifo)
 {
-	return k2hdkc_ex_q_str_push_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pprefix, pval, is_fifo, true, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_q_str_push()\".");
+	return k2hdkc_full_q_str_push(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, pval, is_fifo);
+}
+
+bool k2hdkc_full_q_str_push(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pval, bool is_fifo)
+{
+	return k2hdkc_full_q_str_push_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pprefix, pval, is_fifo, true, NULL, NULL);
 }
 
 bool k2hdkc_pm_q_push(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo)
@@ -2520,17 +2917,23 @@ bool k2hdkc_pm_q_str_push(k2hdkc_chmpx_h handle, const char* pprefix, const char
 
 bool k2hdkc_q_push_wa(const char* config, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_q_push_wa(config, CHM_INVALID_PORT, false, false, pprefix, prefixlength, pval, vallength, is_fifo, checkattr, encpass, expire);
+	return k2hdkc_full_q_push_wa(config, CHM_INVALID_PORT, NULL, false, false, pprefix, prefixlength, pval, vallength, is_fifo, checkattr, encpass, expire);
 }
 
 bool k2hdkc_q_str_push_wa(const char* config, const char* pprefix, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_q_str_push_wa(config, CHM_INVALID_PORT, false, false, pprefix, pval, is_fifo, checkattr, encpass, expire);
+	return k2hdkc_full_q_str_push_wa(config, CHM_INVALID_PORT, NULL, false, false, pprefix, pval, is_fifo, checkattr, encpass, expire);
 }
 
 bool k2hdkc_ex_q_push_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
 {
-	K2hdkcComQPush*	pComObj = GetOtSlaveK2hdkcComQPush(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_q_push_wa()\".");
+	return k2hdkc_full_q_push_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, pval, vallength, is_fifo, checkattr, encpass, expire);
+}
+
+bool k2hdkc_full_q_push_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
+{
+	K2hdkcComQPush*	pComObj = GetOtSlaveK2hdkcComQPush(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool			result	= K2hdkcFullQPush(pComObj, pprefix, prefixlength, pval, vallength, is_fifo, checkattr, encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to push queue.");
@@ -2541,7 +2944,13 @@ bool k2hdkc_ex_q_push_wa(const char* config, short ctlport, bool is_auto_rejoin,
 
 bool k2hdkc_ex_q_str_push_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_q_push_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pprefix), (pprefix ? strlen(pprefix) + 1 : 0), reinterpret_cast<const unsigned char*>(pval), (pval ? strlen(pval) + 1 : 0), is_fifo, checkattr, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_q_str_push_wa()\".");
+	return k2hdkc_full_q_str_push_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, pval, is_fifo, checkattr, encpass, expire);
+}
+
+bool k2hdkc_full_q_str_push_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_q_push_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pprefix), (pprefix ? strlen(pprefix) + 1 : 0), reinterpret_cast<const unsigned char*>(pval), (pval ? strlen(pval) + 1 : 0), is_fifo, checkattr, encpass, expire);
 }
 
 bool k2hdkc_pm_q_push_wa(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
@@ -2582,12 +2991,24 @@ bool k2hdkc_keyq_str_push(const char* config, const char* pprefix, const char* p
 
 bool k2hdkc_ex_keyq_push(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo)
 {
-	return k2hdkc_ex_keyq_push_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, pkey, keylength, pval, vallength, is_fifo, true, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_keyq_push()\".");
+	return k2hdkc_full_keyq_push(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, pkey, keylength, pval, vallength, is_fifo);
+}
+
+bool k2hdkc_full_keyq_push(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo)
+{
+	return k2hdkc_full_keyq_push_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, pkey, keylength, pval, vallength, is_fifo, true, NULL, NULL);
 }
 
 bool k2hdkc_ex_keyq_str_push(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pkey, const char* pval, bool is_fifo)
 {
-	return k2hdkc_ex_keyq_str_push_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pprefix, pkey, pval, is_fifo, true, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_keyq_str_push()\".");
+	return k2hdkc_full_keyq_str_push(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, pkey, pval, is_fifo);
+}
+
+bool k2hdkc_full_keyq_str_push(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pkey, const char* pval, bool is_fifo)
+{
+	return k2hdkc_full_keyq_str_push_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pprefix, pkey, pval, is_fifo, true, NULL, NULL);
 }
 
 bool k2hdkc_pm_keyq_push(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo)
@@ -2602,17 +3023,23 @@ bool k2hdkc_pm_keyq_str_push(k2hdkc_chmpx_h handle, const char* pprefix, const c
 
 bool k2hdkc_keyq_push_wa(const char* config, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_keyq_push_wa(config, CHM_INVALID_PORT, false, false, pprefix, prefixlength, pkey, keylength, pval, vallength, is_fifo, checkattr, encpass, expire);
+	return k2hdkc_full_keyq_push_wa(config, CHM_INVALID_PORT, NULL, false, false, pprefix, prefixlength, pkey, keylength, pval, vallength, is_fifo, checkattr, encpass, expire);
 }
 
 bool k2hdkc_keyq_str_push_wa(const char* config, const char* pprefix, const char* pkey, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_keyq_str_push_wa(config, CHM_INVALID_PORT, false, false, pprefix, pkey, pval, is_fifo, checkattr, encpass, expire);
+	return k2hdkc_full_keyq_str_push_wa(config, CHM_INVALID_PORT, NULL, false, false, pprefix, pkey, pval, is_fifo, checkattr, encpass, expire);
 }
 
 bool k2hdkc_ex_keyq_push_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
 {
-	K2hdkcComQPush*	pComObj = GetOtSlaveK2hdkcComQPush(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_keyq_push_wa()\".");
+	return k2hdkc_full_keyq_push_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, pkey, keylength, pval, vallength, is_fifo, checkattr, encpass, expire);
+}
+
+bool k2hdkc_full_keyq_push_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
+{
+	K2hdkcComQPush*	pComObj = GetOtSlaveK2hdkcComQPush(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool			result	= K2hdkcFullKeyQPush(pComObj, pprefix, prefixlength, pkey, keylength, pval, vallength, is_fifo, checkattr, encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to push key queue.");
@@ -2623,7 +3050,13 @@ bool k2hdkc_ex_keyq_push_wa(const char* config, short ctlport, bool is_auto_rejo
 
 bool k2hdkc_ex_keyq_str_push_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pkey, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_keyq_push_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pprefix), (pprefix ? strlen(pprefix) + 1 : 0), reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pval), (pval ? strlen(pval) + 1 : 0), is_fifo, checkattr, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_keyq_str_push_wa()\".");
+	return k2hdkc_full_keyq_str_push_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, pkey, pval, is_fifo, checkattr, encpass, expire);
+}
+
+bool k2hdkc_full_keyq_str_push_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pkey, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_keyq_push_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pprefix), (pprefix ? strlen(pprefix) + 1 : 0), reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), reinterpret_cast<const unsigned char*>(pval), (pval ? strlen(pval) + 1 : 0), is_fifo, checkattr, encpass, expire);
 }
 
 bool k2hdkc_pm_keyq_push_wa(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
@@ -2715,12 +3148,24 @@ bool k2hdkc_q_str_pop(const char* config, const char* pprefix, bool is_fifo, con
 
 bool k2hdkc_ex_q_pop(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, unsigned char** ppval, size_t* pvallength)
 {
-	return k2hdkc_ex_q_pop_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, is_fifo, NULL, ppval, pvallength);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_q_pop()\".");
+	return k2hdkc_full_q_pop(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, is_fifo, ppval, pvallength);
+}
+
+bool k2hdkc_full_q_pop(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, unsigned char** ppval, size_t* pvallength)
+{
+	return k2hdkc_full_q_pop_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, is_fifo, NULL, ppval, pvallength);
 }
 
 bool k2hdkc_ex_q_str_pop(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char** ppval)
 {
-	return k2hdkc_ex_q_str_pop_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pprefix, is_fifo, NULL, ppval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_q_str_pop()\".");
+	return k2hdkc_full_q_str_pop(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, is_fifo, ppval);
+}
+
+bool k2hdkc_full_q_str_pop(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char** ppval)
+{
+	return k2hdkc_full_q_str_pop_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pprefix, is_fifo, NULL, ppval);
 }
 
 bool k2hdkc_pm_q_pop(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, unsigned char** ppval, size_t* pvallength)
@@ -2735,17 +3180,23 @@ bool k2hdkc_pm_q_str_pop(k2hdkc_chmpx_h handle, const char* pprefix, bool is_fif
 
 bool k2hdkc_q_pop_wp(const char* config, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, const char* encpass, unsigned char** ppval, size_t* pvallength)
 {
-	return k2hdkc_ex_q_pop_wp(config, CHM_INVALID_PORT, false, false, pprefix, prefixlength, is_fifo, encpass, ppval, pvallength);
+	return k2hdkc_full_q_pop_wp(config, CHM_INVALID_PORT, NULL, false, false, pprefix, prefixlength, is_fifo, encpass, ppval, pvallength);
 }
 
 bool k2hdkc_q_str_pop_wp(const char* config, const char* pprefix, bool is_fifo, const char* encpass, const char** ppval)
 {
-	return k2hdkc_ex_q_str_pop_wp(config, CHM_INVALID_PORT, false, false, pprefix, is_fifo, encpass, ppval);
+	return k2hdkc_full_q_str_pop_wp(config, CHM_INVALID_PORT, NULL, false, false, pprefix, is_fifo, encpass, ppval);
 }
 
 bool k2hdkc_ex_q_pop_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, const char* encpass, unsigned char** ppval, size_t* pvallength)
 {
-	K2hdkcComQPop*	pComObj = GetOtSlaveK2hdkcComQPop(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_q_pop_wp()\".");
+	return k2hdkc_full_q_pop_wp(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, is_fifo, encpass, ppval, pvallength);
+}
+
+bool k2hdkc_full_q_pop_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, const char* encpass, unsigned char** ppval, size_t* pvallength)
+{
+	K2hdkcComQPop*	pComObj = GetOtSlaveK2hdkcComQPop(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool			result	= K2hdkcFullQPop(pComObj, pprefix, prefixlength, is_fifo, encpass, ppval, pvallength);
 	if(!result){
 		ERR_DKCPRN("Failed to pop queue.");
@@ -2756,13 +3207,19 @@ bool k2hdkc_ex_q_pop_wp(const char* config, short ctlport, bool is_auto_rejoin, 
 
 bool k2hdkc_ex_q_str_pop_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char* encpass, const char** ppval)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_q_str_pop_wp()\".");
+	return k2hdkc_full_q_str_pop_wp(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, is_fifo, encpass, ppval);
+}
+
+bool k2hdkc_full_q_str_pop_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char* encpass, const char** ppval)
+{
 	if(!ppval){
 		ERR_DKCPRN("Parameter is wrong.");
 		return false;
 	}
 	unsigned char*	pval		= NULL;
 	size_t			vallength	= 0UL;
-	if(!k2hdkc_ex_q_pop_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pprefix), (pprefix ? strlen(pprefix) + 1 : 0), is_fifo, encpass, &pval, &vallength)){
+	if(!k2hdkc_full_q_pop_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pprefix), (pprefix ? strlen(pprefix) + 1 : 0), is_fifo, encpass, &pval, &vallength)){
 		return false;
 	}
 	if(pval && 0 < vallength){
@@ -2825,12 +3282,24 @@ bool k2hdkc_keyq_str_pop(const char* config, const char* pprefix, bool is_fifo, 
 
 bool k2hdkc_ex_keyq_pop(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, unsigned char** ppkey, size_t* pkeylength, unsigned char** ppval, size_t* pvallength)
 {
-	return k2hdkc_ex_keyq_pop_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, is_fifo, NULL, ppkey, pkeylength, ppval, pvallength);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_keyq_pop()\".");
+	return k2hdkc_full_keyq_pop(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, is_fifo, ppkey, pkeylength, ppval, pvallength);
+}
+
+bool k2hdkc_full_keyq_pop(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, unsigned char** ppkey, size_t* pkeylength, unsigned char** ppval, size_t* pvallength)
+{
+	return k2hdkc_full_keyq_pop_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, is_fifo, NULL, ppkey, pkeylength, ppval, pvallength);
 }
 
 bool k2hdkc_ex_keyq_str_pop(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char** ppkey, const char** ppval)
 {
-	return k2hdkc_ex_keyq_str_pop_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pprefix, is_fifo, NULL, ppkey, ppval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_keyq_str_pop()\".");
+	return k2hdkc_full_keyq_str_pop(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, is_fifo, ppkey, ppval);
+}
+
+bool k2hdkc_full_keyq_str_pop(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char** ppkey, const char** ppval)
+{
+	return k2hdkc_full_keyq_str_pop_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pprefix, is_fifo, NULL, ppkey, ppval);
 }
 
 bool k2hdkc_pm_keyq_pop(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, unsigned char** ppkey, size_t* pkeylength, unsigned char** ppval, size_t* pvallength)
@@ -2845,17 +3314,23 @@ bool k2hdkc_pm_keyq_str_pop(k2hdkc_chmpx_h handle, const char* pprefix, bool is_
 
 bool k2hdkc_keyq_pop_wp(const char* config, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, const char* encpass, unsigned char** ppkey, size_t* pkeylength, unsigned char** ppval, size_t* pvallength)
 {
-	return k2hdkc_ex_keyq_pop_wp(config, CHM_INVALID_PORT, false, false, pprefix, prefixlength, is_fifo, encpass, ppkey, pkeylength, ppval, pvallength);
+	return k2hdkc_full_keyq_pop_wp(config, CHM_INVALID_PORT, NULL, false, false, pprefix, prefixlength, is_fifo, encpass, ppkey, pkeylength, ppval, pvallength);
 }
 
 bool k2hdkc_keyq_str_pop_wp(const char* config, const char* pprefix, bool is_fifo, const char* encpass, const char** ppkey, const char** ppval)
 {
-	return k2hdkc_ex_keyq_str_pop_wp(config, CHM_INVALID_PORT, false, false, pprefix, is_fifo, encpass, ppkey, ppval);
+	return k2hdkc_full_keyq_str_pop_wp(config, CHM_INVALID_PORT, NULL, false, false, pprefix, is_fifo, encpass, ppkey, ppval);
 }
 
 bool k2hdkc_ex_keyq_pop_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, const char* encpass, unsigned char** ppkey, size_t* pkeylength, unsigned char** ppval, size_t* pvallength)
 {
-	K2hdkcComQPop*	pComObj = GetOtSlaveK2hdkcComQPop(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_keyq_pop_wp()\".");
+	return k2hdkc_full_keyq_pop_wp(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, is_fifo, encpass, ppkey, pkeylength, ppval, pvallength);
+}
+
+bool k2hdkc_full_keyq_pop_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, const char* encpass, unsigned char** ppkey, size_t* pkeylength, unsigned char** ppval, size_t* pvallength)
+{
+	K2hdkcComQPop*	pComObj = GetOtSlaveK2hdkcComQPop(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool			result	= K2hdkcFullKeyQPop(pComObj, pprefix, prefixlength, is_fifo, encpass, ppkey, pkeylength, ppval, pvallength);
 	if(!result){
 		ERR_DKCPRN("Failed to pop key queue.");
@@ -2866,6 +3341,12 @@ bool k2hdkc_ex_keyq_pop_wp(const char* config, short ctlport, bool is_auto_rejoi
 
 bool k2hdkc_ex_keyq_str_pop_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char* encpass, const char** ppkey, const char** ppval)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_keyq_str_pop_wp()\".");
+	return k2hdkc_full_keyq_str_pop_wp(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, is_fifo, encpass, ppkey, ppval);
+}
+
+bool k2hdkc_full_keyq_str_pop_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char* encpass, const char** ppkey, const char** ppval)
+{
 	if(!ppkey || !ppval){
 		ERR_DKCPRN("Parameter is wrong.");
 		return false;
@@ -2874,7 +3355,7 @@ bool k2hdkc_ex_keyq_str_pop_wp(const char* config, short ctlport, bool is_auto_r
 	size_t			keylength	= 0UL;
 	unsigned char*	pval		= NULL;
 	size_t			vallength	= 0UL;
-	if(!k2hdkc_ex_keyq_pop_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pprefix), (pprefix ? strlen(pprefix) + 1 : 0), is_fifo, encpass, &pkey, &keylength, &pval, &vallength)){
+	if(!k2hdkc_full_keyq_pop_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pprefix), (pprefix ? strlen(pprefix) + 1 : 0), is_fifo, encpass, &pkey, &keylength, &pval, &vallength)){
 		return false;
 	}
 	if(pkey && 0 < keylength){
@@ -2970,12 +3451,24 @@ bool k2hdkc_q_str_remove(const char* config, const char* pprefix, int count, boo
 
 bool k2hdkc_ex_q_remove(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
 {
-	return k2hdkc_ex_q_remove_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, count, is_fifo, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_q_remove()\".");
+	return k2hdkc_full_q_remove(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, count, is_fifo);
+}
+
+bool k2hdkc_full_q_remove(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
+{
+	return k2hdkc_full_q_remove_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, count, is_fifo, NULL);
 }
 
 bool k2hdkc_ex_q_str_remove(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo)
 {
-	return k2hdkc_ex_q_str_remove_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pprefix, count, is_fifo, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_q_str_remove()\".");
+	return k2hdkc_full_q_str_remove(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, count, is_fifo);
+}
+
+bool k2hdkc_full_q_str_remove(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo)
+{
+	return k2hdkc_full_q_str_remove_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pprefix, count, is_fifo, NULL);
 }
 
 bool k2hdkc_pm_q_remove(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
@@ -2990,17 +3483,23 @@ bool k2hdkc_pm_q_str_remove(k2hdkc_chmpx_h handle, const char* pprefix, int coun
 
 bool k2hdkc_q_remove_wp(const char* config, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
 {
-	return k2hdkc_ex_q_remove_wp(config, CHM_INVALID_PORT, false, false, pprefix, prefixlength, count, is_fifo, encpass);
+	return k2hdkc_full_q_remove_wp(config, CHM_INVALID_PORT, NULL, false, false, pprefix, prefixlength, count, is_fifo, encpass);
 }
 
 bool k2hdkc_q_str_remove_wp(const char* config, const char* pprefix, int count, bool is_fifo, const char* encpass)
 {
-	return k2hdkc_ex_q_str_remove_wp(config, CHM_INVALID_PORT, false, false, pprefix, count, is_fifo, encpass);
+	return k2hdkc_full_q_str_remove_wp(config, CHM_INVALID_PORT, NULL, false, false, pprefix, count, is_fifo, encpass);
 }
 
 bool k2hdkc_ex_q_remove_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
 {
-	K2hdkcComQDel*	pComObj = GetOtSlaveK2hdkcComQDel(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_q_remove_wp()\".");
+	return k2hdkc_full_q_remove_wp(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, count, is_fifo, encpass);
+}
+
+bool k2hdkc_full_q_remove_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
+{
+	K2hdkcComQDel*	pComObj = GetOtSlaveK2hdkcComQDel(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool			result	= K2hdkcFullQDel(pComObj, pprefix, prefixlength, count, is_fifo, encpass);
 	if(!result){
 		ERR_DKCPRN("Failed to remove queue.");
@@ -3011,7 +3510,13 @@ bool k2hdkc_ex_q_remove_wp(const char* config, short ctlport, bool is_auto_rejoi
 
 bool k2hdkc_ex_q_str_remove_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo, const char* encpass)
 {
-	return k2hdkc_ex_q_remove_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pprefix), (pprefix ? strlen(pprefix) + 1 : 0), count, is_fifo, encpass);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_q_str_remove_wp()\".");
+	return k2hdkc_full_q_str_remove_wp(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, count, is_fifo, encpass);
+}
+
+bool k2hdkc_full_q_str_remove_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo, const char* encpass)
+{
+	return k2hdkc_full_q_remove_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pprefix), (pprefix ? strlen(pprefix) + 1 : 0), count, is_fifo, encpass);
 }
 
 bool k2hdkc_pm_q_remove_wp(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
@@ -3052,12 +3557,23 @@ bool k2hdkc_keyq_str_remove(const char* config, const char* pprefix, int count, 
 
 bool k2hdkc_ex_keyq_remove(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
 {
-	return k2hdkc_ex_keyq_remove_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, count, is_fifo, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_keyq_remove()\".");
+	return k2hdkc_full_keyq_remove(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, count, is_fifo);
 }
 
+bool k2hdkc_full_keyq_remove(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
+{
+	return k2hdkc_full_keyq_remove_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, count, is_fifo, NULL);
+}
 bool k2hdkc_ex_keyq_str_remove(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo)
 {
-	return k2hdkc_ex_keyq_str_remove_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pprefix, count, is_fifo, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_keyq_str_remove()\".");
+	return k2hdkc_full_keyq_str_remove(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, count, is_fifo);
+}
+
+bool k2hdkc_full_keyq_str_remove(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo)
+{
+	return k2hdkc_full_keyq_str_remove_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pprefix, count, is_fifo, NULL);
 }
 
 bool k2hdkc_pm_keyq_remove(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
@@ -3072,17 +3588,23 @@ bool k2hdkc_pm_keyq_str_remove(k2hdkc_chmpx_h handle, const char* pprefix, int c
 
 bool k2hdkc_keyq_remove_wp(const char* config, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
 {
-	return k2hdkc_ex_keyq_remove_wp(config, CHM_INVALID_PORT, false, false, pprefix, prefixlength, count, is_fifo, encpass);
+	return k2hdkc_full_keyq_remove_wp(config, CHM_INVALID_PORT, NULL, false, false, pprefix, prefixlength, count, is_fifo, encpass);
 }
 
 bool k2hdkc_keyq_str_remove_wp(const char* config, const char* pprefix, int count, bool is_fifo, const char* encpass)
 {
-	return k2hdkc_ex_keyq_str_remove_wp(config, CHM_INVALID_PORT, false, false, pprefix, count, is_fifo, encpass);
+	return k2hdkc_full_keyq_str_remove_wp(config, CHM_INVALID_PORT, NULL, false, false, pprefix, count, is_fifo, encpass);
 }
 
 bool k2hdkc_ex_keyq_remove_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
 {
-	K2hdkcComQDel*	pComObj = GetOtSlaveK2hdkcComQDel(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_keyq_remove_wp()\".");
+	return k2hdkc_full_keyq_remove_wp(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, prefixlength, count, is_fifo, encpass);
+}
+
+bool k2hdkc_full_keyq_remove_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
+{
+	K2hdkcComQDel*	pComObj = GetOtSlaveK2hdkcComQDel(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool			result	= K2hdkcFullKeyQDel(pComObj, pprefix, prefixlength, count, is_fifo, encpass);
 	if(!result){
 		ERR_DKCPRN("Failed to remove key queue.");
@@ -3093,7 +3615,13 @@ bool k2hdkc_ex_keyq_remove_wp(const char* config, short ctlport, bool is_auto_re
 
 bool k2hdkc_ex_keyq_str_remove_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo, const char* encpass)
 {
-	return k2hdkc_ex_keyq_remove_wp(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pprefix), (pprefix ? strlen(pprefix) + 1 : 0), count, is_fifo, encpass);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_keyq_str_remove_wp()\".");
+	return k2hdkc_full_keyq_str_remove_wp(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pprefix, count, is_fifo, encpass);
+}
+
+bool k2hdkc_full_keyq_str_remove_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo, const char* encpass)
+{
+	return k2hdkc_full_keyq_remove_wp(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pprefix), (pprefix ? strlen(pprefix) + 1 : 0), count, is_fifo, encpass);
 }
 
 bool k2hdkc_pm_keyq_remove_wp(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
@@ -3149,12 +3677,24 @@ bool k2hdkc_cas64_str_init(const char* config, const char* pkey, uint64_t val)
 
 bool k2hdkc_ex_cas64_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t val)
 {
-	return k2hdkc_ex_cas64_init_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas64_init()\".");
+	return k2hdkc_full_cas64_init(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val);
+}
+
+bool k2hdkc_full_cas64_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t val)
+{
+	return k2hdkc_full_cas64_init_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val, NULL, NULL);
 }
 
 bool k2hdkc_ex_cas64_str_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t val)
 {
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas64_str_init()\".");
 	return k2hdkc_ex_cas64_str_init_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, val, NULL, NULL);
+}
+
+bool k2hdkc_full_cas64_str_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t val)
+{
+	return k2hdkc_full_cas64_str_init_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, val, NULL, NULL);
 }
 
 bool k2hdkc_pm_cas64_init(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint64_t val)
@@ -3169,17 +3709,23 @@ bool k2hdkc_pm_cas64_str_init(k2hdkc_chmpx_h handle, const char* pkey, uint64_t 
 
 bool k2hdkc_cas64_init_wa(const char* config, const unsigned char* pkey, size_t keylength, uint64_t val, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas64_init_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, val, encpass, expire);
+	return k2hdkc_full_cas64_init_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, val, encpass, expire);
 }
 
 bool k2hdkc_cas64_str_init_wa(const char* config, const char* pkey, uint64_t val, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas64_str_init_wa(config, CHM_INVALID_PORT, false, false, pkey, val, encpass, expire);
+	return k2hdkc_full_cas64_str_init_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, val, encpass, expire);
 }
 
 bool k2hdkc_ex_cas64_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t val, const char* encpass, const time_t* expire)
 {
-	K2hdkcComCasInit*	pComObj = GetOtSlaveK2hdkcComCasInit(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas64_init_wa()\".");
+	return k2hdkc_full_cas64_init_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val, encpass, expire);
+}
+
+bool k2hdkc_full_cas64_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t val, const char* encpass, const time_t* expire)
+{
+	K2hdkcComCasInit*	pComObj = GetOtSlaveK2hdkcComCasInit(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasInit(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&val), sizeof(uint64_t), encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to initialize cas value.");
@@ -3190,7 +3736,13 @@ bool k2hdkc_ex_cas64_init_wa(const char* config, short ctlport, bool is_auto_rej
 
 bool k2hdkc_ex_cas64_str_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t val, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas64_init_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), val, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas64_str_init_wa()\".");
+	return k2hdkc_full_cas64_str_init_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, val, encpass, expire);
+}
+
+bool k2hdkc_full_cas64_str_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t val, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_cas64_init_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), val, encpass, expire);
 }
 
 bool k2hdkc_pm_cas64_init_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint64_t val, const char* encpass, const time_t* expire)
@@ -3231,12 +3783,24 @@ bool k2hdkc_cas32_str_init(const char* config, const char* pkey, uint32_t val)
 
 bool k2hdkc_ex_cas32_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t val)
 {
-	return k2hdkc_ex_cas32_init_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas32_init()\".");
+	return k2hdkc_full_cas32_init(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val);
+}
+
+bool k2hdkc_full_cas32_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t val)
+{
+	return k2hdkc_full_cas32_init_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val, NULL, NULL);
 }
 
 bool k2hdkc_ex_cas32_str_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t val)
 {
-	return k2hdkc_ex_cas32_str_init_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, val, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas32_str_init()\".");
+	return k2hdkc_full_cas32_str_init(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, val);
+}
+
+bool k2hdkc_full_cas32_str_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t val)
+{
+	return k2hdkc_full_cas32_str_init_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, val, NULL, NULL);
 }
 
 bool k2hdkc_pm_cas32_init(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint32_t val)
@@ -3251,17 +3815,23 @@ bool k2hdkc_pm_cas32_str_init(k2hdkc_chmpx_h handle, const char* pkey, uint32_t 
 
 bool k2hdkc_cas32_init_wa(const char* config, const unsigned char* pkey, size_t keylength, uint32_t val, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas32_init_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, val, encpass, expire);
+	return k2hdkc_full_cas32_init_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, val, encpass, expire);
 }
 
 bool k2hdkc_cas32_str_init_wa(const char* config, const char* pkey, uint32_t val, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas32_str_init_wa(config, CHM_INVALID_PORT, false, false, pkey, val, encpass, expire);
+	return k2hdkc_full_cas32_str_init_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, val, encpass, expire);
 }
 
 bool k2hdkc_ex_cas32_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t val, const char* encpass, const time_t* expire)
 {
-	K2hdkcComCasInit*	pComObj = GetOtSlaveK2hdkcComCasInit(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas32_init_wa()\".");
+	return k2hdkc_full_cas32_init_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val, encpass, expire);
+}
+
+bool k2hdkc_full_cas32_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t val, const char* encpass, const time_t* expire)
+{
+	K2hdkcComCasInit*	pComObj = GetOtSlaveK2hdkcComCasInit(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasInit(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&val), sizeof(uint32_t), encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to initialize cas value.");
@@ -3272,7 +3842,13 @@ bool k2hdkc_ex_cas32_init_wa(const char* config, short ctlport, bool is_auto_rej
 
 bool k2hdkc_ex_cas32_str_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t val, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas32_init_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), val, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas32_str_init_wa()\".");
+	return k2hdkc_full_cas32_str_init_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, val, encpass, expire);
+}
+
+bool k2hdkc_full_cas32_str_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t val, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_cas32_init_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), val, encpass, expire);
 }
 
 bool k2hdkc_pm_cas32_init_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint32_t val, const char* encpass, const time_t* expire)
@@ -3313,12 +3889,24 @@ bool k2hdkc_cas16_str_init(const char* config, const char* pkey, uint16_t val)
 
 bool k2hdkc_ex_cas16_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t val)
 {
-	return k2hdkc_ex_cas16_init_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas16_init()\".");
+	return k2hdkc_full_cas16_init(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val);
+}
+
+bool k2hdkc_full_cas16_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t val)
+{
+	return k2hdkc_full_cas16_init_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val, NULL, NULL);
 }
 
 bool k2hdkc_ex_cas16_str_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t val)
 {
-	return k2hdkc_ex_cas16_str_init_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, val, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas16_str_init()\".");
+	return k2hdkc_full_cas16_str_init(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, val);
+}
+
+bool k2hdkc_full_cas16_str_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t val)
+{
+	return k2hdkc_full_cas16_str_init_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, val, NULL, NULL);
 }
 
 bool k2hdkc_pm_cas16_init(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint16_t val)
@@ -3333,17 +3921,23 @@ bool k2hdkc_pm_cas16_str_init(k2hdkc_chmpx_h handle, const char* pkey, uint16_t 
 
 bool k2hdkc_cas16_init_wa(const char* config, const unsigned char* pkey, size_t keylength, uint16_t val, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas16_init_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, val, encpass, expire);
+	return k2hdkc_full_cas16_init_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, val, encpass, expire);
 }
 
 bool k2hdkc_cas16_str_init_wa(const char* config, const char* pkey, uint16_t val, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas16_str_init_wa(config, CHM_INVALID_PORT, false, false, pkey, val, encpass, expire);
+	return k2hdkc_full_cas16_str_init_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, val, encpass, expire);
 }
 
 bool k2hdkc_ex_cas16_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t val, const char* encpass, const time_t* expire)
 {
-	K2hdkcComCasInit*	pComObj = GetOtSlaveK2hdkcComCasInit(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas16_init_wa()\".");
+	return k2hdkc_full_cas16_init_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val, encpass, expire);
+}
+
+bool k2hdkc_full_cas16_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t val, const char* encpass, const time_t* expire)
+{
+	K2hdkcComCasInit*	pComObj = GetOtSlaveK2hdkcComCasInit(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasInit(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&val), sizeof(uint16_t), encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to initialize cas value.");
@@ -3354,7 +3948,13 @@ bool k2hdkc_ex_cas16_init_wa(const char* config, short ctlport, bool is_auto_rej
 
 bool k2hdkc_ex_cas16_str_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t val, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas16_init_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), val, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas16_str_init_wa()\".");
+	return k2hdkc_full_cas16_str_init_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, val, encpass, expire);
+}
+
+bool k2hdkc_full_cas16_str_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t val, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_cas16_init_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), val, encpass, expire);
 }
 
 bool k2hdkc_pm_cas16_init_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint16_t val, const char* encpass, const time_t* expire)
@@ -3395,12 +3995,24 @@ bool k2hdkc_cas8_str_init(const char* config, const char* pkey, uint8_t val)
 
 bool k2hdkc_ex_cas8_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t val)
 {
-	return k2hdkc_ex_cas8_init_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas8_init()\".");
+	return k2hdkc_full_cas8_init(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val);
+}
+
+bool k2hdkc_full_cas8_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t val)
+{
+	return k2hdkc_full_cas8_init_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val, NULL, NULL);
 }
 
 bool k2hdkc_ex_cas8_str_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t val)
 {
-	return k2hdkc_ex_cas8_str_init_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, val, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas8_str_init()\".");
+	return k2hdkc_full_cas8_str_init(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, val);
+}
+
+bool k2hdkc_full_cas8_str_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t val)
+{
+	return k2hdkc_full_cas8_str_init_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, val, NULL, NULL);
 }
 
 bool k2hdkc_pm_cas8_init(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint8_t val)
@@ -3415,17 +4027,23 @@ bool k2hdkc_pm_cas8_str_init(k2hdkc_chmpx_h handle, const char* pkey, uint8_t va
 
 bool k2hdkc_cas8_init_wa(const char* config, const unsigned char* pkey, size_t keylength, uint8_t val, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas8_init_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, val, encpass, expire);
+	return k2hdkc_full_cas8_init_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, val, encpass, expire);
 }
 
 bool k2hdkc_cas8_str_init_wa(const char* config, const char* pkey, uint8_t val, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas8_str_init_wa(config, CHM_INVALID_PORT, false, false, pkey, val, encpass, expire);
+	return k2hdkc_full_cas8_str_init_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, val, encpass, expire);
 }
 
 bool k2hdkc_ex_cas8_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t val, const char* encpass, const time_t* expire)
 {
-	K2hdkcComCasInit*	pComObj = GetOtSlaveK2hdkcComCasInit(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas8_init_wa()\".");
+	return k2hdkc_full_cas8_init_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, val, encpass, expire);
+}
+
+bool k2hdkc_full_cas8_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t val, const char* encpass, const time_t* expire)
+{
+	K2hdkcComCasInit*	pComObj = GetOtSlaveK2hdkcComCasInit(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasInit(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&val), sizeof(uint8_t), encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to initialize cas value.");
@@ -3436,7 +4054,13 @@ bool k2hdkc_ex_cas8_init_wa(const char* config, short ctlport, bool is_auto_rejo
 
 bool k2hdkc_ex_cas8_str_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t val, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas8_init_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), val, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas8_str_init_wa()\".");
+	return k2hdkc_full_cas8_str_init_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, val, encpass, expire);
+}
+
+bool k2hdkc_full_cas8_str_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t val, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_cas8_init_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), val, encpass, expire);
 }
 
 bool k2hdkc_pm_cas8_init_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint8_t val, const char* encpass, const time_t* expire)
@@ -3500,12 +4124,24 @@ bool k2hdkc_cas64_str_get(const char* config, const char* pkey, uint64_t* pval)
 
 bool k2hdkc_ex_cas64_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t* pval)
 {
-	return k2hdkc_ex_cas64_get_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, pval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas64_get()\".");
+	return k2hdkc_full_cas64_get(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pval);
+}
+
+bool k2hdkc_full_cas64_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t* pval)
+{
+	return k2hdkc_full_cas64_get_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, pval);
 }
 
 bool k2hdkc_ex_cas64_str_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t* pval)
 {
-	return k2hdkc_ex_cas64_str_get_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, NULL, pval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas64_str_get()\".");
+	return k2hdkc_full_cas64_str_get(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, pval);
+}
+
+bool k2hdkc_full_cas64_str_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t* pval)
+{
+	return k2hdkc_full_cas64_str_get_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, NULL, pval);
 }
 
 bool k2hdkc_pm_cas64_get(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint64_t* pval)
@@ -3520,17 +4156,23 @@ bool k2hdkc_pm_cas64_str_get(k2hdkc_chmpx_h handle, const char* pkey, uint64_t* 
 
 bool k2hdkc_cas64_get_wa(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, uint64_t* pval)
 {
-	return k2hdkc_ex_cas64_get_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, encpass, pval);
+	return k2hdkc_full_cas64_get_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, encpass, pval);
 }
 
 bool k2hdkc_cas64_str_get_wa(const char* config, const char* pkey, const char* encpass, uint64_t* pval)
 {
-	return k2hdkc_ex_cas64_str_get_wa(config, CHM_INVALID_PORT, false, false, pkey, encpass, pval);
+	return k2hdkc_full_cas64_str_get_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, encpass, pval);
 }
 
 bool k2hdkc_ex_cas64_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint64_t* pval)
 {
-	K2hdkcComCasGet*	pComObj = GetOtSlaveK2hdkcComCasGet(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas64_get_wa()\".");
+	return k2hdkc_full_cas64_get_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, encpass, pval);
+}
+
+bool k2hdkc_full_cas64_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint64_t* pval)
+{
+	K2hdkcComCasGet*	pComObj = GetOtSlaveK2hdkcComCasGet(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasGet(pComObj, pkey, keylength, encpass, reinterpret_cast<unsigned char*>(pval), sizeof(uint64_t));
 	if(!result){
 		ERR_DKCPRN("Failed to get cas value.");
@@ -3541,7 +4183,13 @@ bool k2hdkc_ex_cas64_get_wa(const char* config, short ctlport, bool is_auto_rejo
 
 bool k2hdkc_ex_cas64_str_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint64_t* pval)
 {
-	return k2hdkc_ex_cas64_get_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, pval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas64_str_get_wa()\".");
+	return k2hdkc_full_cas64_str_get_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, encpass, pval);
+}
+
+bool k2hdkc_full_cas64_str_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint64_t* pval)
+{
+	return k2hdkc_full_cas64_get_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, pval);
 }
 
 bool k2hdkc_pm_cas64_get_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const char* encpass, uint64_t* pval)
@@ -3582,12 +4230,24 @@ bool k2hdkc_cas32_str_get(const char* config, const char* pkey, uint32_t* pval)
 
 bool k2hdkc_ex_cas32_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t* pval)
 {
-	return k2hdkc_ex_cas32_get_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, pval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas32_get()\".");
+	return k2hdkc_full_cas32_get(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pval);
+}
+
+bool k2hdkc_full_cas32_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t* pval)
+{
+	return k2hdkc_full_cas32_get_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, pval);
 }
 
 bool k2hdkc_ex_cas32_str_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t* pval)
 {
-	return k2hdkc_ex_cas32_str_get_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, NULL, pval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas32_str_get()\".");
+	return k2hdkc_full_cas32_str_get(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, pval);
+}
+
+bool k2hdkc_full_cas32_str_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t* pval)
+{
+	return k2hdkc_full_cas32_str_get_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, NULL, pval);
 }
 
 bool k2hdkc_pm_cas32_get(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint32_t* pval)
@@ -3602,17 +4262,23 @@ bool k2hdkc_pm_cas32_str_get(k2hdkc_chmpx_h handle, const char* pkey, uint32_t* 
 
 bool k2hdkc_cas32_get_wa(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, uint32_t* pval)
 {
-	return k2hdkc_ex_cas32_get_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, encpass, pval);
+	return k2hdkc_full_cas32_get_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, encpass, pval);
 }
 
 bool k2hdkc_cas32_str_get_wa(const char* config, const char* pkey, const char* encpass, uint32_t* pval)
 {
-	return k2hdkc_ex_cas32_str_get_wa(config, CHM_INVALID_PORT, false, false, pkey, encpass, pval);
+	return k2hdkc_full_cas32_str_get_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, encpass, pval);
 }
 
 bool k2hdkc_ex_cas32_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint32_t* pval)
 {
-	K2hdkcComCasGet*	pComObj = GetOtSlaveK2hdkcComCasGet(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas32_get_wa()\".");
+	return k2hdkc_full_cas32_get_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, encpass, pval);
+}
+
+bool k2hdkc_full_cas32_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint32_t* pval)
+{
+	K2hdkcComCasGet*	pComObj = GetOtSlaveK2hdkcComCasGet(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasGet(pComObj, pkey, keylength, encpass, reinterpret_cast<unsigned char*>(pval), sizeof(uint32_t));
 	if(!result){
 		ERR_DKCPRN("Failed to get cas value.");
@@ -3623,7 +4289,13 @@ bool k2hdkc_ex_cas32_get_wa(const char* config, short ctlport, bool is_auto_rejo
 
 bool k2hdkc_ex_cas32_str_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint32_t* pval)
 {
-	return k2hdkc_ex_cas32_get_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, pval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas32_str_get_wa()\".");
+	return k2hdkc_full_cas32_str_get_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, encpass, pval);
+}
+
+bool k2hdkc_full_cas32_str_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint32_t* pval)
+{
+	return k2hdkc_full_cas32_get_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, pval);
 }
 
 bool k2hdkc_pm_cas32_get_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const char* encpass, uint32_t* pval)
@@ -3664,12 +4336,24 @@ bool k2hdkc_cas16_str_get(const char* config, const char* pkey, uint16_t* pval)
 
 bool k2hdkc_ex_cas16_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t* pval)
 {
-	return k2hdkc_ex_cas16_get_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, pval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas16_get()\".");
+	return k2hdkc_full_cas16_get(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pval);
+}
+
+bool k2hdkc_full_cas16_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t* pval)
+{
+	return k2hdkc_full_cas16_get_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, pval);
 }
 
 bool k2hdkc_ex_cas16_str_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t* pval)
 {
-	return k2hdkc_ex_cas16_str_get_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, NULL, pval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas16_str_get()\".");
+	return k2hdkc_full_cas16_str_get(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, pval);
+}
+
+bool k2hdkc_full_cas16_str_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t* pval)
+{
+	return k2hdkc_full_cas16_str_get_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, NULL, pval);
 }
 
 bool k2hdkc_pm_cas16_get(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint16_t* pval)
@@ -3684,17 +4368,23 @@ bool k2hdkc_pm_cas16_str_get(k2hdkc_chmpx_h handle, const char* pkey, uint16_t* 
 
 bool k2hdkc_cas16_get_wa(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, uint16_t* pval)
 {
-	return k2hdkc_ex_cas16_get_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, encpass, pval);
+	return k2hdkc_full_cas16_get_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, encpass, pval);
 }
 
 bool k2hdkc_cas16_str_get_wa(const char* config, const char* pkey, const char* encpass, uint16_t* pval)
 {
-	return k2hdkc_ex_cas16_str_get_wa(config, CHM_INVALID_PORT, false, false, pkey, encpass, pval);
+	return k2hdkc_full_cas16_str_get_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, encpass, pval);
 }
 
 bool k2hdkc_ex_cas16_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint16_t* pval)
 {
-	K2hdkcComCasGet*	pComObj = GetOtSlaveK2hdkcComCasGet(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas16_get_wa()\".");
+	return k2hdkc_full_cas16_get_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, encpass, pval);
+}
+
+bool k2hdkc_full_cas16_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint16_t* pval)
+{
+	K2hdkcComCasGet*	pComObj = GetOtSlaveK2hdkcComCasGet(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasGet(pComObj, pkey, keylength, encpass, reinterpret_cast<unsigned char*>(pval), sizeof(uint16_t));
 	if(!result){
 		ERR_DKCPRN("Failed to get cas value.");
@@ -3705,7 +4395,13 @@ bool k2hdkc_ex_cas16_get_wa(const char* config, short ctlport, bool is_auto_rejo
 
 bool k2hdkc_ex_cas16_str_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint16_t* pval)
 {
-	return k2hdkc_ex_cas16_get_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, pval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas16_str_get_wa()\".");
+	return k2hdkc_full_cas16_str_get_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, encpass, pval);
+}
+
+bool k2hdkc_full_cas16_str_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint16_t* pval)
+{
+	return k2hdkc_full_cas16_get_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, pval);
 }
 
 bool k2hdkc_pm_cas16_get_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const char* encpass, uint16_t* pval)
@@ -3746,12 +4442,23 @@ bool k2hdkc_cas8_str_get(const char* config, const char* pkey, uint8_t* pval)
 
 bool k2hdkc_ex_cas8_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t* pval)
 {
-	return k2hdkc_ex_cas8_get_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, pval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas8_get()\".");
+	return k2hdkc_full_cas8_get(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, pval);
 }
 
+bool k2hdkc_full_cas8_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t* pval)
+{
+	return k2hdkc_full_cas8_get_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, pval);
+}
 bool k2hdkc_ex_cas8_str_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t* pval)
 {
-	return k2hdkc_ex_cas8_str_get_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, NULL, pval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas8_str_get()\".");
+	return k2hdkc_full_cas8_str_get(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, pval);
+}
+
+bool k2hdkc_full_cas8_str_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t* pval)
+{
+	return k2hdkc_full_cas8_str_get_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, NULL, pval);
 }
 
 bool k2hdkc_pm_cas8_get(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint8_t* pval)
@@ -3766,17 +4473,23 @@ bool k2hdkc_pm_cas8_str_get(k2hdkc_chmpx_h handle, const char* pkey, uint8_t* pv
 
 bool k2hdkc_cas8_get_wa(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, uint8_t* pval)
 {
-	return k2hdkc_ex_cas8_get_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, encpass, pval);
+	return k2hdkc_full_cas8_get_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, encpass, pval);
 }
 
 bool k2hdkc_cas8_str_get_wa(const char* config, const char* pkey, const char* encpass, uint8_t* pval)
 {
-	return k2hdkc_ex_cas8_str_get_wa(config, CHM_INVALID_PORT, false, false, pkey, encpass, pval);
+	return k2hdkc_full_cas8_str_get_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, encpass, pval);
 }
 
 bool k2hdkc_ex_cas8_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint8_t* pval)
 {
-	K2hdkcComCasGet*	pComObj = GetOtSlaveK2hdkcComCasGet(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas8_get_wa()\".");
+	return k2hdkc_full_cas8_get_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, encpass, pval);
+}
+
+bool k2hdkc_full_cas8_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint8_t* pval)
+{
+	K2hdkcComCasGet*	pComObj = GetOtSlaveK2hdkcComCasGet(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasGet(pComObj, pkey, keylength, encpass, reinterpret_cast<unsigned char*>(pval), sizeof(uint8_t));
 	if(!result){
 		ERR_DKCPRN("Failed to get cas value.");
@@ -3787,7 +4500,13 @@ bool k2hdkc_ex_cas8_get_wa(const char* config, short ctlport, bool is_auto_rejoi
 
 bool k2hdkc_ex_cas8_str_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint8_t* pval)
 {
-	return k2hdkc_ex_cas8_get_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, pval);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas8_str_get_wa()\".");
+	return k2hdkc_full_cas8_str_get_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, encpass, pval);
+}
+
+bool k2hdkc_full_cas8_str_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint8_t* pval)
+{
+	return k2hdkc_full_cas8_get_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, pval);
 }
 
 bool k2hdkc_pm_cas8_get_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const char* encpass, uint8_t* pval)
@@ -3840,12 +4559,24 @@ bool k2hdkc_cas64_str_set(const char* config, const char* pkey, uint64_t oldval,
 
 bool k2hdkc_ex_cas64_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval)
 {
-	return k2hdkc_ex_cas64_set_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas64_set()\".");
+	return k2hdkc_full_cas64_set(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval);
+}
+
+bool k2hdkc_full_cas64_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval)
+{
+	return k2hdkc_full_cas64_set_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval, NULL, NULL);
 }
 
 bool k2hdkc_ex_cas64_str_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t oldval, uint64_t newval)
 {
-	return k2hdkc_ex_cas64_str_set_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas64_str_set()\".");
+	return k2hdkc_full_cas64_str_set(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval);
+}
+
+bool k2hdkc_full_cas64_str_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t oldval, uint64_t newval)
+{
+	return k2hdkc_full_cas64_str_set_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval, NULL, NULL);
 }
 
 bool k2hdkc_pm_cas64_set(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval)
@@ -3860,17 +4591,23 @@ bool k2hdkc_pm_cas64_str_set(k2hdkc_chmpx_h handle, const char* pkey, uint64_t o
 
 bool k2hdkc_cas64_set_wa(const char* config, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas64_set_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, oldval, newval, encpass, expire);
+	return k2hdkc_full_cas64_set_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, oldval, newval, encpass, expire);
 }
 
 bool k2hdkc_cas64_str_set_wa(const char* config, const char* pkey, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas64_str_set_wa(config, CHM_INVALID_PORT, false, false, pkey, oldval, newval, encpass, expire);
+	return k2hdkc_full_cas64_str_set_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, oldval, newval, encpass, expire);
 }
 
 bool k2hdkc_ex_cas64_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
 {
-	K2hdkcComCasSet*	pComObj = GetOtSlaveK2hdkcComCasSet(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas64_set_wa()\".");
+	return k2hdkc_full_cas64_set_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval, encpass, expire);
+}
+
+bool k2hdkc_full_cas64_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
+{
+	K2hdkcComCasSet*	pComObj = GetOtSlaveK2hdkcComCasSet(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasSet(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&oldval), sizeof(uint64_t), reinterpret_cast<const unsigned char*>(&newval), sizeof(uint64_t), encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to set cas value.");
@@ -3881,7 +4618,13 @@ bool k2hdkc_ex_cas64_set_wa(const char* config, short ctlport, bool is_auto_rejo
 
 bool k2hdkc_ex_cas64_str_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas64_set_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), oldval, newval, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas64_str_set_wa()\".");
+	return k2hdkc_full_cas64_str_set_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval, encpass, expire);
+}
+
+bool k2hdkc_full_cas64_str_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_cas64_set_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), oldval, newval, encpass, expire);
 }
 
 bool k2hdkc_pm_cas64_set_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
@@ -3922,12 +4665,24 @@ bool k2hdkc_cas32_str_set(const char* config, const char* pkey, uint32_t oldval,
 
 bool k2hdkc_ex_cas32_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval)
 {
-	return k2hdkc_ex_cas32_set_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas32_set()\".");
+	return k2hdkc_full_cas32_set(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval);
+}
+
+bool k2hdkc_full_cas32_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval)
+{
+	return k2hdkc_full_cas32_set_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval, NULL, NULL);
 }
 
 bool k2hdkc_ex_cas32_str_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t oldval, uint32_t newval)
 {
-	return k2hdkc_ex_cas32_str_set_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas32_str_set()\".");
+	return k2hdkc_full_cas32_str_set(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval);
+}
+
+bool k2hdkc_full_cas32_str_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t oldval, uint32_t newval)
+{
+	return k2hdkc_full_cas32_str_set_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval, NULL, NULL);
 }
 
 bool k2hdkc_pm_cas32_set(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval)
@@ -3942,17 +4697,23 @@ bool k2hdkc_pm_cas32_str_set(k2hdkc_chmpx_h handle, const char* pkey, uint32_t o
 
 bool k2hdkc_cas32_set_wa(const char* config, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas32_set_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, oldval, newval, encpass, expire);
+	return k2hdkc_full_cas32_set_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, oldval, newval, encpass, expire);
 }
 
 bool k2hdkc_cas32_str_set_wa(const char* config, const char* pkey, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas32_str_set_wa(config, CHM_INVALID_PORT, false, false, pkey, oldval, newval, encpass, expire);
+	return k2hdkc_full_cas32_str_set_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, oldval, newval, encpass, expire);
 }
 
 bool k2hdkc_ex_cas32_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
 {
-	K2hdkcComCasSet*	pComObj = GetOtSlaveK2hdkcComCasSet(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas32_set_wa()\".");
+	return k2hdkc_full_cas32_set_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval, encpass, expire);
+}
+
+bool k2hdkc_full_cas32_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
+{
+	K2hdkcComCasSet*	pComObj = GetOtSlaveK2hdkcComCasSet(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasSet(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&oldval), sizeof(uint32_t), reinterpret_cast<const unsigned char*>(&newval), sizeof(uint32_t), encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to set cas value.");
@@ -3963,7 +4724,13 @@ bool k2hdkc_ex_cas32_set_wa(const char* config, short ctlport, bool is_auto_rejo
 
 bool k2hdkc_ex_cas32_str_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas32_set_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), oldval, newval, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas32_str_set_wa()\".");
+	return k2hdkc_full_cas32_str_set_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval, encpass, expire);
+}
+
+bool k2hdkc_full_cas32_str_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_cas32_set_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), oldval, newval, encpass, expire);
 }
 
 bool k2hdkc_pm_cas32_set_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
@@ -4004,12 +4771,24 @@ bool k2hdkc_cas16_str_set(const char* config, const char* pkey, uint16_t oldval,
 
 bool k2hdkc_ex_cas16_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval)
 {
-	return k2hdkc_ex_cas16_set_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas16_set()\".");
+	return k2hdkc_full_cas16_set(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval);
+}
+
+bool k2hdkc_full_cas16_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval)
+{
+	return k2hdkc_full_cas16_set_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval, NULL, NULL);
 }
 
 bool k2hdkc_ex_cas16_str_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t oldval, uint16_t newval)
 {
-	return k2hdkc_ex_cas16_str_set_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas16_str_set()\".");
+	return k2hdkc_full_cas16_str_set(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval);
+}
+
+bool k2hdkc_full_cas16_str_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t oldval, uint16_t newval)
+{
+	return k2hdkc_full_cas16_str_set_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval, NULL, NULL);
 }
 
 bool k2hdkc_pm_cas16_set(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval)
@@ -4024,17 +4803,23 @@ bool k2hdkc_pm_cas16_str_set(k2hdkc_chmpx_h handle, const char* pkey, uint16_t o
 
 bool k2hdkc_cas16_set_wa(const char* config, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas16_set_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, oldval, newval, encpass, expire);
+	return k2hdkc_full_cas16_set_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, oldval, newval, encpass, expire);
 }
 
 bool k2hdkc_cas16_str_set_wa(const char* config, const char* pkey, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas16_str_set_wa(config, CHM_INVALID_PORT, false, false, pkey, oldval, newval, encpass, expire);
+	return k2hdkc_full_cas16_str_set_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, oldval, newval, encpass, expire);
 }
 
 bool k2hdkc_ex_cas16_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
 {
-	K2hdkcComCasSet*	pComObj = GetOtSlaveK2hdkcComCasSet(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas16_set_wa()\".");
+	return k2hdkc_full_cas16_set_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval, encpass, expire);
+}
+
+bool k2hdkc_full_cas16_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
+{
+	K2hdkcComCasSet*	pComObj = GetOtSlaveK2hdkcComCasSet(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasSet(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&oldval), sizeof(uint16_t), reinterpret_cast<const unsigned char*>(&newval), sizeof(uint16_t), encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to set cas value.");
@@ -4045,7 +4830,13 @@ bool k2hdkc_ex_cas16_set_wa(const char* config, short ctlport, bool is_auto_rejo
 
 bool k2hdkc_ex_cas16_str_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas16_set_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), oldval, newval, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas16_str_set_wa()\".");
+	return k2hdkc_full_cas16_str_set_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval, encpass, expire);
+}
+
+bool k2hdkc_full_cas16_str_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_cas16_set_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), oldval, newval, encpass, expire);
 }
 
 bool k2hdkc_pm_cas16_set_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
@@ -4086,12 +4877,24 @@ bool k2hdkc_cas8_str_set(const char* config, const char* pkey, uint8_t oldval, u
 
 bool k2hdkc_ex_cas8_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval)
 {
-	return k2hdkc_ex_cas8_set_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas8_set()\".");
+	return k2hdkc_full_cas8_set(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval);
+}
+
+bool k2hdkc_full_cas8_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval)
+{
+	return k2hdkc_full_cas8_set_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval, NULL, NULL);
 }
 
 bool k2hdkc_ex_cas8_str_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t oldval, uint8_t newval)
 {
-	return k2hdkc_ex_cas8_str_set_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas8_str_set()\".");
+	return k2hdkc_full_cas8_str_set(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval);
+}
+
+bool k2hdkc_full_cas8_str_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t oldval, uint8_t newval)
+{
+	return k2hdkc_full_cas8_str_set_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval, NULL, NULL);
 }
 
 bool k2hdkc_pm_cas8_set(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval)
@@ -4106,17 +4909,23 @@ bool k2hdkc_pm_cas8_str_set(k2hdkc_chmpx_h handle, const char* pkey, uint8_t old
 
 bool k2hdkc_cas8_set_wa(const char* config, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas8_set_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, oldval, newval, encpass, expire);
+	return k2hdkc_full_cas8_set_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, oldval, newval, encpass, expire);
 }
 
 bool k2hdkc_cas8_str_set_wa(const char* config, const char* pkey, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas8_str_set_wa(config, CHM_INVALID_PORT, false, false, pkey, oldval, newval, encpass, expire);
+	return k2hdkc_full_cas8_str_set_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, oldval, newval, encpass, expire);
 }
 
 bool k2hdkc_ex_cas8_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
 {
-	K2hdkcComCasSet*	pComObj = GetOtSlaveK2hdkcComCasSet(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas8_set_wa()\".");
+	return k2hdkc_full_cas8_set_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, oldval, newval, encpass, expire);
+}
+
+bool k2hdkc_full_cas8_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
+{
+	K2hdkcComCasSet*	pComObj = GetOtSlaveK2hdkcComCasSet(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasSet(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&oldval), sizeof(uint8_t), reinterpret_cast<const unsigned char*>(&newval), sizeof(uint8_t), encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to set cas value.");
@@ -4127,7 +4936,13 @@ bool k2hdkc_ex_cas8_set_wa(const char* config, short ctlport, bool is_auto_rejoi
 
 bool k2hdkc_ex_cas8_str_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas8_set_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), oldval, newval, encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas8_str_set_wa()\".");
+	return k2hdkc_full_cas8_str_set_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, oldval, newval, encpass, expire);
+}
+
+bool k2hdkc_full_cas8_str_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_cas8_set_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), oldval, newval, encpass, expire);
 }
 
 bool k2hdkc_pm_cas8_set_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
@@ -4180,12 +4995,24 @@ bool k2hdkc_cas_str_increment(const char* config, const char* pkey)
 
 bool k2hdkc_ex_cas_increment(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
 {
-	return k2hdkc_ex_cas_increment_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas_increment()\".");
+	return k2hdkc_full_cas_increment(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength);
+}
+
+bool k2hdkc_full_cas_increment(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
+{
+	return k2hdkc_full_cas_increment_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, NULL);
 }
 
 bool k2hdkc_ex_cas_str_increment(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
 {
-	return k2hdkc_ex_cas_str_increment_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas_str_increment()\".");
+	return k2hdkc_full_cas_str_increment(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey);
+}
+
+bool k2hdkc_full_cas_str_increment(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+{
+	return k2hdkc_full_cas_str_increment_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, NULL, NULL);
 }
 
 bool k2hdkc_pm_cas_increment(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength)
@@ -4200,17 +5027,23 @@ bool k2hdkc_pm_cas_str_increment(k2hdkc_chmpx_h handle, const char* pkey)
 
 bool k2hdkc_cas_increment_wa(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas_increment_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, encpass, expire);
+	return k2hdkc_full_cas_increment_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, encpass, expire);
 }
 
 bool k2hdkc_cas_str_increment_wa(const char* config, const char* pkey, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas_str_increment_wa(config, CHM_INVALID_PORT, false, false, pkey, encpass, expire);
+	return k2hdkc_full_cas_str_increment_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, encpass, expire);
 }
 
 bool k2hdkc_ex_cas_increment_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
 {
-	K2hdkcComCasIncDec*	pComObj = GetOtSlaveK2hdkcComCasIncDec(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas_increment_wa()\".");
+	return k2hdkc_full_cas_increment_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, encpass, expire);
+}
+
+bool k2hdkc_full_cas_increment_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
+{
+	K2hdkcComCasIncDec*	pComObj = GetOtSlaveK2hdkcComCasIncDec(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasIncDec(pComObj, pkey, keylength, true, encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to increment cas value.");
@@ -4221,7 +5054,13 @@ bool k2hdkc_ex_cas_increment_wa(const char* config, short ctlport, bool is_auto_
 
 bool k2hdkc_ex_cas_str_increment_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas_increment_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas_str_increment_wa()\".");
+	return k2hdkc_full_cas_str_increment_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, encpass, expire);
+}
+
+bool k2hdkc_full_cas_str_increment_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_cas_increment_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, expire);
 }
 
 bool k2hdkc_pm_cas_increment_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
@@ -4262,12 +5101,24 @@ bool k2hdkc_cas_str_decrement(const char* config, const char* pkey)
 
 bool k2hdkc_ex_cas_decrement(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
 {
-	return k2hdkc_ex_cas_decrement_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas_decrement()\".");
+	return k2hdkc_full_cas_decrement(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength);
+}
+
+bool k2hdkc_full_cas_decrement(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
+{
+	return k2hdkc_full_cas_decrement_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, NULL, NULL);
 }
 
 bool k2hdkc_ex_cas_str_decrement(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
 {
-	return k2hdkc_ex_cas_str_decrement_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, pkey, NULL, NULL);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas_str_decrement()\".");
+	return k2hdkc_full_cas_str_decrement(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey);
+}
+
+bool k2hdkc_full_cas_str_decrement(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+{
+	return k2hdkc_full_cas_str_decrement_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, pkey, NULL, NULL);
 }
 
 bool k2hdkc_pm_cas_decrement(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength)
@@ -4282,17 +5133,23 @@ bool k2hdkc_pm_cas_str_decrement(k2hdkc_chmpx_h handle, const char* pkey)
 
 bool k2hdkc_cas_decrement_wa(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas_decrement_wa(config, CHM_INVALID_PORT, false, false, pkey, keylength, encpass, expire);
+	return k2hdkc_full_cas_decrement_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, keylength, encpass, expire);
 }
 
 bool k2hdkc_cas_str_decrement_wa(const char* config, const char* pkey, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas_str_decrement_wa(config, CHM_INVALID_PORT, false, false, pkey, encpass, expire);
+	return k2hdkc_full_cas_str_decrement_wa(config, CHM_INVALID_PORT, NULL, false, false, pkey, encpass, expire);
 }
 
 bool k2hdkc_ex_cas_decrement_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
 {
-	K2hdkcComCasIncDec*	pComObj = GetOtSlaveK2hdkcComCasIncDec(config, ctlport, is_auto_rejoin, no_giveup_rejoin);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas_decrement_wa()\".");
+	return k2hdkc_full_cas_decrement_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, keylength, encpass, expire);
+}
+
+bool k2hdkc_full_cas_decrement_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
+{
+	K2hdkcComCasIncDec*	pComObj = GetOtSlaveK2hdkcComCasIncDec(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin);
 	bool				result	= K2hdkcFullCasIncDec(pComObj, pkey, keylength, false, encpass, expire);
 	if(!result){
 		ERR_DKCPRN("Failed to decrement cas value.");
@@ -4303,7 +5160,13 @@ bool k2hdkc_ex_cas_decrement_wa(const char* config, short ctlport, bool is_auto_
 
 bool k2hdkc_ex_cas_str_decrement_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, const time_t* expire)
 {
-	return k2hdkc_ex_cas_decrement_wa(config, ctlport, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, expire);
+	WAN_DKCPRN("This function is deprecated. Use \"k2hdkc_full_cas_str_decrement_wa()\".");
+	return k2hdkc_full_cas_str_decrement_wa(config, ctlport, NULL, is_auto_rejoin, no_giveup_rejoin, pkey, encpass, expire);
+}
+
+bool k2hdkc_full_cas_str_decrement_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, const time_t* expire)
+{
+	return k2hdkc_full_cas_decrement_wa(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, reinterpret_cast<const unsigned char*>(pkey), (pkey ? strlen(pkey) + 1 : 0), encpass, expire);
 }
 
 bool k2hdkc_pm_cas_decrement_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)

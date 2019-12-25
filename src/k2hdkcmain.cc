@@ -47,6 +47,7 @@ using namespace	std;
 #define	OPT_DBG					"D"
 #define	OPT_DBGFILEPATH			"DFILE"
 #define	OPT_CTLPORT				"CTLPORT"
+#define	OPT_CUK					"CUK"
 #define	OPT_COMDBG				"COMLOG"
 #define	OPT_NO_GIVEUP_REJOIN	"NO_GIVEUP_REJOIN"
 
@@ -70,12 +71,13 @@ using namespace	std;
 static bool PrintUsage(const char* prgname)
 {
 	cout << "[Usage]" << endl;
-	cout << (prgname ? prgname : "prgname") << " [-conf <file path> | -json <json string>] [-ctlport <port>] [-comlog] [-no_giveup_rejoin] [-d [silent|err|wan|msg|dump]] [-dfile <file path>]"	<< endl;
+	cout << (prgname ? prgname : "prgname") << " [-conf <file path> | -json <json string>] [-ctlport <port>] [-cuk <cuk>] [-comlog] [-no_giveup_rejoin] [-d [silent|err|wan|msg|dump]] [-dfile <file path>]"	<< endl;
 	cout << (prgname ? prgname : "prgname") << " [ -h | -v ]"										<< endl;
 	cout << "[option]"																				<< endl;
 	cout << "  -conf <path>         specify the configuration file(.ini .yaml .json) path"			<< endl;
 	cout << "  -json <string>       specify the configuration json string"							<< endl;
 	cout << "  -ctlport <port>      specify the self control port(*)"								<< endl;
+	cout << "  -cuk <cuk string>    specify the self CUK(*)"										<< endl;
 	cout << "  -no_giveup_rejoin    not give up rejoining chmpx"									<< endl;
 	cout << "  -comlog              enable logging communication command"							<< endl;
 	cout << "  -d <param>           specify the debugging output mode:"								<< endl;
@@ -93,9 +95,10 @@ static bool PrintUsage(const char* prgname)
 	cout << "  K2HDKCJSONCONF       specify the configuration json string"							<< endl;
 	cout << endl;
 	cout << "(*) you can use environment DKCDBGMODE and DKCDBGFILE instead of -d/-dfile options."	<< endl;
-	cout << "(*) if ctlport option is specified, chmpx searches same ctlport in configuration"		<< endl;
-	cout << "    file and ignores \"CTLPORT\" directive in \"GLOBAL\" section. and chmpx will"		<< endl;
-	cout << "    start in the mode indicated by the server entry that has been detected."			<< endl;
+	cout << "(*) if ctlport and cuk option is specified, chmpx searches same ctlport/cuk"			<< endl;
+	cout << "    in configuration file and ignores \"CTLPORT\" or \"CUK\" directive in"				<< endl;
+	cout << "    \"GLOBAL\" section. and chmpx will start in the mode indicated by the"				<< endl;
+	cout << "    server entry that has been detected."												<< endl;
 
 	return true;
 }
@@ -200,6 +203,12 @@ int main(int argc, char** argv)
 		}
 	}
 
+	// parameter - cuk
+	string	strcuk;
+	if(!opts.Get(OPT_CUK, strcuk)){
+		strcuk.clear();
+	}
+
 	// parameter - comlog
 	if(opts.Find(OPT_COMDBG)){
 		K2hdkcComNumber::Enable();
@@ -220,7 +229,7 @@ int main(int argc, char** argv)
 
 	// initialize K2hdkcCntrl
 	K2hdkcCntrl*	pCntrl = K2hdkcCntrl::Get();
-	if(!pCntrl->Initialize(&k2hdkcconf, ctlport, no_giveup_rejoin)){
+	if(!pCntrl->Initialize(&k2hdkcconf, ctlport, (strcuk.empty() ? NULL : strcuk.c_str()), no_giveup_rejoin)){
 		cout << "ERROR: Failed to initialize control main object." << endl;
 		exit(EXIT_FAILURE);
 	}
