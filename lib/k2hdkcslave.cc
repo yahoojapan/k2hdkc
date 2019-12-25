@@ -57,7 +57,7 @@ K2hdkcCommand* K2hdkcSlave::GetSlaveCommandSendObject(dkccom_type_t comtype, K2h
 //---------------------------------------------------------
 // Constructor/Destructor
 //---------------------------------------------------------
-K2hdkcSlave::K2hdkcSlave(void) : chmpxconfig(""), chmpxctlport(CHM_INVALID_PORT), chmpxautorejoin(false), msgid(CHM_INVALID_MSGID), lastrescode(DKC_NORESTYPE)
+K2hdkcSlave::K2hdkcSlave(void) : chmpxconfig(""), chmpxctlport(CHM_INVALID_PORT), chmpxcuk(""), chmpxautorejoin(false), msgid(CHM_INVALID_MSGID), lastrescode(DKC_NORESTYPE)
 {
 }
 
@@ -69,7 +69,7 @@ K2hdkcSlave::~K2hdkcSlave(void)
 //---------------------------------------------------------
 // Methods
 //---------------------------------------------------------
-bool K2hdkcSlave::Initialize(const char* config, short ctlport, bool is_auto_rejoin)
+bool K2hdkcSlave::Initialize(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin)
 {
 	if(DKCEMPTYSTR(config)){
 		MSG_DKCPRN("config parameter is empty, thus using environment.");
@@ -82,12 +82,13 @@ bool K2hdkcSlave::Initialize(const char* config, short ctlport, bool is_auto_rej
 	}
 
 	// join chmpx
-	if(!chmobj.InitializeOnSlave(config, is_auto_rejoin, ctlport)){
+	if(!chmobj.InitializeOnSlave(config, is_auto_rejoin, ctlport, (DKCEMPTYSTR(cuk) ? NULL : cuk))){
 		ERR_DKCPRN("Could not initialize slave chmpx object.");
 		return false;
 	}
 	chmpxconfig		= config;
 	chmpxctlport	= ctlport;
+	chmpxcuk		= DKCEMPTYSTR(cuk) ? "" : cuk;
 	chmpxautorejoin	= is_auto_rejoin;
 	msgid			= CHM_INVALID_MSGID;
 	return true;
@@ -109,7 +110,8 @@ bool K2hdkcSlave::Clean(bool is_clean_bup)
 		ERR_DKCPRN("Failed to clean chmpx");
 		return false;
 	}
-	chmpxconfig		= "";
+	chmpxconfig.clear();
+	chmpxcuk.clear();
 	chmpxctlport	= CHM_INVALID_PORT;
 	chmpxautorejoin	= false;
 	msgid			= CHM_INVALID_MSGID;

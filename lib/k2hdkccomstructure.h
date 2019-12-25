@@ -72,6 +72,7 @@ DECL_EXTERN_C_START
 #else
 #define	DKC_COM_UNKNOWN					(dkccom_type_t)(-1L)
 #endif
+
 //
 // Macros for Command type
 //
@@ -79,32 +80,11 @@ DECL_EXTERN_C_START
 //
 #define	IS_SAFE_DKCCOM_TYPE(comtype)	(comtype <= DKC_COM_MAX)
 
-#define	STR_DKCCOM_TYPE(comtype)		(	DKC_COM_GET				== comtype ? "DKC_COM_GET"			: \
-											DKC_COM_GET_DIRECT		== comtype ? "DKC_COM_GET_DIRECT"	: \
-											DKC_COM_GET_SUBKEYS		== comtype ? "DKC_COM_GET_SUBKEYS"	: \
-											DKC_COM_GET_ATTRS		== comtype ? "DKC_COM_GET_ATTRS"	: \
-											DKC_COM_GET_ATTR		== comtype ? "DKC_COM_GET_ATTR"		: \
-											DKC_COM_SET				== comtype ? "DKC_COM_SET"			: \
-											DKC_COM_SET_DIRECT		== comtype ? "DKC_COM_SET_DIRECT"	: \
-											DKC_COM_SET_SUBKEYS		== comtype ? "DKC_COM_SET_SUBKEYS"	: \
-											DKC_COM_ADD_SUBKEY		== comtype ? "DKC_COM_ADD_SUBKEY"	: \
-											DKC_COM_SET_ALL			== comtype ? "DKC_COM_SET_ALL"		: \
-											DKC_COM_ADD_SUBKEYS		== comtype ? "DKC_COM_ADD_SUBKEYS"	: \
-											DKC_COM_DEL				== comtype ? "DKC_COM_DEL"			: \
-											DKC_COM_DEL_SUBKEYS		== comtype ? "DKC_COM_DEL_SUBKEYS"	: \
-											DKC_COM_DEL_SUBKEY		== comtype ? "DKC_COM_DEL_SUBKEY"	: \
-											DKC_COM_REN				== comtype ? "DKC_COM_REN"			: \
-											DKC_COM_QPUSH			== comtype ? "DKC_COM_QPUSH"		: \
-											DKC_COM_QPOP			== comtype ? "DKC_COM_QPOP"			: \
-											DKC_COM_QDEL			== comtype ? "DKC_COM_QDEL"			: \
-											DKC_COM_CAS_INIT		== comtype ? "DKC_COM_CAS_INIT"		: \
-											DKC_COM_CAS_GET			== comtype ? "DKC_COM_CAS_GET"		: \
-											DKC_COM_CAS_SET			== comtype ? "DKC_COM_CAS_SET"		: \
-											DKC_COM_CAS_INCDEC		== comtype ? "DKC_COM_CAS_INCDEC"	: \
-											DKC_COM_REPL_KEY		== comtype ? "DKC_COM_REPL_KEY"		: \
-											DKC_COM_K2HSTATE		== comtype ? "DKC_COM_K2HSTATE"		: \
-											DKC_COM_STATE			== comtype ? "DKC_COM_STATE"		: \
-											"UNKNOWN_DKC_COM_TYPE"									)
+//
+// [NOTE] 
+// The STR_DKCCOM_TYPE macro has been moved to k2hdkccombase.cc because an error occurs in cppcheck(1.88).
+//
+const char* STR_DKCCOM_TYPE(dkccom_type_t comtype);
 
 //
 // Response types

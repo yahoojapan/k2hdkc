@@ -136,7 +136,10 @@ lib/k2hdkcversion.cc
 src/k2hdkc
 src/k2hdkcmain
 tests/k2hdkclinetool
-tests/results.xmlA
+tests/results.xml
+tests/test-suite.log
+tests/test.sh.log
+tests/test.sh.trs
 
 #
 # VIM modelines

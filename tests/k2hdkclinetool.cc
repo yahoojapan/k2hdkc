@@ -612,6 +612,7 @@ bool ConsoleInput::RemoveLastHistory(void)
 static string	strConfig("");
 static bool		isModeCAPI		= false;
 static short	CntlPort		= CHM_INVALID_PORT;
+static string	strCuk("");
 static bool		isPermanent		= false;
 static bool		isAutoRejoin	= false;
 static bool		isNoGiveupRejoin= false;
@@ -624,6 +625,7 @@ static bool		isCleanupBup	= true;
 // -help(h)           help display
 // -conf <filename>   chmpx configuration file path
 // -ctlport <port>    slave node chmpx control port
+// -cuk <cuk string>  slave node chmpx cuk string
 // -lap               print lap time after line command
 // -capi              use C API for calling internal library
 // -perm              use permanent chmpx handle
@@ -640,13 +642,14 @@ static bool		isCleanupBup	= true;
 static void Help(const char* progname)
 {
 	PRN(NULL);
-	PRN("Usage: %s [-conf <file> | -json <string>] [-ctlport <port>] [options...]", progname ? progname : "program");
+	PRN("Usage: %s [-conf <file> | -json <string>] [-ctlport <port>] [-cuk <cuk string>] [options...]", progname ? progname : "program");
 	PRN("       %s -help", progname ? progname : "program");
 	PRN(NULL);
 	PRN("Option -help(h)           help display");
 	PRN("       -conf <filename>   k2hdkc configuration file path(.ini .yaml .json)");
 	PRN("       -json <string>     k2hdkc configuration by json string");
 	PRN("       -ctlport <port>    slave node chmpx control port");
+	PRN("       -cuk <cuk string>  slave node chmpx cuk string");
 	PRN("       -lap               print lap time after line command");
 	PRN("       -capi              use C API for calling internal library");
 	PRN("       -perm              use permanent chmpx handle");
@@ -781,6 +784,7 @@ const OPTTYPE ExecOptionTypes[] = {
 	{"-ctlport",		"-ctlport",			1,	1},
 	{"-cntlport",		"-ctlport",			1,	1},
 	{"-cntrlport",		"-ctlport",			1,	1},
+	{"-cuk",			"-cuk",				1,	1},
 	{"-lap",			"-lap",				0,	0},
 	{"-capi",			"-capi",			0,	0},
 	{"-perm",			"-permanent",		0,	0},
@@ -1518,15 +1522,15 @@ static bool GetSubkeysCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* p
 		if(isModeCAPI){
 			if(is_noattr){
 				// no check attribute type
-				result = k2hdkc_ex_get_subkeys_np(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylength, ppskeypck, pskeypckcnt);
+				result = k2hdkc_full_get_subkeys_np(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pkey, keylength, ppskeypck, pskeypckcnt);
 			}else{
 				// normal
-				result = k2hdkc_ex_get_subkeys(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylength, ppskeypck, pskeypckcnt);
+				result = k2hdkc_full_get_subkeys(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pkey, keylength, ppskeypck, pskeypckcnt);
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComGetSubkeys*	pComObj	= GetOtSlaveK2hdkcComGetSubkeys(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComGetSubkeys*	pComObj	= GetOtSlaveK2hdkcComGetSubkeys(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			K2HSubKeys*				pSubKeys= NULL;
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
@@ -1658,19 +1662,19 @@ static bool RawPrintCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* pke
 		if(isModeCAPI){
 			if(is_noattr){
 				// no check attribute type
-				result = k2hdkc_ex_get_value_np(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylength, &pval, &vallength);
+				result = k2hdkc_full_get_value_np(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pkey, keylength, &pval, &vallength);
 			}else if(!DKCEMPTYSTR(passphrase)){
 				// pass phrase
-				result = k2hdkc_ex_get_value_wp(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylength, passphrase, &pval, &vallength);
+				result = k2hdkc_full_get_value_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pkey, keylength, passphrase, &pval, &vallength);
 			}else{
 				// normal
-				result = k2hdkc_ex_get_value(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylength, &pval, &vallength);
+				result = k2hdkc_full_get_value(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pkey, keylength, &pval, &vallength);
 			}
 			rescode		= k2hdkc_get_lastres_code();
 			pconstval	= pval;
 
 		}else{
-			K2hdkcComGet*	pComObj = GetOtSlaveK2hdkcComGet(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComGet*	pComObj = GetOtSlaveK2hdkcComGet(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(pComObj){
 				result = pComObj->CommandSend(pkey, keylength, !is_noattr, passphrase, &pconstval, &vallength, &rescode);
 			}else{
@@ -1810,11 +1814,11 @@ static bool RawDirectGetCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char*
 	if(K2HDKC_INVALID_HANDLE == chmpxhandle){
 		// use one-time chmpx object
 		if(isModeCAPI){
-			result		= k2hdkc_ex_da_get_value(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylen, offset, length, ppval, &vallen);
+			result		= k2hdkc_full_da_get_value(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pkey, keylen, offset, length, ppval, &vallen);
 			rescode		= k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComGetDirect*	pComObj = GetOtSlaveK2hdkcComGetDirect(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComGetDirect*	pComObj = GetOtSlaveK2hdkcComGetDirect(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return false;
@@ -1960,11 +1964,11 @@ static bool PrintAttrCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 	if(K2HDKC_INVALID_HANDLE == chmpxhandle){
 		// use one-time chmpx object
 		if(isModeCAPI){
-			result = k2hdkc_ex_get_attrs(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &pattrspck, &attrspckcnt);
+			result = k2hdkc_full_get_attrs(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &pattrspck, &attrspckcnt);
 			rescode= k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComGetAttrs*	pComObj		= GetOtSlaveK2hdkcComGetAttrs(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComGetAttrs*	pComObj		= GetOtSlaveK2hdkcComGetAttrs(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			K2HAttrs*			pAttrsObj	= NULL;
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
@@ -2126,15 +2130,15 @@ static bool RawSetCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* pKey,
 		if(isModeCAPI){
 			if(!pExpire && !pPassPhrase && !is_rmsublist){
 				// normal
-				result = k2hdkc_ex_set_value(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pKey, KeyLen, pVal, ValLen);
+				result = k2hdkc_full_set_value(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pKey, KeyLen, pVal, ValLen);
 			}else{
 				// with attributes
-				result = k2hdkc_ex_set_value_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pKey, KeyLen, pVal, ValLen, is_rmsublist, pPassPhrase, pExpire);
+				result = k2hdkc_full_set_value_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pKey, KeyLen, pVal, ValLen, is_rmsublist, pPassPhrase, pExpire);
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComSet*	pComObj = GetOtSlaveK2hdkcComSet(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComSet*	pComObj = GetOtSlaveK2hdkcComSet(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(pComObj){
 				result = pComObj->CommandSend(pKey, KeyLen, pVal, ValLen, is_rmsublist, pPassPhrase, pExpire, &rescode);
 			}else{
@@ -2259,11 +2263,11 @@ static bool RawDirectSetCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char*
 	if(K2HDKC_INVALID_HANDLE == chmpxhandle){
 		// use one-time chmpx object
 		if(isModeCAPI){
-			result	= k2hdkc_ex_da_set_value(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylen, pval, vallen, offset);
+			result	= k2hdkc_full_da_set_value(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pkey, keylen, pval, vallen, offset);
 			rescode	= k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComSetDirect*	pComObj = GetOtSlaveK2hdkcComSetDirect(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComSetDirect*	pComObj = GetOtSlaveK2hdkcComSetDirect(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(pComObj){
 				result = pComObj->CommandSend(pkey, keylen, pval, vallen, offset, &rescode);
 			}else{
@@ -2502,15 +2506,15 @@ static bool RemoveCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* pkey,
 		if(isModeCAPI){
 			if(is_subkeys){
 				// with subkeys
-				result = k2hdkc_ex_remove_all(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylen);
+				result = k2hdkc_full_remove_all(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pkey, keylen);
 			}else{
 				// without subkeys
-				result = k2hdkc_ex_remove(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylen);
+				result = k2hdkc_full_remove(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pkey, keylen);
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComDel*	pComObj = GetOtSlaveK2hdkcComDel(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComDel*	pComObj = GetOtSlaveK2hdkcComDel(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(pComObj){
 				result = pComObj->CommandSend(pkey, keylen, is_subkeys, true, &rescode);
 			}else{
@@ -2675,16 +2679,16 @@ static bool RawSetSubkeyCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char*
 			// add subkey with value and set into parent key
 			if(!pExpire && pPassPhrase){
 				// without attributes
-				result	= k2hdkc_ex_set_subkey(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pParentKey, ParentKeyLen, pSubKey, SubKeyLen, pVal, ValLen);
+				result	= k2hdkc_full_set_subkey(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pParentKey, ParentKeyLen, pSubKey, SubKeyLen, pVal, ValLen);
 			}else{
 				// with attributes
-				result	= k2hdkc_ex_set_subkey_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pParentKey, ParentKeyLen, pSubKey, SubKeyLen, pVal, ValLen, !is_noattr, pPassPhrase, pExpire);
+				result	= k2hdkc_full_set_subkey_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pParentKey, ParentKeyLen, pSubKey, SubKeyLen, pVal, ValLen, !is_noattr, pPassPhrase, pExpire);
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
 			// add subkey with value and set into parent key
-			K2hdkcComAddSubkey*	pComObj = GetOtSlaveK2hdkcComAddSubkey(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComAddSubkey*	pComObj = GetOtSlaveK2hdkcComAddSubkey(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return false;
@@ -2808,7 +2812,7 @@ static bool SetSubkeyCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 				DKC_FREE_KEYPACK(psrcskeypck, srcskeypckcnt);
 
 				// set subkey name into parent key
-				result	= k2hdkc_ex_set_subkeys(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pPKey, PKeyLen, pskeypck, skeypckcnt);
+				result	= k2hdkc_full_set_subkeys(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pPKey, PKeyLen, pskeypck, skeypckcnt);
 				rescode = k2hdkc_get_lastres_code();
 
 				DKC_FREE_KEYPACK(pskeypck, skeypckcnt);
@@ -2841,7 +2845,7 @@ static bool SetSubkeyCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 				DKC_FREE_KEYPACK(pskeypck, skeypckcnt);
 
 				// set subkey name into parent key
-				K2hdkcComSetSubkeys*	pComObj = GetOtSlaveK2hdkcComSetSubkeys(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+				K2hdkcComSetSubkeys*	pComObj = GetOtSlaveK2hdkcComSetSubkeys(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 				if(!pComObj){
 					ERR("Something internal error occurred. could not make command object.");
 					DKC_FREE(psubkeys);
@@ -2988,8 +2992,7 @@ static bool RemoveSubkeyCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 		if(isModeCAPI){
 			if(is_all){
 				// remove all subkey list
-				result = k2hdkc_ex_clear_subkeys(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strParentKey.c_str()), strParentKey.length() + 1);
-
+				result = k2hdkc_full_clear_subkeys(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strParentKey.c_str()), strParentKey.length() + 1);
 			}else{
 				// remove target key
 				PK2HDKCKEYPCK	pnewskeypck		= NULL;
@@ -2999,7 +3002,7 @@ static bool RemoveSubkeyCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 					DKC_FREE_KEYPACK(pskeypck, skeypckcnt);
 					return true;	// for continue.
 				}
-				result = k2hdkc_ex_set_subkeys(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strParentKey.c_str()), strParentKey.length() + 1, pnewskeypck, newskeypckcnt);
+				result = k2hdkc_full_set_subkeys(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strParentKey.c_str()), strParentKey.length() + 1, pnewskeypck, newskeypckcnt);
 
 				DKC_FREE_KEYPACK(pnewskeypck, newskeypckcnt);
 			}
@@ -3029,7 +3032,7 @@ static bool RemoveSubkeyCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 			}
 
 			// set new subkey list into parent key
-			K2hdkcComSetSubkeys*	pComObj = GetOtSlaveK2hdkcComSetSubkeys(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComSetSubkeys*	pComObj = GetOtSlaveK2hdkcComSetSubkeys(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				DKC_FREE(psubkeys);
@@ -3176,23 +3179,23 @@ static bool RenameCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 			if(strParentKey.empty()){
 				// rename only key
 				if(-1 == Expire && PassPhrase.empty()){
-					result = k2hdkc_ex_rename(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pOldKey, OldKeyLen, pNewKey, NewkeyLen);
+					result = k2hdkc_full_rename(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pOldKey, OldKeyLen, pNewKey, NewkeyLen);
 				}else{
-					result = k2hdkc_ex_rename_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pOldKey, OldKeyLen, pNewKey, NewkeyLen, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+					result = k2hdkc_full_rename_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pOldKey, OldKeyLen, pNewKey, NewkeyLen, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}
 			}else{
 				// rename key and change subkey list in parent key
 				if(-1 == Expire && PassPhrase.empty()){
-					result = k2hdkc_ex_rename_with_parent(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pOldKey, OldKeyLen, pNewKey, NewkeyLen, pParentKey, pParentKeyLen);
+					result = k2hdkc_full_rename_with_parent(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pOldKey, OldKeyLen, pNewKey, NewkeyLen, pParentKey, pParentKeyLen);
 				}else{
-					result = k2hdkc_ex_rename_with_parent_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pOldKey, OldKeyLen, pNewKey, NewkeyLen, pParentKey, pParentKeyLen, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+					result = k2hdkc_full_rename_with_parent_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pOldKey, OldKeyLen, pNewKey, NewkeyLen, pParentKey, pParentKeyLen, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
 			// rename only key (and change subkey list in parent key)
-			K2hdkcComRen*	pComObj = GetOtSlaveK2hdkcComRen(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComRen*	pComObj = GetOtSlaveK2hdkcComRen(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return true;		// for continue.
@@ -3281,14 +3284,14 @@ static bool QueuePushCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* pN
 		// use one-time chmpx object
 		if(isModeCAPI){
 			if(-1 == Expire && PassPhrase.empty()){
-				result = k2hdkc_ex_q_push(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.length() + 1, is_Fifo);
+				result = k2hdkc_full_q_push(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.length() + 1, is_Fifo);
 			}else{
-				result = k2hdkc_ex_q_push_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.length() + 1, is_Fifo, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+				result = k2hdkc_full_q_push_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.length() + 1, is_Fifo, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComQPush*	pComObj = GetOtSlaveK2hdkcComQPush(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComQPush*	pComObj = GetOtSlaveK2hdkcComQPush(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return true;		// for continue.
@@ -3366,14 +3369,14 @@ static bool QueuePopCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* pNa
 		if(isModeCAPI){
 			// [NOTE] always check attributes
 			if(PassPhrase.empty()){
-				result = k2hdkc_ex_q_pop(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, &pval, &vallength);
+				result = k2hdkc_full_q_pop(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, &pval, &vallength);
 			}else{
-				result = k2hdkc_ex_q_pop_wp(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &pval, &vallength);
+				result = k2hdkc_full_q_pop_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &pval, &vallength);
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComQPop*	pComObj = GetOtSlaveK2hdkcComQPop(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComQPop*	pComObj = GetOtSlaveK2hdkcComQPop(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return true;		// for continue.
@@ -3484,14 +3487,14 @@ static bool QueueRemoveCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* 
 		// use one-time chmpx object
 		if(isModeCAPI){
 			if(PassPhrase.empty()){
-				result = k2hdkc_ex_q_remove(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo);
+				result = k2hdkc_full_q_remove(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo);
 			}else{
-				result = k2hdkc_ex_q_remove_wp(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()));
+				result = k2hdkc_full_q_remove_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()));
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComQDel*	pComObj = GetOtSlaveK2hdkcComQDel(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComQDel*	pComObj = GetOtSlaveK2hdkcComQDel(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return true;		// for continue.
@@ -3619,14 +3622,14 @@ static bool KeyQueuePushCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char*
 		// use one-time chmpx object
 		if(isModeCAPI){
 			if(-1 == Expire && PassPhrase.empty()){
-				result = k2hdkc_ex_keyq_push(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.length() + 1, is_Fifo);
+				result = k2hdkc_full_keyq_push(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.length() + 1, is_Fifo);
 			}else{
-				result = k2hdkc_ex_keyq_push_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.length() + 1, is_Fifo, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+				result = k2hdkc_full_keyq_push_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.length() + 1, is_Fifo, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComQPush*	pComObj = GetOtSlaveK2hdkcComQPush(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComQPush*	pComObj = GetOtSlaveK2hdkcComQPush(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return true;		// for continue.
@@ -3706,14 +3709,14 @@ static bool KeyQueuePopCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* 
 		if(isModeCAPI){
 			// [NOTE] always check attributes
 			if(PassPhrase.empty()){
-				result = k2hdkc_ex_keyq_pop(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, &pkey, &keylength, &pval, &vallength);
+				result = k2hdkc_full_keyq_pop(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, &pkey, &keylength, &pval, &vallength);
 			}else{
-				result = k2hdkc_ex_keyq_pop_wp(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &pkey, &keylength, &pval, &vallength);
+				result = k2hdkc_full_keyq_pop_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &pkey, &keylength, &pval, &vallength);
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComQPop*	pComObj = GetOtSlaveK2hdkcComQPop(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComQPop*	pComObj = GetOtSlaveK2hdkcComQPop(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return true;		// for continue.
@@ -3841,14 +3844,14 @@ static bool KeyQueueRemoveCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned cha
 		// use one-time chmpx object
 		if(isModeCAPI){
 			if(PassPhrase.empty()){
-				result = k2hdkc_ex_keyq_remove(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo);
+				result = k2hdkc_full_keyq_remove(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo);
 			}else{
-				result = k2hdkc_ex_keyq_remove_wp(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()));
+				result = k2hdkc_full_keyq_remove_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()));
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComQDel*	pComObj = GetOtSlaveK2hdkcComQDel(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComQDel*	pComObj = GetOtSlaveK2hdkcComQDel(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return true;		// for continue.
@@ -3975,36 +3978,36 @@ static bool CasInitCommand(k2hdkc_chmpx_h chmpxhandle, CASTYPE type, params_t& p
 			if(-1 == Expire && PassPhrase.empty()){
 				if(CAS_TYPE_8 == type){
 					uint8_t		val	= static_cast<uint8_t>(atoi(strValue.c_str()));
-					result			= k2hdkc_ex_cas8_init(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val);
+					result			= k2hdkc_full_cas8_init(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val);
 				}else if(CAS_TYPE_16 == type){
 					uint16_t	val	= static_cast<uint16_t>(atoi(strValue.c_str()));
-					result			= k2hdkc_ex_cas16_init(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val);
+					result			= k2hdkc_full_cas16_init(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val);
 				}else if(CAS_TYPE_32 == type){
 					uint32_t	val	= static_cast<uint32_t>(atoi(strValue.c_str()));
-					result			= k2hdkc_ex_cas32_init(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val);
+					result			= k2hdkc_full_cas32_init(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val);
 				}else{	// CAS_TYPE_64 == type
 					uint64_t	val	= static_cast<uint64_t>(atoi(strValue.c_str()));
-					result			= k2hdkc_ex_cas64_init(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val);
+					result			= k2hdkc_full_cas64_init(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val);
 				}
 			}else{
 				if(CAS_TYPE_8 == type){
 					uint8_t		val	= static_cast<uint8_t>(atoi(strValue.c_str()));
-					result			= k2hdkc_ex_cas8_init_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+					result			= k2hdkc_full_cas8_init_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}else if(CAS_TYPE_16 == type){
 					uint16_t	val	= static_cast<uint16_t>(atoi(strValue.c_str()));
-					result			= k2hdkc_ex_cas16_init_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+					result			= k2hdkc_full_cas16_init_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}else if(CAS_TYPE_32 == type){
 					uint32_t	val	= static_cast<uint32_t>(atoi(strValue.c_str()));
-					result			= k2hdkc_ex_cas32_init_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+					result			= k2hdkc_full_cas32_init_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}else{	// CAS_TYPE_64 == type
 					uint64_t	val	= static_cast<uint64_t>(atoi(strValue.c_str()));
-					result			= k2hdkc_ex_cas64_init_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+					result			= k2hdkc_full_cas64_init_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComCasInit*	pComObj = GetOtSlaveK2hdkcComCasInit(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComCasInit*	pComObj = GetOtSlaveK2hdkcComCasInit(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return true;		// for continue.
@@ -4129,29 +4132,29 @@ static bool CasGetCommand(k2hdkc_chmpx_h chmpxhandle, CASTYPE type, params_t& pa
 		if(isModeCAPI){
 			if(PassPhrase.empty()){
 				if(CAS_TYPE_8 == type){
-					result	= k2hdkc_ex_cas8_get(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &val8);
+					result	= k2hdkc_full_cas8_get(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &val8);
 				}else if(CAS_TYPE_16 == type){
-					result	= k2hdkc_ex_cas16_get(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &val16);
+					result	= k2hdkc_full_cas16_get(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &val16);
 				}else if(CAS_TYPE_32 == type){
-					result	= k2hdkc_ex_cas32_get(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &val32);
+					result	= k2hdkc_full_cas32_get(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &val32);
 				}else{	// CAS_TYPE_64 == type
-					result	= k2hdkc_ex_cas64_get(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &val64);
+					result	= k2hdkc_full_cas64_get(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &val64);
 				}
 			}else{
 				if(CAS_TYPE_8 == type){
-					result	= k2hdkc_ex_cas8_get_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val8);
+					result	= k2hdkc_full_cas8_get_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val8);
 				}else if(CAS_TYPE_16 == type){
-					result	= k2hdkc_ex_cas16_get_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val16);
+					result	= k2hdkc_full_cas16_get_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val16);
 				}else if(CAS_TYPE_32 == type){
-					result	= k2hdkc_ex_cas32_get_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val32);
+					result	= k2hdkc_full_cas32_get_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val32);
 				}else{	// CAS_TYPE_64 == type
-					result	= k2hdkc_ex_cas64_get_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val64);
+					result	= k2hdkc_full_cas64_get_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val64);
 				}
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComCasGet*	pComObj = GetOtSlaveK2hdkcComCasGet(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComCasGet*	pComObj = GetOtSlaveK2hdkcComCasGet(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return true;		// for continue.
@@ -4297,43 +4300,43 @@ static bool CasSetCommand(k2hdkc_chmpx_h chmpxhandle, CASTYPE type, params_t& pa
 				if(CAS_TYPE_8 == type){
 					uint8_t		oldval	= static_cast<uint8_t>(atoi(strOldVal.c_str()));
 					uint8_t		newval	= static_cast<uint8_t>(atoi(strNewVal.c_str()));
-					result				= k2hdkc_ex_cas8_set(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval);
+					result				= k2hdkc_full_cas8_set(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval);
 				}else if(CAS_TYPE_16 == type){
 					uint16_t	oldval	= static_cast<uint16_t>(atoi(strOldVal.c_str()));
 					uint16_t	newval	= static_cast<uint16_t>(atoi(strNewVal.c_str()));
-					result				= k2hdkc_ex_cas16_set(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval);
+					result				= k2hdkc_full_cas16_set(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval);
 				}else if(CAS_TYPE_32 == type){
 					uint32_t	oldval	= static_cast<uint32_t>(atoi(strOldVal.c_str()));
 					uint32_t	newval	= static_cast<uint32_t>(atoi(strNewVal.c_str()));
-					result				= k2hdkc_ex_cas32_set(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval);
+					result				= k2hdkc_full_cas32_set(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval);
 				}else{	// CAS_TYPE_64 == type
 					uint64_t	oldval	= static_cast<uint64_t>(atoi(strOldVal.c_str()));
 					uint64_t	newval	= static_cast<uint64_t>(atoi(strNewVal.c_str()));
-					result				= k2hdkc_ex_cas64_set(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval);
+					result				= k2hdkc_full_cas64_set(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval);
 				}
 			}else{
 				if(CAS_TYPE_8 == type){
 					uint8_t		oldval	= static_cast<uint8_t>(atoi(strOldVal.c_str()));
 					uint8_t		newval	= static_cast<uint8_t>(atoi(strNewVal.c_str()));
-					result				= k2hdkc_ex_cas8_set_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+					result				= k2hdkc_full_cas8_set_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}else if(CAS_TYPE_16 == type){
 					uint16_t	oldval	= static_cast<uint16_t>(atoi(strOldVal.c_str()));
 					uint16_t	newval	= static_cast<uint16_t>(atoi(strNewVal.c_str()));
-					result				= k2hdkc_ex_cas16_set_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+					result				= k2hdkc_full_cas16_set_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}else if(CAS_TYPE_32 == type){
 					uint32_t	oldval	= static_cast<uint32_t>(atoi(strOldVal.c_str()));
 					uint32_t	newval	= static_cast<uint32_t>(atoi(strNewVal.c_str()));
-					result				= k2hdkc_ex_cas32_set_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+					result				= k2hdkc_full_cas32_set_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}else{	// CAS_TYPE_64 == type
 					uint64_t	oldval	= static_cast<uint64_t>(atoi(strOldVal.c_str()));
 					uint64_t	newval	= static_cast<uint64_t>(atoi(strNewVal.c_str()));
-					result				= k2hdkc_ex_cas64_set_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+					result				= k2hdkc_full_cas64_set_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComCasSet*	pComObj = GetOtSlaveK2hdkcComCasSet(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComCasSet*	pComObj = GetOtSlaveK2hdkcComCasSet(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return true;		// for continue.
@@ -4473,21 +4476,21 @@ static bool CasIncDecCommand(k2hdkc_chmpx_h chmpxhandle, bool is_increment, para
 		if(isModeCAPI){
 			if(-1 == Expire && PassPhrase.empty()){
 				if(is_increment){
-					result = k2hdkc_ex_cas_increment(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1);
+					result = k2hdkc_full_cas_increment(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1);
 				}else{
-					result = k2hdkc_ex_cas_decrement(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1);
+					result = k2hdkc_full_cas_decrement(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1);
 				}
 			}else{
 				if(is_increment){
-					result = k2hdkc_ex_cas_increment_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+					result = k2hdkc_full_cas_increment_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}else{
-					result = k2hdkc_ex_cas_decrement_wa(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+					result = k2hdkc_full_cas_decrement_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 				}
 			}
 			rescode = k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComCasIncDec*	pComObj = GetOtSlaveK2hdkcComCasIncDec(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComCasIncDec*	pComObj = GetOtSlaveK2hdkcComCasIncDec(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return true;		// for continue.
@@ -4612,7 +4615,7 @@ static bool StatusChmpxCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 
 	// Initialize
 	ChmCntrl	chmobj;
-	if(!chmobj.OnlyAttachInitialize(strConfig.c_str(), CntlPort)){
+	if(!chmobj.OnlyAttachInitialize(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()))){
 		ERR("Could not initialize(attach) chmpx shared memory.");
 		return true;		// for continue.
 	}
@@ -4641,6 +4644,12 @@ static bool StatusChmpxCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 			PRN("pending hash               = 0x%016" PRIx64 ,	pInfo->pending_hash);
 			PRN("port                       = %d",				pInfo->port);
 			PRN("control port               = %d",				pInfo->ctlport);
+			PRN("cuk                        = %s",				pInfo->cuk);
+			PRN("custom id seed             = %s",				pInfo->custom_seed);
+			PRN("endpoints                  = %s",				get_hostport_pairs_string(pInfo->endpoints, EXTERNAL_EP_MAX).c_str());
+			PRN("control endpoints          = %s",				get_hostport_pairs_string(pInfo->ctlendpoints, EXTERNAL_EP_MAX).c_str());
+			PRN("forward peers              = %s",				get_hostport_pairs_string(pInfo->forward_peers, FORWARD_PEER_MAX).c_str());
+			PRN("reverse peers              = %s",				get_hostport_pairs_string(pInfo->reverse_peers, REVERSE_PEER_MAX).c_str());
 			PRN("ssl                        = %s",				pInfo->is_ssl ? "yes" : "no");
 
 			if(pInfo->is_ssl){
@@ -4680,6 +4689,8 @@ static bool StatusChmpxCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 			PRN("mode                       = %s",				STRCHMPXMODE(pInfo->mode));
 			PRN("port                       = %d",				pInfo->port);
 			PRN("control port               = %d",				pInfo->ctlport);
+			PRN("cuk                        = %s",				pInfo->cuk);
+			PRN("custom id seed             = %s",				pInfo->custom_seed);
 			PRN("ssl                        = %s",				pInfo->is_ssl ? "yes" : "no");
 			PRN("last status update time    = %zu (unix time)",	pInfo->last_status_time);
 			PRN("status                     = %s",				STR_CHMPXSTS_FULL(pInfo->status).c_str());
@@ -4768,6 +4779,12 @@ static bool StatusChmpxCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 				PRN("  pending hash                               = 0x%016" PRIx64 ,pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.pending_hash);
 				PRN("  port                                       = %d",			pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.port);
 				PRN("  control port                               = %d",			pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.ctlport);
+				PRN("  cuk                                        = %s",			pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.cuk);
+				PRN("  custom id seed                             = %s",			pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.custom_seed);
+				PRN("  endpoints                                  = %s",			get_hostport_pairs_string(pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.endpoints, EXTERNAL_EP_MAX).c_str());
+				PRN("  control endpoints                          = %s",			get_hostport_pairs_string(pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.ctlendpoints, EXTERNAL_EP_MAX).c_str());
+				PRN("  forward peers                              = %s",			get_hostport_pairs_string(pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.forward_peers, FORWARD_PEER_MAX).c_str());
+				PRN("  reverse peers                              = %s",			get_hostport_pairs_string(pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.reverse_peers, REVERSE_PEER_MAX).c_str());
 				PRN("  ssl                                        = %s",			pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.is_ssl ? "yes" : "no");
 
 				if(pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.is_ssl){
@@ -4809,6 +4826,12 @@ static bool StatusChmpxCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 				PRN("    pending hash                             = 0x%016" PRIx64 ,pchmpxlist->chmpx.pending_hash);
 				PRN("    port                                     = %d",			pchmpxlist->chmpx.port);
 				PRN("    control port                             = %d",			pchmpxlist->chmpx.ctlport);
+				PRN("    cuk                                      = %s",			pchmpxlist->chmpx.cuk);
+				PRN("    custom id seed                           = %s",			pchmpxlist->chmpx.custom_seed);
+				PRN("    endpoints                                = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.endpoints, EXTERNAL_EP_MAX).c_str());
+				PRN("    control endpoints                        = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.ctlendpoints, EXTERNAL_EP_MAX).c_str());
+				PRN("    forward peers                            = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.forward_peers, FORWARD_PEER_MAX).c_str());
+				PRN("    reverse peers                            = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.reverse_peers, REVERSE_PEER_MAX).c_str());
 				PRN("    ssl                                      = %s",			pchmpxlist->chmpx.is_ssl ? "yes" : "no");
 
 				if(pchmpxlist->chmpx.is_ssl){
@@ -4851,6 +4874,12 @@ static bool StatusChmpxCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 				PRN("    pending hash                             = 0x%016" PRIx64 ,pchmpxlist->chmpx.pending_hash);
 				PRN("    port                                     = %d",			pchmpxlist->chmpx.port);
 				PRN("    control port                             = %d",			pchmpxlist->chmpx.ctlport);
+				PRN("    cuk                                      = %s",			pchmpxlist->chmpx.cuk);
+				PRN("    custom id seed                           = %s",			pchmpxlist->chmpx.custom_seed);
+				PRN("    endpoints                                = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.endpoints, EXTERNAL_EP_MAX).c_str());
+				PRN("    control endpoints                        = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.ctlendpoints, EXTERNAL_EP_MAX).c_str());
+				PRN("    forward peers                            = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.forward_peers, FORWARD_PEER_MAX).c_str());
+				PRN("    reverse peers                            = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.reverse_peers, REVERSE_PEER_MAX).c_str());
 				PRN("    ssl                                      = %s",			pchmpxlist->chmpx.is_ssl ? "yes" : "no");
 
 				if(pchmpxlist->chmpx.is_ssl){
@@ -4975,6 +5004,12 @@ static bool StatusChmpxCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 				PRN("  mode                                       = %s",			STRCHMPXMODE(pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.mode));
 				PRN("  port                                       = %d",			pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.port);
 				PRN("  control port                               = %d",			pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.ctlport);
+				PRN("  cuk                                        = %s",			pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.cuk);
+				PRN("  custom id seed                             = %s",			pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.custom_seed);
+				PRN("  endpoints                                  = %s",			get_hostport_pairs_string(pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.endpoints, EXTERNAL_EP_MAX).c_str());
+				PRN("  control endpoints                          = %s",			get_hostport_pairs_string(pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.ctlendpoints, EXTERNAL_EP_MAX).c_str());
+				PRN("  forward peers                              = %s",			get_hostport_pairs_string(pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.forward_peers, FORWARD_PEER_MAX).c_str());
+				PRN("  reverse peers                              = %s",			get_hostport_pairs_string(pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.reverse_peers, REVERSE_PEER_MAX).c_str());
 				PRN("  ssl                                        = %s",			pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.is_ssl ? "yes" : "no");
 				PRN("  last status update time                    = %zu (unix time)",	pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.last_status_time);
 				PRN("  status                                     = %s",			STR_CHMPXSTS_FULL(pInfo->pchminfo->chmpx_man.chmpx_self->chmpx.status).c_str());
@@ -4990,6 +5025,12 @@ static bool StatusChmpxCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 				PRN("    mode                                     = %s",			STRCHMPXMODE(pchmpxlist->chmpx.mode));
 				PRN("    port                                     = %d",			pchmpxlist->chmpx.port);
 				PRN("    control port                             = %d",			pchmpxlist->chmpx.ctlport);
+				PRN("    cuk                                      = %s",			pchmpxlist->chmpx.cuk);
+				PRN("    custom id seed                           = %s",			pchmpxlist->chmpx.custom_seed);
+				PRN("    endpoints                                = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.endpoints, EXTERNAL_EP_MAX).c_str());
+				PRN("    control endpoints                        = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.ctlendpoints, EXTERNAL_EP_MAX).c_str());
+				PRN("    forward peers                            = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.forward_peers, FORWARD_PEER_MAX).c_str());
+				PRN("    reverse peers                            = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.reverse_peers, REVERSE_PEER_MAX).c_str());
 				PRN("    ssl                                      = %s",			pchmpxlist->chmpx.is_ssl ? "yes" : "no");
 				PRN("    last status update time                  = %zu (unix time)",	pchmpxlist->chmpx.last_status_time);
 				PRN("    status                                   = %s",			STR_CHMPXSTS_FULL(pchmpxlist->chmpx.status).c_str());
@@ -5004,6 +5045,13 @@ static bool StatusChmpxCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 				PRN("    chmpxid                                  = 0x%016" PRIx64 ,pchmpxlist->chmpx.chmpxid);
 				PRN("    hostname                                 = %s",			pchmpxlist->chmpx.name);
 				PRN("    mode                                     = %s",			STRCHMPXMODE(pchmpxlist->chmpx.mode));
+				PRN("    control port                             = %d",			pchmpxlist->chmpx.ctlport);
+				PRN("    cuk                                      = %s",			pchmpxlist->chmpx.cuk);
+				PRN("    custom id seed                           = %s",			pchmpxlist->chmpx.custom_seed);
+				PRN("    endpoints                                = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.endpoints, EXTERNAL_EP_MAX).c_str());
+				PRN("    control endpoints                        = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.ctlendpoints, EXTERNAL_EP_MAX).c_str());
+				PRN("    forward peers                            = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.forward_peers, FORWARD_PEER_MAX).c_str());
+				PRN("    reverse peers                            = %s",			get_hostport_pairs_string(pchmpxlist->chmpx.reverse_peers, REVERSE_PEER_MAX).c_str());
 				PRN("    ssl                                      = %s",			pchmpxlist->chmpx.is_ssl ? "yes" : "no");
 				PRN("    last status update time                  = %zu (unix time)",	pchmpxlist->chmpx.last_status_time);
 				PRN("    status                                   = %s",			STR_CHMPXSTS_FULL(pchmpxlist->chmpx.status).c_str());
@@ -5047,11 +5095,11 @@ static bool StatusNodeCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 	if(K2HDKC_INVALID_HANDLE == chmpxhandle){
 		// use one-time chmpx object
 		if(isModeCAPI){
-			result	= k2hdkc_ex_get_state(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, &pstates, &statecount);
+			result	= k2hdkc_full_get_state(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, &pstates, &statecount);
 			rescode	= k2hdkc_get_lastres_code();
 
 		}else{
-			K2hdkcComState*	pComObj = GetOtSlaveK2hdkcComState(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+			K2hdkcComState*	pComObj = GetOtSlaveK2hdkcComState(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin);
 			if(!pComObj){
 				ERR("Something internal error occurred. could not make command object.");
 				return true;		// for continue.
@@ -5758,6 +5806,10 @@ int main(int argc, char** argv)
 		string	strtmp	= opts["-ctlport"][0];
 		CntlPort		= static_cast<short>(atoi(strtmp.c_str()));
 	}
+	// -cuk
+	if(opts.end() != opts.find("-cuk")){
+		strCuk	= opts["-cuk"][0];
+	}
 	// -permanent
 	if(opts.end() != opts.find("-permanent")){
 		isPermanent	= true;
@@ -5851,13 +5903,13 @@ int main(int argc, char** argv)
 	k2hdkc_chmpx_h	chmpxhandle	= K2HDKC_INVALID_HANDLE;
 	if(isPermanent){
 		if(isModeCAPI){
-			if(K2HDKC_INVALID_HANDLE == (chmpxhandle = k2hdkc_open_chmpx_ex(strConfig.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, isCleanupBup))){
+			if(K2HDKC_INVALID_HANDLE == (chmpxhandle = k2hdkc_open_chmpx_full(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, isCleanupBup))){
 				ERR("Could not open(join and open msgid) slave node chmpx.");
 				exit(EXIT_FAILURE);
 			}
 		}else{
 			pSlave = new K2hdkcSlave();
-			if(!pSlave->Initialize(strConfig.c_str(), CntlPort, isAutoRejoin)){
+			if(!pSlave->Initialize(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin)){
 				ERR("Could not join slave node chmpx.");
 				DKC_DELETE(pSlave);
 				exit(EXIT_FAILURE);
@@ -5901,6 +5953,7 @@ int main(int argc, char** argv)
 			PRN("Chmpx parameters:");
 			PRN("    Configuration               : %s",	strConfig.c_str());
 			PRN("    Control port                : %d",	(CHM_INVALID_PORT == CntlPort ? 0 : CntlPort));
+			PRN("    CUK                         : %s",	strCuk.c_str());
 			PRN("    Permanent connect           : %s",	isPermanent ? "yes" : "no");
 			PRN("    Auto rejoin                 : %s",	isAutoRejoin ? "yes" : "no");
 			PRN("    Join giveup                 : %s",	isNoGiveupRejoin ? "yes" : "no");

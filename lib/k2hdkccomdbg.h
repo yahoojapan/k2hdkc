@@ -38,30 +38,7 @@ inline bool IS_SAFE_DKC_COM_OFFSET(const DKCCOM_ALL* pComAll, off_t offset, size
 		ERR_DKCPRN("DKCCOM_ALL command type(0x%016" PRIx64 ") is wrong.", pComAll->com_head.comtype);
 		return false;
 	}
-
-	if(	(DKC_COM_GET 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_GET_DIRECT 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_GET_SUBKEYS 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_GET_ATTRS 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_GET_ATTR 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_SET 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_SET_DIRECT 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_SET_SUBKEYS 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_SET_ALL 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_ADD_SUBKEYS 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_DEL 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_DEL_SUBKEYS 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_REN 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_QPUSH 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_QPOP 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_CAS_INIT 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_CAS_GET 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_CAS_SET 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_CAS_INCDEC 	== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_REPL_KEY 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_K2HSTATE 		== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) ||
-		(DKC_COM_STATE 			== pComAll->com_head.comtype && pComAll->com_head.length < (size + offset)) )
-	{
+	if(pComAll->com_head.length < (size + offset)){
 		ERR_DKCPRN("DKCCOM_ALL command type(0x%016" PRIx64 ") length(%zu byte) is too small( + %zu length byte + %zd offset byte ).", pComAll->com_head.comtype, pComAll->com_head.length, size, offset);
 		return false;
 	}

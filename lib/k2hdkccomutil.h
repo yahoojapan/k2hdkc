@@ -101,6 +101,7 @@
 //
 //		const char*		config
 //		short			ctlport				(default = CHM_INVALID_PORT)
+//		const char*		cuk					(default = NULL)
 //		bool			is_auto_rejoin		(default = false)
 //		bool			no_giveup_rejoin	(default = false)
 //		uint64_t		comnum				(default = K2hdkcComNumber::INIT_NUMBER)
