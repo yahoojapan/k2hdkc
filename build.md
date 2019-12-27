@@ -87,12 +87,13 @@ After successfully installing **K2HDKC**, you will see the k2hdkc help text:
 ```bash
 $ k2hdkc -h
 [Usage]
-k2hdkc [-conf <file path> | -json <json string>] [-ctlport <port>] [-comlog] [-no_giveup_rejoin] [-d [silent|err|wan|msg|dump]] [-dfile <file path>]
+k2hdkc [-conf <file path> | -json <json string>] [-ctlport <port>] [-cuk <cuk>] [-comlog] [-no_giveup_rejoin] [-d [silent|err|wan|msg|dump]] [-dfile <file path>]
 k2hdkc [ -h | -v ]
 [option]
   -conf <path>         specify the configuration file(.ini .yaml .json) path
   -json <string>       specify the configuration json string
   -ctlport <port>      specify the self control port(*)
+  -cuk <cuk string>    specify the self CUK(*)
   -no_giveup_rejoin    not give up rejoining chmpx
   -comlog              enable logging communication command
   -d <param>           specify the debugging output mode:
@@ -110,7 +111,8 @@ k2hdkc [ -h | -v ]
   K2HDKCJSONCONF       specify the configuration json string
 
 (*) you can use environment DKCDBGMODE and DKCDBGFILE instead of -d/-dfile options.
-(*) if ctlport option is specified, chmpx searches same ctlport in configuration
-    file and ignores "CTLPORT" directive in "GLOBAL" section. and chmpx will
-    start in the mode indicated by the server entry that has been detected.
+(*) if ctlport and cuk option is specified, chmpx searches same ctlport/cuk
+    in configuration file and ignores "CTLPORT" or "CUK" directive in
+    "GLOBAL" section. and chmpx will start in the mode indicated by the
+    server entry that has been detected.
 ```
