@@ -29,12 +29,14 @@ k2hdkclinetoolプロセスの起動オプションを説明します。
 k2hdkclinetoolプロセスは、以下のような起動オプションを受け取ります。（**-h** オプションにより起動オプションを表示します。）
 ```
 $ k2hdkclinetool -h
-Usage: lt-k2hdkclinetool [-conf <file> | -json <string>] [-ctlport <port>] [options...]
+Usage: lt-k2hdkclinetool [-conf <file> | -json <string>] [-ctlport <port>] [-cuk <cuk string>] [options...]
        lt-k2hdkclinetool -help
+
 Option -help(h)           help display
        -conf <filename>   k2hdkc configuration file path(.ini .yaml .json)
        -json <string>     k2hdkc configuration by json string
        -ctlport <port>    slave node chmpx control port
+       -cuk <cuk string>  slave node chmpx cuk string
        -lap               print lap time after line command
        -capi              use C API for calling internal library
        -perm              use permanent chmpx handle
@@ -47,12 +49,13 @@ Option -help(h)           help display
        -his <count>       set history count(default 500)
        -libversion        display k2hdkc library version
        -run <file path>   run command(history) file.
+
 (*) You can specify "K2HDKCCONFFILE" or "K2HDKCJSONCONF" environment instead of
     "-conf" or "-json" option for configuration.
 (*) You can set debug level by another way which is setting environment as "DKCDBGMODE".
     "DKCDBGMODE" environment is took as "SILENT(SLT)", "ERROR(ERR)", "WARNING(WAN)",
     "INFO(MSG)" or "DUMP(DMP)" value.
-    When this process gets SIGUSER1 signal, the debug level is bumpup.
+    When this process gets SIGUSR1 signal, the debug level is bumpup.
     (The debug level is changed as "SLT"->"ERR"->"WAN"->"MSG"->"DMP"->...)
 (*) You can set debugging message log file by the environment "DKCDBGFILE".
 ```
@@ -70,6 +73,11 @@ k2hdkcクラスタに接続しているchmpxプロセス（スレーブノード
 k2hdkcクラスタに接続しているchmpxプロセス（スレーブノード）の制御ポート番号を指定します。  
 このオプションは、HOST上に1つのchmpxプロセス（スレーブノード）のみ起動している場合、省略することができます。  
 同一HOST上に複数のchmpxプロセス（スレーブノード）が起動している場合には、このオプションの指定は必須です。
+#### -cuk <cuk string>  
+k2hdkcプロセスが接続するchmpxプロセス（サーバーノード）を明確にするためにCUK（Custom Unique Key）を指定します。  
+CHMPXのコンフィグレーションに同一のホスト名（IPアドレス）や制御ポートで複数のCHMPXプログラムを起動する場合、CHMPXプログラムは自信がどの設定値を読み込むのか曖昧なケースがあります。  
+このようなコンフィグレーションを指定する場合に、設定値を明確にするために、CUKを指定している場合があります。  
+CUKは、クラスタ内で一意であるべき設定値です。
 #### -perm
 本ツールのコマンド（k2hdkcクラスタへの通信コマンド）を実行するときに、chmpxプロセス（スレーブノード）への接続を使いまわす場合に指定してください。  
 このオプションを指定することで、永続的接続のテストが可能です。  

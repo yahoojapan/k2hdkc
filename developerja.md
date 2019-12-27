@@ -214,7 +214,7 @@ k2hdkc_set_debug_level_message();
 
 #### 書式
 - k2hdkc_chmpx_h k2hdkc_open_chmpx(const char* config)
-- k2hdkc_chmpx_h k2hdkc_open_chmpx_ex(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, bool is_clean_bup)
+- k2hdkc_chmpx_h k2hdkc_open_chmpx_full(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, bool is_clean_bup)
 - bool k2hdkc_close_chmpx(k2hdkc_chmpx_h handle)
 - bool k2hdkc_close_chmpx_ex(k2hdkc_chmpx_h handle, bool is_clean_bup)
 
@@ -233,6 +233,8 @@ k2hdkc_set_debug_level_message();
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -252,7 +254,7 @@ k2hdkc_set_debug_level_message();
 #### サンプル
 ```
 k2hdkc_chmpx_h    chmpxhandle;
-if(K2HDKC_INVALID_HANDLE == (chmpxhandle = k2hdkc_open_chmpx_ex(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, isCleanupBup))){
+if(K2HDKC_INVALID_HANDLE == (chmpxhandle = k2hdkc_open_chmpx_ex(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, isCleanupBup))){
     exit(EXIT_FAILURE);
 }
 ...
@@ -343,20 +345,20 @@ k2hdkcクラスタからキーを指定して、値を取得する関数群で�
 - bool k2hdkc_get_str_value_np(const char* config, const char* pkey, char** ppval);
 - char* k2hdkc_get_str_direct_value_np(const char* config, const char* pkey);
  
-- bool k2hdkc_ex_get_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, unsigned char** ppval, size_t* pvallength);
-- unsigned char* k2hdkc_ex_get_direct_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, size_t* pvallength);
-- bool k2hdkc_ex_get_str_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char** ppval);
-- char* k2hdkc_ex_get_str_direct_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey);
+- bool k2hdkc_full_get_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, unsigned char** ppval, size_t* pvallength);
+- unsigned char* k2hdkc_full_get_direct_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, size_t* pvallength);
+- bool k2hdkc_full_get_str_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char** ppval);
+- char* k2hdkc_full_get_str_direct_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey);
  
-- bool k2hdkc_ex_get_value_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, unsigned char** ppval, size_t* pvallength);
-- unsigned char* k2hdkc_ex_get_direct_value_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, size_t* pvallength);
-- bool k2hdkc_ex_get_str_value_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, char** ppval);
-- char* k2hdkc_ex_get_str_direct_value_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass);
+- bool k2hdkc_full_get_value_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, unsigned char** ppval, size_t* pvallength);
+- unsigned char* k2hdkc_full_get_direct_value_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, size_t* pvallength);
+- bool k2hdkc_full_get_str_value_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, char** ppval);
+- char* k2hdkc_full_get_str_direct_value_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass);
  
-- bool k2hdkc_ex_get_value_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, unsigned char** ppval, size_t* pvallength);
-- unsigned char* k2hdkc_ex_get_direct_value_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, size_t* pvallength);
-- bool k2hdkc_ex_get_str_value_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char** ppval);
-- char* k2hdkc_ex_get_str_direct_value_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey);
+- bool k2hdkc_full_get_value_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, unsigned char** ppval, size_t* pvallength);
+- unsigned char* k2hdkc_full_get_direct_value_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, size_t* pvallength);
+- bool k2hdkc_full_get_str_value_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char** ppval);
+- char* k2hdkc_full_get_str_direct_value_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey);
  
 - bool k2hdkc_pm_get_value(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, unsigned char** ppval, size_t* pvallength);
 - unsigned char* k2hdkc_pm_get_direct_value(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, size_t* pvallength);
@@ -395,7 +397,7 @@ k2hdkcクラスタからキーを指定して、値を取得する関数群で�
 さらに、以下のタイプが上記までのタイプに加え、以下の形式が存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -405,6 +407,8 @@ k2hdkcクラスタからキーを指定して、値を取得する関数群で�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -436,7 +440,7 @@ k2hdkcクラスタからキーを指定して、値を取得する関数群で�
 // do command
 unsigned char* pval = NULL;
 size_t         vallength = 0;
-bool           result = k2hdkc_ex_get_value(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylength, &pval, &vallength);
+bool           result = k2hdkc_full_get_value(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pkey, keylength, &pval, &vallength);
 dkcres_type_t  rescode = k2hdkc_get_lastres_code();
 
 // check result
@@ -460,10 +464,10 @@ k2hdkcクラスタからキーを指定して、値を取得する関数群で�
 - bool k2hdkc_da_get_str_value(const char* config, const char* pkey, off_t getpos, size_t val_length, char** ppval)
 - char* k2hdkc_da_get_str_direct_value(const char* config, const char* pkey, off_t getpos, size_t val_length)
  
-- bool k2hdkc_ex_da_get_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, off_t getpos, size_t val_length, unsigned char** ppval, size_t* pvallength)
-- unsigned char* k2hdkc_ex_da_get_direct_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, off_t getpos, size_t val_length, size_t* pvallength)
-- bool k2hdkc_ex_da_get_str_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, off_t getpos, size_t val_length, char** ppval)
-- char* k2hdkc_ex_da_get_str_direct_value(const char* conffile, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, off_t getpos, size_t val_length)
+- bool k2hdkc_full_da_get_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, off_t getpos, size_t val_length, unsigned char** ppval, size_t* pvallength)
+- unsigned char* k2hdkc_full_da_get_direct_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, off_t getpos, size_t val_length, size_t* pvallength)
+- bool k2hdkc_full_da_get_str_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, off_t getpos, size_t val_length, char** ppval)
+- char* k2hdkc_full_da_get_str_direct_value(const char* conffile, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, off_t getpos, size_t val_length)
  
 - bool k2hdkc_pm_da_get_value(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, off_t getpos, size_t val_length, unsigned char** ppval, size_t* pvallength)
 - unsigned char* k2hdkc_pm_da_get_direct_value(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, off_t getpos, size_t val_length, size_t* pvallength)
@@ -484,7 +488,7 @@ k2hdkcクラスタからキーを指定して、値を取得する関数群で�
 上記の4種類に対して、以下の規則でそれぞれのタイプに対して引数などの違いのある類似関数があります。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -494,6 +498,8 @@ k2hdkcクラスタからキーを指定して、値を取得する関数群で�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -528,7 +534,7 @@ Get Direct系にはGet系のように、属性チェック（パーミッショ�
 // get direct
 unsigned char**    ppval    = NULL;
 size_t        vallen    = 0;
-bool        result    = k2hdkc_ex_da_get_value(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylen, offset, length, ppval, &vallen);
+bool        result    = k2hdkc_full_da_get_value(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pkey, keylen, offset, length, ppval, &vallen);
 dkcres_type_t    rescode    = k2hdkc_get_lastres_code();
 
 // check result
@@ -557,15 +563,15 @@ k2hdkcクラスタからキーを指定して、Subkeyリストを取得する�
 - int k2hdkc_get_str_subkeys_np(const char* config, const char* pkey, char*** ppskeyarray)
 - char** k2hdkc_get_str_direct_subkeys_np(const char* config, const char* pkey)
  
-- bool k2hdkc_ex_get_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, PK2HDKCKEYPCK* ppskeypck, int* pskeypckcnt)
-- PK2HDKCKEYPCK k2hdkc_ex_get_direct_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, int* pskeypckcnt)
-- int k2hdkc_ex_get_str_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char*** ppskeyarray)
-- char** k2hdkc_ex_get_str_direct_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+- bool k2hdkc_full_get_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, PK2HDKCKEYPCK* ppskeypck, int* pskeypckcnt)
+- PK2HDKCKEYPCK k2hdkc_full_get_direct_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, int* pskeypckcnt)
+- int k2hdkc_full_get_str_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char*** ppskeyarray)
+- char** k2hdkc_full_get_str_direct_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
  
-- bool k2hdkc_ex_get_subkeys_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, PK2HDKCKEYPCK* ppskeypck, int* pskeypckcnt)
-- PK2HDKCKEYPCK k2hdkc_ex_get_direct_subkeys_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, int* pskeypckcnt)
-- int k2hdkc_ex_get_str_subkeys_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char*** ppskeyarray)
-- char** k2hdkc_ex_get_str_direct_subkeys_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+- bool k2hdkc_full_get_subkeys_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, PK2HDKCKEYPCK* ppskeypck, int* pskeypckcnt)
+- PK2HDKCKEYPCK k2hdkc_full_get_direct_subkeys_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, int* pskeypckcnt)
+- int k2hdkc_full_get_str_subkeys_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, char*** ppskeyarray)
+- char** k2hdkc_full_get_str_direct_subkeys_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
  
 - bool k2hdkc_pm_get_subkeys(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, PK2HDKCKEYPCK* ppskeypck, int* pskeypckcnt)
 - PK2HDKCKEYPCK k2hdkc_pm_get_direct_subkeys(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, int* pskeypckcnt)
@@ -597,7 +603,7 @@ k2hdkcクラスタからキーを指定して、Subkeyリストを取得する�
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -607,6 +613,8 @@ k2hdkcクラスタからキーを指定して、Subkeyリストを取得する�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -661,7 +669,7 @@ extern bool k2h_free_keyarray(char** pkeys);
 ```
 PK2HDKCKEYPCK    pskeypck = NULL;
 int        skeypckcnt = 0;
-bool        result = k2hdkc_ex_get_subkeys(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylength, &pskeypck, &skeypckcnt);
+bool        result = k2hdkc_full_get_subkeys(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pkey, keylength, &pskeypck, &skeypckcnt);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -683,9 +691,9 @@ k2hdkcクラスタからキーを指定して、属性（Attribute）を取得�
 - PK2HDKCATTRPCK k2hdkc_get_direct_attrs(const char* config, const unsigned char* pkey, size_t keylength, int* pattrspckcnt)
 - PK2HDKCATTRPCK k2hdkc_get_str_direct_attrs(const char* config, const char* pkey, int* pattrspckcnt)
  
-- bool k2hdkc_ex_get_attrs(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, PK2HDKCATTRPCK* ppattrspck, int* pattrspckcnt)
-- PK2HDKCATTRPCK k2hdkc_ex_get_direct_attrs(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, int* pattrspckcnt)
-- PK2HDKCATTRPCK k2hdkc_ex_get_str_direct_attrs(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, int* pattrspckcnt)
+- bool k2hdkc_full_get_attrs(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, PK2HDKCATTRPCK* ppattrspck, int* pattrspckcnt)
+- PK2HDKCATTRPCK k2hdkc_full_get_direct_attrs(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, int* pattrspckcnt)
+- PK2HDKCATTRPCK k2hdkc_full_get_str_direct_attrs(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, int* pattrspckcnt)
  
 - bool k2hdkc_pm_get_attrs(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, PK2HDKCATTRPCK* ppattrspck, int* pattrspckcnt)
 - PK2HDKCATTRPCK k2hdkc_pm_get_direct_attrs(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, int* pattrspckcnt)
@@ -704,7 +712,7 @@ k2hdkcクラスタからキーを指定して、属性（Attribute）を取得�
 上記の3種類に対して、以下の規則でそれぞれのタイプに対して引数などの違いのある類似関数があります。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -714,6 +722,8 @@ k2hdkcクラスタからキーを指定して、属性（Attribute）を取得�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -764,7 +774,7 @@ extern bool k2h_free_attrpack(PK2HATTRPCK pattrs, int attrcnt);
 ```
 PK2HDKCATTRPCK    pattrspck    = NULL;
 int        attrspckcnt    = 0;
-bool        result = k2hdkc_ex_get_attrs(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &pattrspck, &attrspckcnt);
+bool        result = k2hdkc_full_get_attrs(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &pattrspck, &attrspckcnt);
 dkcres_type_t    rescode= k2hdkc_get_lastres_code();
  
 // check result
@@ -786,8 +796,8 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
 - bool k2hdkc_set_value(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength)
 - bool k2hdkc_set_str_value(const char* config, const char* pkey, const char* pval)
  
-- bool k2hdkc_ex_set_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength)
-- bool k2hdkc_ex_set_str_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval)
+- bool k2hdkc_full_set_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength)
+- bool k2hdkc_full_set_str_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval)
  
 - bool k2hdkc_pm_set_value(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength)
 - bool k2hdkc_pm_set_str_value(k2hdkc_chmpx_h handle, const char* pkey, const char* pval)
@@ -795,8 +805,8 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
 - bool k2hdkc_set_value_wa(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool rmsubkeylist, const char* encpass, const time_t* expire)
 - bool k2hdkc_set_str_value_wa(const char* config, const char* pkey, const char* pval, bool rmsubkeylist, const char* encpass, const time_t* expire)
  
-- bool k2hdkc_ex_set_value_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool rmsubkeylist, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_set_str_value_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, bool rmsubkeylist, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_set_value_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool rmsubkeylist, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_set_str_value_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, bool rmsubkeylist, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_pm_set_value_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool rmsubkeylist, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_set_str_value_wa(k2hdkc_chmpx_h handle, const char* pkey, const char* pval, bool rmsubkeylist, const char* encpass, const time_t* expire)
@@ -817,7 +827,7 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -827,6 +837,8 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -853,7 +865,7 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
 
 #### サンプル
 ```
-bool        result = k2hdkc_ex_set_value(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pKey, KeyLen, pVal, ValLen);
+bool        result = k2hdkc_full_set_value(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pKey, KeyLen, pVal, ValLen);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -874,8 +886,8 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
 - bool k2hdkc_da_set_value(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const off_t setpos)
 - bool k2hdkc_da_set_str_value(const char* config, const char* pkey, const char* pval, const off_t setpos)
  
-- bool k2hdkc_ex_da_set_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const off_t setpos)
-- bool k2hdkc_ex_da_set_str_value(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, const off_t setpos)
+- bool k2hdkc_full_da_set_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const off_t setpos)
+- bool k2hdkc_full_da_set_str_value(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, const off_t setpos)
  
 - bool k2hdkc_pm_da_set_value(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const off_t setpos)
 - bool k2hdkc_pm_da_set_str_value(k2hdkc_chmpx_h handle, const char* pkey, const char* pval, const off_t setpos)
@@ -890,7 +902,7 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
 上記の2種類に対して、以下の規則でそれぞれのタイプに対して引数などの違いのある類似関数があります。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -900,6 +912,8 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -922,7 +936,7 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
 
 #### サンプル
 ```
-bool        result    = k2hdkc_ex_da_set_value(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylen, pval, vallen, offset);
+bool        result    = k2hdkc_full_da_set_value(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pkey, keylen, pval, vallen, offset);
 dkcres_type_t    rescode    = k2hdkc_get_lastres_code();
  
 // check result
@@ -943,8 +957,8 @@ k2hdkcクラスタからキーを指定して、サブキーリストを設定�
 - bool k2hdkc_set_subkeys(const char* config, const unsigned char* pkey, size_t keylength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
 - bool k2hdkc_set_str_subkeys(const char* config, const char* pkey, const char** pskeyarray)
  
-- bool k2hdkc_ex_set_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
-- bool k2hdkc_ex_set_str_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char** pskeyarray)
+- bool k2hdkc_full_set_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
+- bool k2hdkc_full_set_str_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char** pskeyarray)
  
 - bool k2hdkc_pm_set_subkeys(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
 - bool k2hdkc_pm_set_str_subkeys(k2hdkc_chmpx_h handle, const char* pkey, const char** pskeyarray)
@@ -959,7 +973,7 @@ k2hdkcクラスタからキーを指定して、サブキーリストを設定�
 上記の2種類に対して、以下の規則でそれぞれのタイプに対して引数などの違いのある類似関数があります。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -969,6 +983,8 @@ k2hdkcクラスタからキーを指定して、サブキーリストを設定�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -991,7 +1007,7 @@ k2hdkcクラスタからキーを指定して、サブキーリストを設定�
 
 #### サンプル
 ```
-bool        result    = k2hdkc_ex_set_subkeys(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pPKey, PKeyLen, pskeypck, skeypckcnt);
+bool        result    = k2hdkc_full_set_subkeys(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pPKey, PKeyLen, pskeypck, skeypckcnt);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -1012,8 +1028,8 @@ k2hdkcクラスタからキーを指定して、サブキーリストをクリ�
 - bool k2hdkc_clear_subkeys(const char* config, const unsigned char* pkey, size_t keylength)
 - bool k2hdkc_clear_str_subkeys(const char* config, const char* pkey)
  
-- bool k2hdkc_ex_clear_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
-- bool k2hdkc_ex_clear_str_subkeys(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+- bool k2hdkc_full_clear_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
+- bool k2hdkc_full_clear_str_subkeys(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
  
 - bool k2hdkc_pm_clear_subkeys(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength)
 - bool k2hdkc_pm_clear_str_subkeys(k2hdkc_chmpx_h handle, const char* pkey)
@@ -1028,7 +1044,7 @@ k2hdkcクラスタからキーを指定して、サブキーリストをクリ�
 上記の2種類に対して、以下の規則でそれぞれのタイプに対して引数などの違いのある類似関数があります。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -1038,6 +1054,8 @@ k2hdkcクラスタからキーを指定して、サブキーリストをクリ�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -1054,7 +1072,7 @@ k2hdkcクラスタからキーを指定して、サブキーリストをクリ�
 
 #### サンプル
 ```
-bool        result    = k2hdkc_ex_clear_subkeys(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pPKey, PKeyLen);
+bool        result    = k2hdkc_full_clear_subkeys(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pPKey, PKeyLen);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -1075,8 +1093,8 @@ k2hdkcクラスタから親キー、サブキーを指定して、サブキー�
 - bool k2hdkc_set_subkey(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength)
 - bool k2hdkc_set_str_subkey(const char* config, const char* pkey, const char* psubkey, const char* pskeyval)
  
-- bool k2hdkc_ex_set_subkey(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength)
-- bool k2hdkc_ex_set_str_subkey(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, const char* pskeyval)
+- bool k2hdkc_full_set_subkey(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength)
+- bool k2hdkc_full_set_str_subkey(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, const char* pskeyval)
  
 - bool k2hdkc_pm_set_subkey(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength)
 - bool k2hdkc_pm_set_str_subkey(k2hdkc_chmpx_h handle, const char* pkey, const char* psubkey, const char* pskeyval)
@@ -1084,8 +1102,8 @@ k2hdkcクラスタから親キー、サブキーを指定して、サブキー�
 - bool k2hdkc_set_subkey_wa(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength, bool checkattr, const char* encpass, const time_t* expire)
 - bool k2hdkc_set_str_subkey_wa(const char* config, const char* pkey, const char* psubkey, const char* pskeyval, bool checkattr, const char* encpass, const time_t* expire)
  
-- bool k2hdkc_ex_set_subkey_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength, bool checkattr, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_set_str_subkey_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, const char* pskeyval, bool checkattr, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_set_subkey_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength, bool checkattr, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_set_str_subkey_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, const char* pskeyval, bool checkattr, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_pm_set_subkey_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, const unsigned char* pskeyval, size_t skeyvallength, bool checkattr, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_set_str_subkey_wa(k2hdkc_chmpx_h handle, const char* pkey, const char* psubkey, const char* pskeyval, bool checkattr, const char* encpass, const time_t* expire)
@@ -1106,7 +1124,7 @@ k2hdkcクラスタから親キー、サブキーを指定して、サブキー�
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -1116,6 +1134,8 @@ k2hdkcクラスタから親キー、サブキーを指定して、サブキー�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -1146,7 +1166,7 @@ k2hdkcクラスタから親キー、サブキーを指定して、サブキー�
 
 #### サンプル
 ```
-bool        result    = k2hdkc_ex_set_subkeys(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pPKey, PKeyLen, pskeypck, skeypckcnt);
+bool        result    = k2hdkc_full_set_subkeys(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pPKey, PKeyLen, pskeypck, skeypckcnt);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -1167,8 +1187,8 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
 - bool k2hdkc_set_all(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
 - bool k2hdkc_set_str_all(const char* config, const char* pkey, const char* pval, const char** pskeyarray)
  
-- bool k2hdkc_ex_set_all(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
-- bool k2hdkc_ex_set_str_all(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, const char** pskeyarray)
+- bool k2hdkc_full_set_all(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
+- bool k2hdkc_full_set_str_all(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, const char** pskeyarray)
  
 - bool k2hdkc_pm_set_all(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt)
 - bool k2hdkc_pm_set_str_all(k2hdkc_chmpx_h handle, const char* pkey, const char* pval, const char** pskeyarray)
@@ -1176,8 +1196,8 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
 - bool k2hdkc_set_all_wa(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt, const char* encpass, const time_t* expire)
 - bool k2hdkc_set_str_all_wa(const char* config, const char* pkey, const char* pval, const char** pskeyarray, const char* encpass, const time_t* expire)
  
-- bool k2hdkc_ex_set_all_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_set_str_all_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, const char** pskeyarray, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_set_all_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_set_str_all_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* pval, const char** pskeyarray, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_pm_set_all_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, const PK2HDKCKEYPCK pskeypck, int skeypckcnt, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_set_str_all_wa(k2hdkc_chmpx_h handle, const char* pkey, const char* pval, const char** pskeyarray, const char* encpass, const time_t* expire)
@@ -1198,7 +1218,7 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -1208,6 +1228,8 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -1238,7 +1260,7 @@ k2hdkcクラスタからキーを指定して、値を設定する関数群で�
 
 #### サンプル
 ```
-bool        result = k2hdkc_ex_set_all(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pKey, KeyLen, pVal, ValLen, NULL, 0);
+bool        result = k2hdkc_full_set_all(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pKey, KeyLen, pVal, ValLen, NULL, 0);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -1259,8 +1281,8 @@ k2hdkcクラスタからキーを指定して、キー（およびキーに属�
 - bool k2hdkc_remove_all(const char* config, const unsigned char* pkey, size_t keylength)
 - bool k2hdkc_remove_str_all(const char* config, const char* pkey)
  
-- bool k2hdkc_ex_remove_all(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
-- bool k2hdkc_ex_remove_str_all(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+- bool k2hdkc_full_remove_all(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
+- bool k2hdkc_full_remove_str_all(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
  
 - bool k2hdkc_pm_remove_all(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength)
 - bool k2hdkc_pm_remove_str_all(k2hdkc_chmpx_h handle, const char* pkey)
@@ -1268,8 +1290,8 @@ k2hdkcクラスタからキーを指定して、キー（およびキーに属�
 - bool k2hdkc_remove(const char* config, const unsigned char* pkey, size_t keylength)
 - bool k2hdkc_remove_str(const char* config, const char* pkey)
  
-- bool k2hdkc_ex_remove(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
-- bool k2hdkc_ex_remove_str(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+- bool k2hdkc_full_remove(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
+- bool k2hdkc_full_remove_str(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
  
 - bool k2hdkc_pm_remove(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength)
 - bool k2hdkc_pm_remove_str(k2hdkc_chmpx_h handle, const char* pkey)
@@ -1288,7 +1310,7 @@ k2hdkcクラスタからキーを指定して、キー（およびキーに属�
 上記の2種類に対して、以下の規則でそれぞれのタイプに対して引数などの違いのある類似関数があります。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -1298,6 +1320,8 @@ k2hdkcクラスタからキーを指定して、キー（およびキーに属�
    chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -1314,7 +1338,7 @@ k2hdkcクラスタからキーを指定して、キー（およびキーに属�
 
 #### サンプル
 ```
-bool        result = k2hdkc_ex_remove(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylen);
+bool        result = k2hdkc_full_remove(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pkey, keylen);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -1336,8 +1360,8 @@ k2hdkcクラスタから親キーを指定して、サブキーを削除する�
 - bool k2hdkc_remove_subkey(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
 - bool k2hdkc_remove_str_subkey(const char* config, const char* pkey, const char* psubkey, bool is_nest)
  
-- bool k2hdkc_ex_remove_subkey(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
-- bool k2hdkc_ex_remove_str_subkey(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, bool is_nest)
+- bool k2hdkc_full_remove_subkey(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
+- bool k2hdkc_full_remove_str_subkey(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, bool is_nest)
  
 - bool k2hdkc_pm_remove_subkey(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
 - bool k2hdkc_pm_remove_str_subkey(k2hdkc_chmpx_h handle, const char* pkey, const char* psubkey, size_t subkeylength, bool is_nest)
@@ -1345,8 +1369,8 @@ k2hdkcクラスタから親キーを指定して、サブキーを削除する�
 - bool k2hdkc_remove_subkey_np(const char* config, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
 - bool k2hdkc_remove_str_subkey_np(const char* config, const char* pkey, const char* psubkey, bool is_nest)
  
-- bool k2hdkc_ex_remove_subkey_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
-- bool k2hdkc_ex_remove_str_subkey_np(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, bool is_nest)
+- bool k2hdkc_full_remove_subkey_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
+- bool k2hdkc_full_remove_str_subkey_np(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* psubkey, bool is_nest)
  
 - bool k2hdkc_pm_remove_subkey_np(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const unsigned char* psubkey, size_t subkeylength, bool is_nest)
 - bool k2hdkc_pm_remove_str_subkey_np(k2hdkc_chmpx_h handle, const char* pkey, const char* psubkey, size_t subkeylength, bool is_nest)
@@ -1367,7 +1391,7 @@ k2hdkcクラスタから親キーを指定して、サブキーを削除する�
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -1377,6 +1401,8 @@ k2hdkcクラスタから親キーを指定して、サブキーを削除する�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -1399,7 +1425,7 @@ k2hdkcクラスタから親キーを指定して、サブキーを削除する�
 
 #### サンプル
 ```
-bool        result = k2hdkc_ex_remove_subkey(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pkey, keylen, psubkey, subkeylen, true);
+bool        result = k2hdkc_full_remove_subkey(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pkey, keylen, psubkey, subkeylen, true);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -1420,8 +1446,8 @@ k2hdkcクラスタからキーを指定して、キーをリネームする関�
 - bool k2hdkc_rename(const char* config, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength)
 - bool k2hdkc_rename_str(const char* config, const char* poldkey, const char* pnewkey)
  
-- bool k2hdkc_ex_rename(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength)
-- bool k2hdkc_ex_rename_str(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey)
+- bool k2hdkc_full_rename(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength)
+- bool k2hdkc_full_rename_str(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey)
  
 - bool k2hdkc_pm_rename(k2hdkc_chmpx_h handle, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength)
 - bool k2hdkc_pm_rename_str(k2hdkc_chmpx_h handle, const char* poldkey, const char* pnewkey)
@@ -1429,8 +1455,8 @@ k2hdkcクラスタからキーを指定して、キーをリネームする関�
 - bool k2hdkc_rename_wa(const char* config, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, bool checkattr, const char* encpass, const time_t* expire)
 - bool k2hdkc_rename_str_wa(const char* config, const char* poldkey, const char* pnewkey, bool checkattr, const char* encpass, const time_t* expire)
  
-- bool k2hdkc_ex_rename_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, bool checkattr, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_rename_str_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey, bool checkattr, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_rename_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, bool checkattr, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_rename_str_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey, bool checkattr, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_pm_rename_wa(k2hdkc_chmpx_h handle, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, bool checkattr, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_rename_str_wa(k2hdkc_chmpx_h handle, const char* poldkey, const char* pnewkey, bool checkattr, const char* encpass, const time_t* expire)
@@ -1438,8 +1464,8 @@ k2hdkcクラスタからキーを指定して、キーをリネームする関�
 - bool k2hdkc_rename_with_parent(const char* config, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength)
 - bool k2hdkc_rename_with_parent_str(const char* config, const char* poldkey, const char* pnewkey, const char* pparentkey)
  
-- bool k2hdkc_ex_rename_with_parent(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength)
-- bool k2hdkc_ex_rename_with_parent_str(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey, const char* pparentkey)
+- bool k2hdkc_full_rename_with_parent(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength)
+- bool k2hdkc_full_rename_with_parent_str(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey, const char* pparentkey)
  
 - bool k2hdkc_pm_rename_with_parent(k2hdkc_chmpx_h handle, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength)
 - bool k2hdkc_pm_rename_with_parent_str(k2hdkc_chmpx_h handle, const char* poldkey, const char* pnewkey, const char* pparentkey)
@@ -1447,8 +1473,8 @@ k2hdkcクラスタからキーを指定して、キーをリネームする関�
 - bool k2hdkc_rename_with_parent_wa(const char* config, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength, bool checkattr, const char* encpass, const time_t* expire)
 - bool k2hdkc_rename_with_parent_str_wa(const char* config, const char* poldkey, const char* pnewkey, const char* pparentkey, bool checkattr, const char* encpass, const time_t* expire)
  
-- bool k2hdkc_ex_rename_with_parent_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength, bool checkattr, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_rename_with_parent_str_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey, const char* pparentkey, bool checkattr, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_rename_with_parent_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength, bool checkattr, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_rename_with_parent_str_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* poldkey, const char* pnewkey, const char* pparentkey, bool checkattr, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_pm_rename_with_parent_wa(k2hdkc_chmpx_h handle, const unsigned char* poldkey, size_t oldkeylength, const unsigned char* pnewkey, size_t newkeylength, const unsigned char* pparentkey, size_t parentkeylength, bool checkattr, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_rename_with_parent_str_wa(k2hdkc_chmpx_h handle, const char* poldkey, const char* pnewkey, const char* pparentkey, bool checkattr, const char* encpass, const time_t* expire)
@@ -1473,7 +1499,7 @@ k2hdkcクラスタからキーを指定して、キーをリネームする関�
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -1483,6 +1509,8 @@ k2hdkcクラスタからキーを指定して、キーをリネームする関�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -1515,7 +1543,7 @@ k2hdkcクラスタからキーを指定して、キーをリネームする関�
 
 #### サンプル
 ```
-bool        result = k2hdkc_ex_rename_with_parent(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pOldKey, OldKeyLen, pNewKey, NewkeyLen, pParentKey, pParentKeyLen);
+bool        result = k2hdkc_full_rename_with_parent(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pOldKey, OldKeyLen, pNewKey, NewkeyLen, pParentKey, pParentKeyLen);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -1536,8 +1564,8 @@ k2hdkcクラスタからキューを指定して、キューにPUSHする関数�
 - bool k2hdkc_q_push(const char* config, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo)
 - bool k2hdkc_q_str_push(const char* config, const char* pprefix, const char* pval, bool is_fifo)
  
-- bool k2hdkc_ex_q_push(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo)
-- bool k2hdkc_ex_q_str_push(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pval, bool is_fifo)
+- bool k2hdkc_full_q_push(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo)
+- bool k2hdkc_full_q_str_push(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pval, bool is_fifo)
  
 - bool k2hdkc_pm_q_push(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo)
 - bool k2hdkc_pm_q_str_push(k2hdkc_chmpx_h handle, const char* pprefix, const char* pval, bool is_fifo)
@@ -1545,8 +1573,8 @@ k2hdkcクラスタからキューを指定して、キューにPUSHする関数�
 - bool k2hdkc_q_push_wa(const char* config, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
 - bool k2hdkc_q_str_push_wa(const char* config, const char* pprefix, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
  
-- bool k2hdkc_ex_q_push_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_q_str_push_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_q_push_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_q_str_push_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_pm_q_push_wa(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_q_str_push_wa(k2hdkc_chmpx_h handle, const char* pprefix, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
@@ -1554,8 +1582,8 @@ k2hdkcクラスタからキューを指定して、キューにPUSHする関数�
 - bool k2hdkc_keyq_push(const char* config, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo)
 - bool k2hdkc_keyq_str_push(const char* config, const char* pprefix, const char* pkey, const char* pval, bool is_fifo)
  
-- bool k2hdkc_ex_keyq_push(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo)
-- bool k2hdkc_ex_keyq_str_push(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pkey, const char* pval, bool is_fifo)
+- bool k2hdkc_full_keyq_push(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo)
+- bool k2hdkc_full_keyq_str_push(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pkey, const char* pval, bool is_fifo)
  
 - bool k2hdkc_pm_keyq_push(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo)
 - bool k2hdkc_pm_keyq_str_push(k2hdkc_chmpx_h handle, const char* pprefix, const char* pkey, const char* pval, bool is_fifo)
@@ -1563,8 +1591,8 @@ k2hdkcクラスタからキューを指定して、キューにPUSHする関数�
 - bool k2hdkc_keyq_push_wa(const char* config, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
 - bool k2hdkc_keyq_str_push_wa(const char* config, const char* pprefix, const char* pkey, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
  
-- bool k2hdkc_ex_keyq_push_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_keyq_str_push_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pkey, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_keyq_push_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_keyq_str_push_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, const char* pkey, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_pm_keyq_push_wa(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, const unsigned char* pkey, size_t keylength, const unsigned char* pval, size_t vallength, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_keyq_str_push_wa(k2hdkc_chmpx_h handle, const char* pprefix, const char* pkey, const char* pval, bool is_fifo, bool checkattr, const char* encpass, const time_t* expire)
@@ -1589,7 +1617,7 @@ k2hdkcクラスタからキューを指定して、キューにPUSHする関数�
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -1599,6 +1627,8 @@ k2hdkcクラスタからキューを指定して、キューにPUSHする関数�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -1631,7 +1661,7 @@ k2hdkcクラスタからキューを指定して、キューにPUSHする関数�
 
 #### サンプル
 ```
-bool        result = k2hdkc_ex_keyq_push(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.length() + 1, is_Fifo);
+bool        result = k2hdkc_full_keyq_push(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pName, NameLen, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.length() + 1, is_Fifo);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -1654,15 +1684,15 @@ k2hdkcクラスタからキューを指定して、キューからPOPする関�
 - bool k2hdkc_q_str_pop(const char* config, const char* pprefix, bool is_fifo, const char** ppval)
 - bool k2hdkc_q_str_pop_wp(const char* config, const char* pprefix, bool is_fifo, const char* encpass, const char** ppval)
  
-- bool k2hdkc_ex_q_pop(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, unsigned char** ppval, size_t* pvallength)
-- bool k2hdkc_ex_q_pop_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, const char* encpass, unsigned char** ppval, size_t* pvallength)
-- bool k2hdkc_ex_q_str_pop(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char** ppval)
-- bool k2hdkc_ex_q_str_pop_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char* encpass, const char** ppval)
+- bool k2hdkc_full_q_pop(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, unsigned char** ppval, size_t* pvallength)
+- bool k2hdkc_full_q_pop_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, const char* encpass, unsigned char** ppval, size_t* pvallength)
+- bool k2hdkc_full_q_str_pop(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char** ppval)
+- bool k2hdkc_full_q_str_pop_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char* encpass, const char** ppval)
  
-- bool k2hdkc_ex_keyq_pop(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, unsigned char** ppkey, size_t* pkeylength, unsigned char** ppval, size_t* pvallength)
-- bool k2hdkc_ex_keyq_pop_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, const char* encpass, unsigned char** ppkey, size_t* pkeylength, unsigned char** ppval, size_t* pval- bool k2hdkc_ex_keyq_str_pop(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char** ppkey, const char** ppval)
+- bool k2hdkc_full_keyq_pop(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, unsigned char** ppkey, size_t* pkeylength, unsigned char** ppval, size_t* pvallength)
+- bool k2hdkc_full_keyq_pop_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, const char* encpass, unsigned char** ppkey, size_t* pkeylength, unsigned char** ppval, size_t* pval- bool k2hdkc_full_keyq_str_pop(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char** ppkey, const char** ppval)
 length)
-- bool k2hdkc_ex_keyq_str_pop_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char* encpass, const char** ppkey, const char** ppval)
+- bool k2hdkc_full_keyq_str_pop_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, bool is_fifo, const char* encpass, const char** ppkey, const char** ppval)
  
 - bool k2hdkc_pm_q_pop(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, unsigned char** ppval, size_t* pvallength)
 - bool k2hdkc_pm_q_pop_wp(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, bool is_fifo, const char* encpass, unsigned char** ppval, size_t* pvallength)
@@ -1695,7 +1725,7 @@ length)
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -1705,6 +1735,8 @@ length)
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -1737,7 +1769,7 @@ unsigned char*    pkey        = NULL;
 size_t        keylength    = 0;
 unsigned char*    pval        = NULL;
 size_t        vallength    = 0;
-bool        result        = k2hdkc_ex_keyq_pop(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, &pkey, &keylength, &pval, &vallength);
+bool        result        = k2hdkc_full_keyq_pop(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, &pkey, &keylength, &pval, &vallength);
 dkcres_type_t    rescode        = k2hdkc_get_lastres_code();
  
 // check result
@@ -1758,8 +1790,8 @@ k2hdkcクラスタからキューを指定して、キューから指定した�
 - bool k2hdkc_q_remove(const char* config, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
 - bool k2hdkc_q_str_remove(const char* config, const char* pprefix, int count, bool is_fifo)
  
-- bool k2hdkc_ex_q_remove(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
-- bool k2hdkc_ex_q_str_remove(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo)
+- bool k2hdkc_full_q_remove(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
+- bool k2hdkc_full_q_str_remove(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo)
  
 - bool k2hdkc_pm_q_remove(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
 - bool k2hdkc_pm_q_str_remove(k2hdkc_chmpx_h handle, const char* pprefix, int count, bool is_fifo)
@@ -1767,8 +1799,8 @@ k2hdkcクラスタからキューを指定して、キューから指定した�
 - bool k2hdkc_q_remove_wp(const char* config, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
 - bool k2hdkc_q_str_remove_wp(const char* config, const char* pprefix, int count, bool is_fifo, const char* encpass)
  
-- bool k2hdkc_ex_q_remove_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
-- bool k2hdkc_ex_q_str_remove_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo, const char* encpass)
+- bool k2hdkc_full_q_remove_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
+- bool k2hdkc_full_q_str_remove_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo, const char* encpass)
  
 - bool k2hdkc_pm_q_remove_wp(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
 - bool k2hdkc_pm_q_str_remove_wp(k2hdkc_chmpx_h handle, const char* pprefix, int count, bool is_fifo, const char* encpass)
@@ -1776,8 +1808,8 @@ k2hdkcクラスタからキューを指定して、キューから指定した�
 - bool k2hdkc_keyq_remove(const char* config, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
 - bool k2hdkc_keyq_str_remove(const char* config, const char* pprefix, int count, bool is_fifo)
  
-- bool k2hdkc_ex_keyq_remove(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
-- bool k2hdkc_ex_keyq_str_remove(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo)
+- bool k2hdkc_full_keyq_remove(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
+- bool k2hdkc_full_keyq_str_remove(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo)
  
 - bool k2hdkc_pm_keyq_remove(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo)
 - bool k2hdkc_pm_keyq_str_remove(k2hdkc_chmpx_h handle, const char* pprefix, int count, bool is_fifo)
@@ -1785,8 +1817,8 @@ k2hdkcクラスタからキューを指定して、キューから指定した�
 - bool k2hdkc_keyq_remove_wp(const char* config, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
 - bool k2hdkc_keyq_str_remove_wp(const char* config, const char* pprefix, int count, bool is_fifo, const char* encpass)
  
-- bool k2hdkc_ex_keyq_remove_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
-- bool k2hdkc_ex_keyq_str_remove_wp(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo, const char* encpass)
+- bool k2hdkc_full_keyq_remove_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
+- bool k2hdkc_full_keyq_str_remove_wp(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pprefix, int count, bool is_fifo, const char* encpass)
  
 - bool k2hdkc_pm_keyq_remove_wp(k2hdkc_chmpx_h handle, const unsigned char* pprefix, size_t prefixlength, int count, bool is_fifo, const char* encpass)
 - bool k2hdkc_pm_keyq_str_remove_wp(k2hdkc_chmpx_h handle, const char* pprefix, int count, bool is_fifo, const char* encpass)
@@ -1811,7 +1843,7 @@ k2hdkcクラスタからキューを指定して、キューから指定した�
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -1821,6 +1853,8 @@ k2hdkcクラスタからキューを指定して、キューから指定した�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -1841,7 +1875,7 @@ k2hdkcクラスタからキューを指定して、キューから指定した�
 
 #### サンプル
 ```
-bool        result = k2hdkc_ex_keyq_remove(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo);
+bool        result = k2hdkc_full_keyq_remove(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -1861,53 +1895,53 @@ k2hdkcクラスタにキー名を指定して、そのキーをCAS（Compare And
 #### 書式
 - bool k2hdkc_cas64_init(const char* config, const unsigned char* pkey, size_t keylength, uint64_t val)
 - bool k2hdkc_cas64_str_init(const char* config, const char* pkey, uint64_t val)
-- bool k2hdkc_ex_cas64_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t val)
-- bool k2hdkc_ex_cas64_str_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t val)
+- bool k2hdkc_full_cas64_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t val)
+- bool k2hdkc_full_cas64_str_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t val)
 - bool k2hdkc_pm_cas64_init(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint64_t val)
 - bool k2hdkc_pm_cas64_str_init(k2hdkc_chmpx_h handle, const char* pkey, uint64_t val)
 - bool k2hdkc_cas64_init_wa(const char* config, const unsigned char* pkey, size_t keylength, uint64_t val, const char* encpass, const time_t* expire)
 - bool k2hdkc_cas64_str_init_wa(const char* config, const char* pkey, uint64_t val, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas64_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t val, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas64_str_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t val, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas64_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t val, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas64_str_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t val, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas64_init_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint64_t val, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas64_str_init_wa(k2hdkc_chmpx_h handle, const char* pkey, uint64_t val, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_cas32_init(const char* config, const unsigned char* pkey, size_t keylength, uint32_t val)
 - bool k2hdkc_cas32_str_init(const char* config, const char* pkey, uint32_t val)
-- bool k2hdkc_ex_cas32_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t val)
-- bool k2hdkc_ex_cas32_str_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t val)
+- bool k2hdkc_full_cas32_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t val)
+- bool k2hdkc_full_cas32_str_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t val)
 - bool k2hdkc_pm_cas32_init(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint32_t val)
 - bool k2hdkc_pm_cas32_str_init(k2hdkc_chmpx_h handle, const char* pkey, uint32_t val)
 - bool k2hdkc_cas32_init_wa(const char* config, const unsigned char* pkey, size_t keylength, uint32_t val, const char* encpass, const time_t* expire)
 - bool k2hdkc_cas32_str_init_wa(const char* config, const char* pkey, uint32_t val, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas32_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t val, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas32_str_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t val, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas32_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t val, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas32_str_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t val, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas32_init_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint32_t val, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas32_str_init_wa(k2hdkc_chmpx_h handle, const char* pkey, uint32_t val, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_cas16_init(const char* config, const unsigned char* pkey, size_t keylength, uint16_t val)
 - bool k2hdkc_cas16_str_init(const char* config, const char* pkey, uint16_t val)
-- bool k2hdkc_ex_cas16_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t val)
-- bool k2hdkc_ex_cas16_str_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t val)
+- bool k2hdkc_full_cas16_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t val)
+- bool k2hdkc_full_cas16_str_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t val)
 - bool k2hdkc_pm_cas16_init(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint16_t val)
 - bool k2hdkc_pm_cas16_str_init(k2hdkc_chmpx_h handle, const char* pkey, uint16_t val)
 - bool k2hdkc_cas16_init_wa(const char* config, const unsigned char* pkey, size_t keylength, uint16_t val, const char* encpass, const time_t* expire)
 - bool k2hdkc_cas16_str_init_wa(const char* config, const char* pkey, uint16_t val, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas16_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t val, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas16_str_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t val, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas16_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t val, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas16_str_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t val, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas16_init_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint16_t val, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas16_str_init_wa(k2hdkc_chmpx_h handle, const char* pkey, uint16_t val, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_cas8_init(const char* config, const unsigned char* pkey, size_t keylength, uint8_t val)
 - bool k2hdkc_cas8_str_init(const char* config, const char* pkey, uint8_t val)
-- bool k2hdkc_ex_cas8_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t val)
-- bool k2hdkc_ex_cas8_str_init(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t val)
+- bool k2hdkc_full_cas8_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t val)
+- bool k2hdkc_full_cas8_str_init(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t val)
 - bool k2hdkc_pm_cas8_init(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint8_t val)
 - bool k2hdkc_pm_cas8_str_init(k2hdkc_chmpx_h handle, const char* pkey, uint8_t val)
 - bool k2hdkc_cas8_init_wa(const char* config, const unsigned char* pkey, size_t keylength, uint8_t val, const char* encpass, const time_t* expire)
 - bool k2hdkc_cas8_str_init_wa(const char* config, const char* pkey, uint8_t val, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas8_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t val, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas8_str_init_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t val, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas8_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t val, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas8_str_init_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t val, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas8_init_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint8_t val, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas8_str_init_wa(k2hdkc_chmpx_h handle, const char* pkey, uint8_t val, const char* encpass, const time_t* expire)
 
@@ -1937,7 +1971,7 @@ k2hdkcクラスタにキー名を指定して、そのキーをCAS（Compare And
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -1947,6 +1981,8 @@ k2hdkcクラスタにキー名を指定して、そのキーをCAS（Compare And
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -1969,7 +2005,7 @@ k2hdkcクラスタにキー名を指定して、そのキーをCAS（Compare And
 
 #### サンプル
 ```
-bool        result    = k2hdkc_ex_cas64_init(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val);
+bool        result    = k2hdkc_full_cas64_init(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -1989,53 +2025,53 @@ k2hdkcクラスタにキー名を指定して、そのキーの値を取得す�
 #### 書式
 - bool k2hdkc_cas64_get(const char* config, const unsigned char* pkey, size_t keylength, uint64_t* pval)
 - bool k2hdkc_cas64_str_get(const char* config, const char* pkey, uint64_t* pval)
-- bool k2hdkc_ex_cas64_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t* pval)
-- bool k2hdkc_ex_cas64_str_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t* pval)
+- bool k2hdkc_full_cas64_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t* pval)
+- bool k2hdkc_full_cas64_str_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t* pval)
 - bool k2hdkc_pm_cas64_get(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint64_t* pval)
 - bool k2hdkc_pm_cas64_str_get(k2hdkc_chmpx_h handle, const char* pkey, uint64_t* pval)
 - bool k2hdkc_cas64_get_wa(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, uint64_t* pval)
 - bool k2hdkc_cas64_str_get_wa(const char* config, const char* pkey, const char* encpass, uint64_t* pval)
-- bool k2hdkc_ex_cas64_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint64_t* pval)
-- bool k2hdkc_ex_cas64_str_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint64_t* pval)
+- bool k2hdkc_full_cas64_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint64_t* pval)
+- bool k2hdkc_full_cas64_str_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint64_t* pval)
 - bool k2hdkc_pm_cas64_get_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const char* encpass, uint64_t* pval)
 - bool k2hdkc_pm_cas64_str_get_wa(k2hdkc_chmpx_h handle, const char* pkey, const char* encpass, uint64_t* pval)
  
 - bool k2hdkc_cas32_get(const char* config, const unsigned char* pkey, size_t keylength, uint32_t* pval)
 - bool k2hdkc_cas32_str_get(const char* config, const char* pkey, uint32_t* pval)
-- bool k2hdkc_ex_cas32_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t* pval)
-- bool k2hdkc_ex_cas32_str_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t* pval)
+- bool k2hdkc_full_cas32_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t* pval)
+- bool k2hdkc_full_cas32_str_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t* pval)
 - bool k2hdkc_pm_cas32_get(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint32_t* pval)
 - bool k2hdkc_pm_cas32_str_get(k2hdkc_chmpx_h handle, const char* pkey, uint32_t* pval)
 - bool k2hdkc_cas32_get_wa(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, uint32_t* pval)
 - bool k2hdkc_cas32_str_get_wa(const char* config, const char* pkey, const char* encpass, uint32_t* pval)
-- bool k2hdkc_ex_cas32_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint32_t* pval)
-- bool k2hdkc_ex_cas32_str_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint32_t* pval)
+- bool k2hdkc_full_cas32_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint32_t* pval)
+- bool k2hdkc_full_cas32_str_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint32_t* pval)
 - bool k2hdkc_pm_cas32_get_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const char* encpass, uint32_t* pval)
 - bool k2hdkc_pm_cas32_str_get_wa(k2hdkc_chmpx_h handle, const char* pkey, const char* encpass, uint32_t* pval)
  
 - bool k2hdkc_cas16_get(const char* config, const unsigned char* pkey, size_t keylength, uint16_t* pval)
 - bool k2hdkc_cas16_str_get(const char* config, const char* pkey, uint16_t* pval)
-- bool k2hdkc_ex_cas16_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t* pval)
-- bool k2hdkc_ex_cas16_str_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t* pval)
+- bool k2hdkc_full_cas16_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t* pval)
+- bool k2hdkc_full_cas16_str_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t* pval)
 - bool k2hdkc_pm_cas16_get(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint16_t* pval)
 - bool k2hdkc_pm_cas16_str_get(k2hdkc_chmpx_h handle, const char* pkey, uint16_t* pval)
 - bool k2hdkc_cas16_get_wa(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, uint16_t* pval)
 - bool k2hdkc_cas16_str_get_wa(const char* config, const char* pkey, const char* encpass, uint16_t* pval)
-- bool k2hdkc_ex_cas16_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint16_t* pval)
-- bool k2hdkc_ex_cas16_str_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint16_t* pval)
+- bool k2hdkc_full_cas16_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint16_t* pval)
+- bool k2hdkc_full_cas16_str_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint16_t* pval)
 - bool k2hdkc_pm_cas16_get_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const char* encpass, uint16_t* pval)
 - bool k2hdkc_pm_cas16_str_get_wa(k2hdkc_chmpx_h handle, const char* pkey, const char* encpass, uint16_t* pval)
  
 - bool k2hdkc_cas8_get(const char* config, const unsigned char* pkey, size_t keylength, uint8_t* pval)
 - bool k2hdkc_cas8_str_get(const char* config, const char* pkey, uint8_t* pval)
-- bool k2hdkc_ex_cas8_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t* pval)
-- bool k2hdkc_ex_cas8_str_get(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t* pval)
+- bool k2hdkc_full_cas8_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t* pval)
+- bool k2hdkc_full_cas8_str_get(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t* pval)
 - bool k2hdkc_pm_cas8_get(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint8_t* pval)
 - bool k2hdkc_pm_cas8_str_get(k2hdkc_chmpx_h handle, const char* pkey, uint8_t* pval)
 - bool k2hdkc_cas8_get_wa(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, uint8_t* pval)
 - bool k2hdkc_cas8_str_get_wa(const char* config, const char* pkey, const char* encpass, uint8_t* pval)
-- bool k2hdkc_ex_cas8_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint8_t* pval)
-- bool k2hdkc_ex_cas8_str_get_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint8_t* pval)
+- bool k2hdkc_full_cas8_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, uint8_t* pval)
+- bool k2hdkc_full_cas8_str_get_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, uint8_t* pval)
 - bool k2hdkc_pm_cas8_get_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const char* encpass, uint8_t* pval)
 - bool k2hdkc_pm_cas8_str_get_wa(k2hdkc_chmpx_h handle, const char* pkey, const char* encpass, uint8_t* pval)
 
@@ -2065,7 +2101,7 @@ k2hdkcクラスタにキー名を指定して、そのキーの値を取得す�
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -2075,6 +2111,8 @@ k2hdkcクラスタにキー名を指定して、そのキーの値を取得す�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -2096,7 +2134,7 @@ k2hdkcクラスタにキー名を指定して、そのキーの値を取得す�
 #### サンプル
 ```
 uint64_t    val64    = 0;
-bool        result    = k2hdkc_ex_cas64_get(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &val64);
+bool        result    = k2hdkc_full_cas64_get(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &val64);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -2117,53 +2155,53 @@ k2hdkcクラスタにキー名と期待する値を指定して、期待する�
 #### 書式
 - bool k2hdkc_cas64_set(const char* config, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval)
 - bool k2hdkc_cas64_str_set(const char* config, const char* pkey, uint64_t oldval, uint64_t newval)
-- bool k2hdkc_ex_cas64_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval)
-- bool k2hdkc_ex_cas64_str_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t oldval, uint64_t newval)
+- bool k2hdkc_full_cas64_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval)
+- bool k2hdkc_full_cas64_str_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t oldval, uint64_t newval)
 - bool k2hdkc_pm_cas64_set(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval)
 - bool k2hdkc_pm_cas64_str_set(k2hdkc_chmpx_h handle, const char* pkey, uint64_t oldval, uint64_t newval)
 - bool k2hdkc_cas64_set_wa(const char* config, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
 - bool k2hdkc_cas64_str_set_wa(const char* config, const char* pkey, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas64_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas64_str_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas64_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas64_str_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas64_set_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas64_str_set_wa(k2hdkc_chmpx_h handle, const char* pkey, uint64_t oldval, uint64_t newval, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_cas32_set(const char* config, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval)
 - bool k2hdkc_cas32_str_set(const char* config, const char* pkey, uint32_t oldval, uint32_t newval)
-- bool k2hdkc_ex_cas32_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval)
-- bool k2hdkc_ex_cas32_str_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t oldval, uint32_t newval)
+- bool k2hdkc_full_cas32_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval)
+- bool k2hdkc_full_cas32_str_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t oldval, uint32_t newval)
 - bool k2hdkc_pm_cas32_set(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval)
 - bool k2hdkc_pm_cas32_str_set(k2hdkc_chmpx_h handle, const char* pkey, uint32_t oldval, uint32_t newval)
 - bool k2hdkc_cas32_set_wa(const char* config, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
 - bool k2hdkc_cas32_str_set_wa(const char* config, const char* pkey, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas32_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas32_str_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas32_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas32_str_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas32_set_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas32_str_set_wa(k2hdkc_chmpx_h handle, const char* pkey, uint32_t oldval, uint32_t newval, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_cas16_set(const char* config, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval)
 - bool k2hdkc_cas16_str_set(const char* config, const char* pkey, uint16_t oldval, uint16_t newval)
-- bool k2hdkc_ex_cas16_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval)
-- bool k2hdkc_ex_cas16_str_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t oldval, uint16_t newval)
+- bool k2hdkc_full_cas16_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval)
+- bool k2hdkc_full_cas16_str_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t oldval, uint16_t newval)
 - bool k2hdkc_pm_cas16_set(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval)
 - bool k2hdkc_pm_cas16_str_set(k2hdkc_chmpx_h handle, const char* pkey, uint16_t oldval, uint16_t newval)
 - bool k2hdkc_cas16_set_wa(const char* config, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
 - bool k2hdkc_cas16_str_set_wa(const char* config, const char* pkey, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas16_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas16_str_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas16_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas16_str_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas16_set_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas16_str_set_wa(k2hdkc_chmpx_h handle, const char* pkey, uint16_t oldval, uint16_t newval, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_cas8_set(const char* config, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval)
 - bool k2hdkc_cas8_str_set(const char* config, const char* pkey, uint8_t oldval, uint8_t newval)
-- bool k2hdkc_ex_cas8_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval)
-- bool k2hdkc_ex_cas8_str_set(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t oldval, uint8_t newval)
+- bool k2hdkc_full_cas8_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval)
+- bool k2hdkc_full_cas8_str_set(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t oldval, uint8_t newval)
 - bool k2hdkc_pm_cas8_set(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval)
 - bool k2hdkc_pm_cas8_str_set(k2hdkc_chmpx_h handle, const char* pkey, uint8_t oldval, uint8_t newval)
 - bool k2hdkc_cas8_set_wa(const char* config, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
 - bool k2hdkc_cas8_str_set_wa(const char* config, const char* pkey, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas8_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas8_str_set_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas8_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas8_str_set_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas8_set_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas8_str_set_wa(k2hdkc_chmpx_h handle, const char* pkey, uint8_t oldval, uint8_t newval, const char* encpass, const time_t* expire)
 
@@ -2193,7 +2231,7 @@ k2hdkcクラスタにキー名と期待する値を指定して、期待する�
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -2203,6 +2241,8 @@ k2hdkcクラスタにキー名と期待する値を指定して、期待する�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -2227,7 +2267,7 @@ k2hdkcクラスタにキー名と期待する値を指定して、期待する�
 
 #### サンプル
 ```
-bool        result    = k2hdkc_ex_cas64_set(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval);
+bool        result    = k2hdkc_full_cas64_set(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval);
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -2247,27 +2287,27 @@ k2hdkcクラスタにキー名を指定して、その値をインクリメン�
 #### 書式
 - bool k2hdkc_cas_increment(const char* config, const unsigned char* pkey, size_t keylength)
 - bool k2hdkc_cas_str_increment(const char* config, const char* pkey)
-- bool k2hdkc_ex_cas_increment(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
-- bool k2hdkc_ex_cas_str_increment(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+- bool k2hdkc_full_cas_increment(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
+- bool k2hdkc_full_cas_str_increment(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
 - bool k2hdkc_pm_cas_increment(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength)
 - bool k2hdkc_pm_cas_str_increment(k2hdkc_chmpx_h handle, const char* pkey)
 - bool k2hdkc_cas_increment_wa(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
 - bool k2hdkc_cas_str_increment_wa(const char* config, const char* pkey, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas_increment_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas_str_increment_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas_increment_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas_str_increment_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas_increment_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas_str_increment_wa(k2hdkc_chmpx_h handle, const char* pkey, const char* encpass, const time_t* expire)
  
 - bool k2hdkc_cas_decrement(const char* config, const unsigned char* pkey, size_t keylength)
 - bool k2hdkc_cas_str_decrement(const char* config, const char* pkey)
-- bool k2hdkc_ex_cas_decrement(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
-- bool k2hdkc_ex_cas_str_decrement(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
+- bool k2hdkc_full_cas_decrement(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength)
+- bool k2hdkc_full_cas_str_decrement(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey)
 - bool k2hdkc_pm_cas_decrement(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength)
 - bool k2hdkc_pm_cas_str_decrement(k2hdkc_chmpx_h handle, const char* pkey)
 - bool k2hdkc_cas_decrement_wa(const char* config, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
 - bool k2hdkc_cas_str_decrement_wa(const char* config, const char* pkey, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas_decrement_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
-- bool k2hdkc_ex_cas_str_decrement_wa(const char* config, short ctlport, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas_decrement_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
+- bool k2hdkc_full_cas_str_decrement_wa(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, const char* pkey, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas_decrement_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t keylength, const char* encpass, const time_t* expire)
 - bool k2hdkc_pm_cas_str_decrement_wa(k2hdkc_chmpx_h handle, const char* pkey, const char* encpass, const time_t* expire)
 
@@ -2291,7 +2331,7 @@ k2hdkcクラスタにキー名を指定して、その値をインクリメン�
 さらに、以下のタイプが上記までのタイプに加えて（積算）、存在します。
 - k2hdkc_...  
   予め設定されているデフォルトのchmpxに関する引数で、chmpxへ接続し、本コマンド処理を行う関数群です。簡単に非永続のchmpxを利用する場合に利用できる関数群です。
-- k2hdkc_ex_...  
+- k2hdkc_full_...  
   chmpxに関する引数を呼び出し毎で指定して、chmpxへ接続し、本コマンド処理を行う関数群です。詳細な設定を行いつつ、非永続のchmpxを利用する場合に利用できる関数群です。
 - k2hdkc_pm_...  
   永続的なchmpxへのハンドルを指定して、本コマンド処理を行う関数群です。
@@ -2301,6 +2341,8 @@ k2hdkcクラスタにキー名を指定して、その値をインクリメン�
   chmpxスレーブノードのコンフィグレーション（INI形式、YAML形式、JSON形式ファイルへのパス、もしくはJSON文字列）を指定します。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -2321,7 +2363,7 @@ k2hdkcクラスタにキー名を指定して、その値をインクリメン�
 
 #### サンプル
 ```
-bool        result = k2hdkc_ex_cas_increment_wa(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
+bool        result = k2hdkc_full_cas_increment_wa(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire));
 dkcres_type_t    rescode = k2hdkc_get_lastres_code();
  
 // check result
@@ -2532,6 +2574,8 @@ k2hdkcライブラリは、内部動作およびAPIの動作の確認をする�
   NULLまたは空文字列が指定されている場合には、環境変数（K2HDKCCONFFILEもしくはK2HDKCJSONCONF）の値が使用されます。
 - ctlport  
   chmpxスレーブノードの制御ポート番号を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
+- cuk  
+  chmpxスレーブノードのCUK文字列を指定します。（同一サーバ上で複数のchmpxが起動している場合には指定する必要があります）
 - is_auto_rejoin  
   chmpxとの接続が切断された場合に自動的に再接続するか指定します。
 - no_giveup_rejoin  
@@ -2550,7 +2594,7 @@ k2hdkcライブラリは、内部動作およびAPIの動作の確認をする�
 //-------------------------------------
 // One time connection type
 //-------------------------------------
-K2hdkcComGet*    pComObj = GetOtSlaveK2hdkcComGet(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComGet*    pComObj = GetOtSlaveK2hdkcComGet(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool        result = pComObj->CommandSend(pkey, keylength, !is_noattr, passphrase, &pconstval, &vallength, &rescode);
 delete pComObj;
  
@@ -2559,7 +2603,7 @@ delete pComObj;
 //-------------------------------------
 // Open chmpx
 K2hdkcSlave* pSlave = new K2hdkcSlave();
-if(!pSlave->Initialize(strConfFile.c_str(), CntlPort, isAutoRejoin)){
+if(!pSlave->Initialize(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin)){
     cerr << "Could not join slave node chmpx." << endl;
     delete pSlave;
     return false;
@@ -2615,7 +2659,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComGet* pComObj = GetOtSlaveK2hdkcComGet(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComGet* pComObj = GetOtSlaveK2hdkcComGet(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool result = pComObj->CommandSend(pkey, keylength, !is_noattr, passphrase, &pconstval, &vallength, &rescode);
 ```
 <!-- -----------------------------------------------------------　-->
@@ -2653,7 +2697,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComGetDirect*    pComObj = GetOtSlaveK2hdkcComGetDirect(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComGetDirect*    pComObj = GetOtSlaveK2hdkcComGetDirect(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool pComObj->CommandSend(pkey, keylen, offset, length, &pconstval, &vallen, &rescode);
 ```
 
@@ -2690,7 +2734,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 #### サンプル
 ```
 K2HSubKeys*           pSubKeys= NULL;
-K2hdkcComGetSubkeys*  pComObj = GetOtSlaveK2hdkcComGetSubkeys(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComGetSubkeys*  pComObj = GetOtSlaveK2hdkcComGetSubkeys(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool                  result  = pComObj->CommandSend(pkey, keylength, !is_noattr, &pSubKeys, &rescode);
 ```
 
@@ -2726,7 +2770,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 #### サンプル
 ```
 K2HAttrs*            pAttrsObj    = NULL;
-K2hdkcComGetAttrs*    pComObj     = GetOtSlaveK2hdkcComGetAttrs(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComGetAttrs*    pComObj     = GetOtSlaveK2hdkcComGetAttrs(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool            result = pComObj->CommandSend(reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, &pAttrsObj, &rescode);
 ```
 
@@ -2765,7 +2809,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComGetAttrs*    pComObj     = GetOtSlaveK2hdkcComGetAttr(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComGetAttrs*    pComObj     = GetOtSlaveK2hdkcComGetAttr(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool            result = pComObj->CommandSend(reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, pattrname, attrnamelen, &pAttrval, attrvallen, &rescode);
 ```
 
@@ -2807,7 +2851,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComSet*    pComObj = GetOtSlaveK2hdkcComSet(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComSet*    pComObj = GetOtSlaveK2hdkcComSet(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool            result = pComObj->CommandSend(pKey, KeyLen, pVal, ValLen, is_rmsublist, pPassPhrase, pExpire, &rescode);
 ```
 
@@ -2844,7 +2888,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComSetDirect*    pComObj = GetOtSlaveK2hdkcComSetDirect(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComSetDirect*    pComObj = GetOtSlaveK2hdkcComSetDirect(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool            result = pComObj->CommandSend(pkey, keylen, pval, vallen, offset, &rescode);
 ```
 
@@ -2890,7 +2934,7 @@ if(!Subkeys.Serialize(&psubkeys, &subkeyslength)){
     return false;
 }
  
-K2hdkcComSetSubkeys*    pComObj = GetOtSlaveK2hdkcComSetSubkeys(conffile, ctlport, is_auto_rejoin, no_giveup_rejoin);
+K2hdkcComSetSubkeys*    pComObj = GetOtSlaveK2hdkcComSetSubkeys(conffile, ctlport, NULL/* cuk is NULL */, is_auto_rejoin, no_giveup_rejoin);
 bool            result = pComObj->CommandSend(pPKey, PKeyLen, psubkeys, subkeyslength , &rescode);
  
 DKC_FREE(psubkeys);
@@ -2943,7 +2987,7 @@ if(!Subkeys.Serialize(&psubkeys, &subkeyslength)){
     return false;
 }
  
-K2hdkcComSetAll*    pComObj = GetOtSlaveK2hdkcComSetAll(conffile, ctlport, is_auto_rejoin, no_giveup_rejoin);
+K2hdkcComSetAll*    pComObj = GetOtSlaveK2hdkcComSetAll(conffile, ctlport, NULL/* cuk is NULL */, is_auto_rejoin, no_giveup_rejoin);
 bool            result = pComObj->CommandSend(pPKey, PKeyLen, psubkeys, subkeyslength, NULL, 0, &rescode);
  
 DKC_FREE(psubkeys);
@@ -2982,7 +3026,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComAddSubkeys*    pComObj = GetOtSlaveK2hdkcComAddSubkeys(conffile, ctlport, is_auto_rejoin, no_giveup_rejoin);
+K2hdkcComAddSubkeys*    pComObj = GetOtSlaveK2hdkcComAddSubkeys(conffile, ctlport, NULL/* cuk is NULL */, is_auto_rejoin, no_giveup_rejoin);
 bool            result = pComObj->CommandSend(pPKey, PKeyLen, psubkey, subkeylen, true, &rescode);
 ```
 
@@ -3027,7 +3071,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComAddSubkey*    pComObj = GetOtSlaveK2hdkcComAddSubkey(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComAddSubkey*    pComObj = GetOtSlaveK2hdkcComAddSubkey(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool            result = pComObj->CommandSend(pParentKey, ParentKeyLen, pSubKey, SubKeyLen, pVal, ValLen, !is_noattr, pPassPhrase, pExpire, &rescode);
 ```
 
@@ -3060,7 +3104,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComDel*    pComObj = GetOtSlaveK2hdkcComDel(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComDel*    pComObj = GetOtSlaveK2hdkcComDel(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool            result = pComObj->CommandSend(pkey, keylen, is_subkeys, true, &rescode);
 ```
 
@@ -3097,7 +3141,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComDelSubkeys*    pComObj = GetOtSlaveK2hdkcComDelSubkeys(conffile, ctlport, is_auto_rejoin, no_giveup_rejoin);
+K2hdkcComDelSubkeys*    pComObj = GetOtSlaveK2hdkcComDelSubkeys(conffile, ctlport, NULL/* cuk is NULL */, is_auto_rejoin, no_giveup_rejoin);
 bool            result = pComObj->CommandSend(pPKey, PKeyLen, psubkey, subkeylen, true, &rescode);
 ```
 
@@ -3134,7 +3178,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComDelSubkey*    pComObj = GetOtSlaveK2hdkcComDelSubkey(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComDelSubkey*    pComObj = GetOtSlaveK2hdkcComDelSubkey(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool            result = pComObj->CommandSend(pParentKey, ParentKeyLen, pSubKey, SubKeyLen, pVal, ValLen, true, &rescode);
 ```
 
@@ -3181,7 +3225,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComRen*    pComObj = GetOtSlaveK2hdkcComRen(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComRen*    pComObj = GetOtSlaveK2hdkcComRen(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool            result = pComObj->CommandSend(pOldKey, OldKeyLen, pNewKey, NewkeyLen, pParentKey, pParentKeyLen, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire), &rescode);
 ```
 
@@ -3234,7 +3278,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComQPush*    pComObj = GetOtSlaveK2hdkcComQPush(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComQPush*    pComObj = GetOtSlaveK2hdkcComQPush(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool            result = pComObj->QueueCommandSend(pName, NameLen, reinterpret_cast<const unsigned char*>(strValue.c_str()), strValue.length() + 1, is_Fifo, NULL, 0UL, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire), &rescode);
 ```
 
@@ -3282,7 +3326,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComQPop*    pComObj = GetOtSlaveK2hdkcComQPop(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComQPop*    pComObj = GetOtSlaveK2hdkcComQPop(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool            result = pComObj->KeyQueueCommandSend(pName, NameLen, is_Fifo, !is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &pkeytmp, &keytmplen, &pvaltmp, &valtmplen, &rescode);
 ```
 
@@ -3323,7 +3367,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComQDel*    pComObj = GetOtSlaveK2hdkcComQDel(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComQDel*    pComObj = GetOtSlaveK2hdkcComQDel(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool            result = pComObj->QueueCommandSend(pName, NameLen, RmCount, is_Fifo, true, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &rescode);
 ```
 
@@ -3366,7 +3410,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComCasInit*    pComObj = GetOtSlaveK2hdkcComCasInit(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComCasInit*    pComObj = GetOtSlaveK2hdkcComCasInit(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool                 result  = pComObj->CommandSend(reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, val, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire), &rescode);
 ```
 
@@ -3408,7 +3452,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComCasGet*    pComObj = GetOtSlaveK2hdkcComCasGet(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComCasGet*    pComObj = GetOtSlaveK2hdkcComCasGet(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool                result = pComObj->CommandSend(reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, true, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &pval8, &rescode);
 ```
 
@@ -3456,7 +3500,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComCasSet*    pComObj = GetOtSlaveK2hdkcComCasSet(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComCasSet*    pComObj = GetOtSlaveK2hdkcComCasSet(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool                result  = pComObj->CommandSend(reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, oldval, newval, true, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire), &rescode);
 ```
 
@@ -3496,7 +3540,7 @@ CommandSendには、コマンド送信と結果取得を1度に行うメソッ�
 
 #### サンプル
 ```
-K2hdkcComCasIncDec* pComObj = GetOtSlaveK2hdkcComCasIncDec(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComCasIncDec* pComObj = GetOtSlaveK2hdkcComCasIncDec(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool                result  = pComObj->pComObj->IncrementCommandSend(reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, true, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire), &rescode);
 ```
 
@@ -3567,6 +3611,6 @@ typedef struct k2h_state{
 
 #### サンプル
 ```
-K2hdkcComState*    pComObj = GetOtSlaveK2hdkcComState(strConfFile.c_str(), CntlPort, isAutoRejoin, isNoGiveupRejoin);
+K2hdkcComState*    pComObj = GetOtSlaveK2hdkcComState(strConfFile.c_str(), CntlPort, NULL/* cuk is NULL */,  isAutoRejoin, isNoGiveupRejoin);
 bool               result = pComObj->CommandSend(&ptmpstates, &tmpstatecount, &rescode);
 ```

@@ -29,12 +29,14 @@ The following explains the startup options of the k2hdkclinetool.
 The k2hdkclinetool program can receive the following startup options(**-h** option displays startup options).
 ```
 $ k2hdkclinetool -h
-Usage: lt-k2hdkclinetool [-conf <file> | -json <string>] [-ctlport <port>] [options...]
+Usage: lt-k2hdkclinetool [-conf <file> | -json <string>] [-ctlport <port>] [-cuk <cuk string>] [options...]
        lt-k2hdkclinetool -help
+
 Option -help(h)           help display
        -conf <filename>   k2hdkc configuration file path(.ini .yaml .json)
        -json <string>     k2hdkc configuration by json string
        -ctlport <port>    slave node chmpx control port
+       -cuk <cuk string>  slave node chmpx cuk string
        -lap               print lap time after line command
        -capi              use C API for calling internal library
        -perm              use permanent chmpx handle
@@ -47,12 +49,13 @@ Option -help(h)           help display
        -his <count>       set history count(default 500)
        -libversion        display k2hdkc library version
        -run <file path>   run command(history) file.
+
 (*) You can specify "K2HDKCCONFFILE" or "K2HDKCJSONCONF" environment instead of
     "-conf" or "-json" option for configuration.
 (*) You can set debug level by another way which is setting environment as "DKCDBGMODE".
     "DKCDBGMODE" environment is took as "SILENT(SLT)", "ERROR(ERR)", "WARNING(WAN)",
     "INFO(MSG)" or "DUMP(DMP)" value.
-    When this process gets SIGUSER1 signal, the debug level is bumpup.
+    When this process gets SIGUSR1 signal, the debug level is bumpup.
     (The debug level is changed as "SLT"->"ERR"->"WAN"->"MSG"->"DMP"->...)
 (*) You can set debugging message log file by the environment "DKCDBGFILE".
 ```
@@ -70,6 +73,11 @@ If environment variable (K2HDKCCONFFILE or K2HDKCJSONCONF) is specified, both **
 Specifies the control port number of the chmpx process(slave node) to the k2hdkc cluster.  
 This option can be omitted if only one chmpx process(slave node) is running on HOST.  
 If more than one chmpx process(slave node) is running on the same HOST, specifying this option is mandatory.
+#### -cuk <cuk string>  
+Specify CUK(Custom Unique Key) to clarify the chmpx process(server node) to which the k2hdkc process connects.  
+When starting multiple CHMPX programs with the same host name(IP address) or control port in the CHMPX configuration, there are cases where the CHMPX program is ambiguous about which setting value it will read.  
+When specifying such a configuration, CUK may be specified to clarify the settings.
+CUK is a setting that must be unique within a cluster.
 #### -perm
 Specifies this option, then k2hdkclinetool uses existing connection to the chmpx process(slave node) when executing k2hdkclinetool command(communication command to k2hdkc cluster).  
 You can test the persistent connection by specifying this option.  

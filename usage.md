@@ -88,12 +88,14 @@ The k2hdkc process can receive the following startup options(**-h** option displ
 ```
 $ k2hdkc -h
 [Usage]
-k2hdkc [-conf <file path> | -json <json string>] [-ctlport <port>] [-comlog] [-no_giveup_rejoin] [-d [silent|err|wan|msg|dump]] [-dfile <file path>]
+[Usage]
+k2hdkc [-conf <file path> | -json <json string>] [-ctlport <port>] [-cuk <cuk>] [-comlog] [-no_giveup_rejoin] [-d [silent|err|wan|msg|dump]] [-dfile <file path>]
 k2hdkc [ -h | -v ]
 [option]
   -conf <path>         specify the configuration file(.ini .yaml .json) path
   -json <string>       specify the configuration json string
   -ctlport <port>      specify the self control port(*)
+  -cuk <cuk string>    specify the self CUK(*)
   -no_giveup_rejoin    not give up rejoining chmpx
   -comlog              enable logging communication command
   -d <param>           specify the debugging output mode:
@@ -105,13 +107,16 @@ k2hdkc [ -h | -v ]
   -dfile <path>        specify the file path which is put output
   -h(help)             display this usage.
   -v(version)          display version.
+
 [environment]
   K2HDKCCONFFILE       specify the configuration file(.ini .yaml .json) path
   K2HDKCJSONCONF       specify the configuration json string
+
 (*) you can use environment DKCDBGMODE and DKCDBGFILE instead of -d/-dfile options.
-(*) if ctlport option is specified, chmpx searches same ctlport in configuration
-    file and ignores "CTLPORT" directive in "GLOBAL" section. and chmpx will
-    start in the mode indicated by the server entry that has been detected.
+(*) if ctlport and cuk option is specified, chmpx searches same ctlport/cuk
+    in configuration file and ignores "CTLPORT" or "CUK" directive in
+    "GLOBAL" section. and chmpx will start in the mode indicated by the
+    server entry that has been detected.
 ```
 
 Each startup option is explained below.
@@ -129,6 +134,11 @@ If environment variable (K2HDKCCONFFILE or K2HDKCJSONCONF) is specified, both **
 Specifies the control port number of the chmpx process(server node) to which the k2hdkc process connects.  
 This option can be omitted if only one chmpx process(server node) is running on HOST.  
 If more than one chmpx process(server node) is running on the same HOST, specifying this option is mandatory.
+##### -cuk <cuk string>  
+Specify CUK(Custom Unique Key) to clarify the chmpx process(server node) to which the k2hdkc process connects.  
+When starting multiple CHMPX programs with the same host name(IP address) or control port in the CHMPX configuration, there are cases where the CHMPX program is ambiguous about which setting value it will read.  
+When specifying such a configuration, CUK may be specified to clarify the settings.
+CUK is a setting that must be unique within a cluster.
 ##### -no_giveup_rejoin
 After the k2hdkc process is started, if the k2hdkc process could not connect with the chmpx process(server node), the k2hdkc process retries to reconnect to the chmpx process(server node).  
 Specify this option to eliminate the upper limit trying to reconnect(not give up) and try again until you can connect.  
