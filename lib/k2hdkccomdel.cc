@@ -164,40 +164,21 @@ bool K2hdkcComDel::CommandSend(const unsigned char* pkey, size_t keylength, bool
 	// maybe there is a possibility that the inconvenience will occur.
 	//
 
-	// [1] remove all subkeys in key
+	// [1] get subkey list before removing key
+	K2HSubKeys*		pSubKeys	= NULL;
+	dkcres_type_t	rescode		= DKC_INITRESTYPE;
 	if(is_subkeys){
-		// get all subkeys list
 		K2hdkcComGetSubkeys*	pComGetSubkeys	= GetCommonK2hdkcComGetSubkeys(pK2hObj, pChmObj, SendMsgid, GetDispComNumber(), IsSendWithoutSelf(), false, true);	// [NOTICE] wait result
-		K2HSubKeys*				pSubKeys		= NULL;
-		dkcres_type_t			rescode			= DKC_INITRESTYPE;
 		if(!pComGetSubkeys->CommandSend(pkey, keylength, checkattr, &pSubKeys, &rescode) || !pSubKeys){
-			MSG_DKCPRN("Failed to get subkey in key(%s) in DKCCOM_DEL(%p), but continue...", bin_to_string(pkey, keylength).c_str(), pRcvComAll);
-
-		}else{
-			// remove subkeys
-			// cppcheck-suppress postfixOperator
-			for(K2HSubKeys::iterator iter = pSubKeys->begin(); iter != pSubKeys->end(); iter++){
-				if(0UL == iter->length){
-					WAN_DKCPRN("Subkey is empty in key(%s).", bin_to_string(pkey, keylength).c_str());
-					continue;
-				}
-				// remove subkey
-				K2hdkcComDel*	pComDelSub	= GetCommonK2hdkcComDel(pK2hObj, pChmObj, SendMsgid, GetDispComNumber(), false, true, false);
-				rescode						= DKC_INITRESTYPE;
-				if(!pComDelSub->CommandSend(iter->pSubKey, iter->length, is_subkeys, checkattr, &rescode)){
-					ERR_DKCPRN("Failed to remove subkey(%s) in key(%s) in DKCCOM_DEL(%p), but continue...", bin_to_string(iter->pSubKey, iter->length).c_str(), bin_to_string(pkey, keylength).c_str(), pRcvComAll);
-				}
-				DKC_DELETE(pComDelSub);
-			}
+			MSG_DKCPRN("Could not get subkey in key(%s) in DKCCOM_DEL(%p), continue...", bin_to_string(pkey, keylength).c_str(), pRcvComAll);
 		}
-		DKC_DELETE(pSubKeys);
-		DKC_DELETE(pComGetSubkeys);
 	}
 
 	// [2] delete key(send command)
 	PDKCCOM_ALL	pComAll;
 	if(NULL == (pComAll = reinterpret_cast<PDKCCOM_ALL>(malloc(sizeof(DKCCOM_DEL) + keylength)))){
 		ERR_DKCPRN("Could not allocate memory.");
+		DKC_DELETE(pSubKeys);
 		return false;
 	}
 	PDKCCOM_DEL	pComDel			= CVT_DKCCOM_DEL(pComAll);
@@ -215,14 +196,40 @@ bool K2hdkcComDel::CommandSend(const unsigned char* pkey, size_t keylength, bool
 	if(!SetSendData(pComAll, K2hdkcCommand::MakeChmpxHash((reinterpret_cast<unsigned char*>(pComDel) + pComDel->key_offset), keylength))){
 		ERR_DKCPRN("Failed to set command data to internal buffer.");
 		DKC_FREE(pComAll);
+		DKC_DELETE(pSubKeys);
 		return false;
 	}
 
 	// do command & receive response(on slave node)
 	if(!CommandSend()){
 		ERR_DKCPRN("Failed to send command.");
+		DKC_DELETE(pSubKeys);
 		return false;
 	}
+
+	// [3] remove subkeys if it exists
+	//
+	// [NOTE]
+	// Even if an error occurs, output only the message and continue processing.
+	//
+	if(is_subkeys && pSubKeys){
+		// cppcheck-suppress postfixOperator
+		for(K2HSubKeys::iterator iter = pSubKeys->begin(); iter != pSubKeys->end(); iter++){
+			if(0UL == iter->length){
+				WAN_DKCPRN("Subkey is empty in key(%s).", bin_to_string(pkey, keylength).c_str());
+				continue;
+			}
+			// remove subkey
+			K2hdkcComDel*	pComDelSub	= GetCommonK2hdkcComDel(pK2hObj, pChmObj, SendMsgid, GetDispComNumber(), false, true, false);
+			rescode						= DKC_INITRESTYPE;
+			if(!pComDelSub->CommandSend(iter->pSubKey, iter->length, is_subkeys, checkattr, &rescode)){
+				ERR_DKCPRN("Failed to remove subkey(%s) in key(%s) in DKCCOM_DEL(%p), but continue...", bin_to_string(iter->pSubKey, iter->length).c_str(), bin_to_string(pkey, keylength).c_str(), pRcvComAll);
+			}
+			DKC_DELETE(pComDelSub);
+		}
+	}
+	DKC_DELETE(pSubKeys);
+
 	return true;
 }
 
