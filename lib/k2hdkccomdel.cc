@@ -182,12 +182,12 @@ bool K2hdkcComDel::CommandSend(const unsigned char* pkey, size_t keylength, bool
 					continue;
 				}
 				// remove subkey
-				K2hdkcComDel*	pComDel	= GetCommonK2hdkcComDel(pK2hObj, pChmObj, SendMsgid, GetDispComNumber(), false, true, false);
-				rescode					= DKC_INITRESTYPE;
-				if(!pComDel->CommandSend(iter->pSubKey, iter->length, is_subkeys, checkattr, &rescode)){
+				K2hdkcComDel*	pComDelSub	= GetCommonK2hdkcComDel(pK2hObj, pChmObj, SendMsgid, GetDispComNumber(), false, true, false);
+				rescode						= DKC_INITRESTYPE;
+				if(!pComDelSub->CommandSend(iter->pSubKey, iter->length, is_subkeys, checkattr, &rescode)){
 					ERR_DKCPRN("Failed to remove subkey(%s) in key(%s) in DKCCOM_DEL(%p), but continue...", bin_to_string(iter->pSubKey, iter->length).c_str(), bin_to_string(pkey, keylength).c_str(), pRcvComAll);
 				}
-				DKC_DELETE(pComDel);
+				DKC_DELETE(pComDelSub);
 			}
 		}
 		DKC_DELETE(pSubKeys);
