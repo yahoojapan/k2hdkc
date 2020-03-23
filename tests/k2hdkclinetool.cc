@@ -5279,7 +5279,7 @@ static bool StatusCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 //
 // Command Line: history(his)
 //
-static bool HistoryCommand(ConsoleInput& InputIF)
+static bool HistoryCommand(const ConsoleInput& InputIF)
 {
 	const strarr_t&	history = InputIF.GetAllHistory();
 
@@ -5294,7 +5294,7 @@ static bool HistoryCommand(ConsoleInput& InputIF)
 //
 // Command Line: save <file path>
 //
-static bool SaveCommand(ConsoleInput& InputIF, params_t& params)
+static bool SaveCommand(const ConsoleInput& InputIF, params_t& params)
 {
 	int	fd;
 	if(-1 == (fd = open(params[0].c_str(), O_CREAT | O_RDWR | O_TRUNC, 0644))){

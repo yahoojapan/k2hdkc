@@ -277,7 +277,7 @@ size_t K2hdkcComState::GetServerNodeMapList(dkcchmpxhashmap_t& idhashmap)
 		return idhashmap.size();
 	}
 
-	if(pChmpxInfos && pChmpxInfos->pchminfo && 0 < pChmpxInfos->pchminfo->chmpx_man.chmpx_server_count){
+	if(pChmpxInfos->pchminfo && 0 < pChmpxInfos->pchminfo->chmpx_man.chmpx_server_count){
 		for(PCHMPXLIST pchmpxlist = pChmpxInfos->pchminfo->chmpx_man.chmpx_servers; pchmpxlist; pchmpxlist = pchmpxlist->next){
 			idhashmap[pchmpxlist->chmpx.chmpxid] = pchmpxlist->chmpx.base_hash;
 		}

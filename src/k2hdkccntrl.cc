@@ -416,14 +416,18 @@ bool K2hdkcCntrl::Clean(void)
 
 	// cleanup rest data
 	while(!fullock::flck_trylock_noshared_mutex(&procdatas_lockval));	// MUTEX LOCK
-	for(k2hdkcrcvprocdata_t::iterator iter = rcvprocdatas.begin(); iter != rcvprocdatas.end(); iter = rcvprocdatas.erase(iter)){
+
+	for(k2hdkcrcvprocdata_t::iterator iter = rcvprocdatas.begin(); iter != rcvprocdatas.end(); ++iter){
 		if(*iter){
 			CHM_Free((*iter)->pComPkt);
 			CHM_Free((*iter)->pbody);
 		}
 		DKC_DELETE((*iter));
 	}
+	rcvprocdatas.clear();
+
 	fullock::flck_unlock_noshared_mutex(&procdatas_lockval);			// MUTEX UNLOCK
+
 	return true;
 }
 

@@ -87,8 +87,9 @@ bool K2hdkcComGetAttr::SetResponseData(const unsigned char* pAttrVal, size_t att
 			DKC_FREE(pComAll);
 			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
 			return false;
+		}else{
+			memcpy(pdata, pAttrVal, pComRes->attrval_length);
 		}
-		memcpy(pdata, pAttrVal, pComRes->attrval_length);
 	}
 
 	if(!SetResponseData(pComAll)){
@@ -146,7 +147,7 @@ bool K2hdkcComGetAttr::CommandProcessing(void)
 		}
 
 		// set response data
-		if(!SetResponseData(byAttr, attr_length)){
+		if(!byAttr || !SetResponseData(byAttr, attr_length)){
 			MSG_DKCPRN("Failed to make response data for key(%s)", bin_to_string(pKey, pCom->key_length).c_str());
 			// continue for responding
 		}

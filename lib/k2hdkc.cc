@@ -142,10 +142,7 @@ dkcres_type_t k2hdkc_get_res_code(k2hdkc_chmpx_h handle)
 		return DKC_NORESTYPE;
 	}
 	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return DKC_NORESTYPE;
-	}
+
 	return pSlave->GetResponseCode();
 }
 
@@ -240,10 +237,7 @@ bool k2hdkc_close_chmpx_ex(k2hdkc_chmpx_h handle, bool is_clean_bup)
 		return false;
 	}
 	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
+
 	return DestoryOpenedMsgidSlaveObject(pSlave, is_clean_bup);
 }
 
@@ -338,12 +332,8 @@ bool k2hdkc_pm_get_state(k2hdkc_chmpx_h handle, PDKC_NODESTATE* ppstates, size_t
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-	K2hdkcComState*	pComObj = GetPmSlaveK2hdkcComState(pSlave);
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
+	K2hdkcComState*	pComObj	= GetPmSlaveK2hdkcComState(pSlave);
 
 	bool	result = K2hdkcFullGetState(pComObj, ppstates, pstatecount);
 	if(!result){
@@ -659,12 +649,8 @@ bool k2hdkc_pm_get_value(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-	K2hdkcComGet*	pComObj = GetPmSlaveK2hdkcComGet(pSlave);
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
+	K2hdkcComGet*	pComObj	= GetPmSlaveK2hdkcComGet(pSlave);
 
 	bool	result = K2hdkcFullGetValue(pComObj, pkey, keylength, true, NULL, ppval, pvallength);
 	if(!result){
@@ -713,12 +699,8 @@ bool k2hdkc_pm_get_value_wp(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-	K2hdkcComGet*	pComObj = GetPmSlaveK2hdkcComGet(pSlave);
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
+	K2hdkcComGet*	pComObj	= GetPmSlaveK2hdkcComGet(pSlave);
 
 	bool	result = K2hdkcFullGetValue(pComObj, pkey, keylength, true, encpass, ppval, pvallength);
 	if(!result){
@@ -767,12 +749,8 @@ bool k2hdkc_pm_get_value_np(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-	K2hdkcComGet*	pComObj = GetPmSlaveK2hdkcComGet(pSlave);
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
+	K2hdkcComGet*	pComObj	= GetPmSlaveK2hdkcComGet(pSlave);
 
 	bool	result = K2hdkcFullGetValue(pComObj, pkey, keylength, false, NULL, ppval, pvallength);
 	if(!result){
@@ -933,12 +911,7 @@ bool k2hdkc_pm_da_get_value(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComGetDirect*	pComObj	= GetPmSlaveK2hdkcComGetDirect(pSlave);
 	bool				result	= K2hdkcFullGetDirect(pComObj, pkey, keylength, getpos, val_length, ppval, pvallength);
 	if(!result){
@@ -1291,11 +1264,7 @@ bool k2hdkc_pm_get_subkeys(k2hdkc_chmpx_h handle, const unsigned char* pkey, siz
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
+	K2hdkcSlave*			pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComGetSubkeys*	pComObj = GetPmSlaveK2hdkcComGetSubkeys(pSlave);
 	K2HSubKeys*				pSubKeys= NULL;
 	bool					result	= K2hdkcFullGetSubkeys(pComObj, pkey, keylength, true, &pSubKeys);
@@ -1327,11 +1296,7 @@ int k2hdkc_pm_get_str_subkeys(k2hdkc_chmpx_h handle, const char* pkey, char*** p
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return -1;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return -1;
-	}
+	K2hdkcSlave*			pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComGetSubkeys*	pComObj = GetPmSlaveK2hdkcComGetSubkeys(pSlave);
 	K2HSubKeys*				pSubKeys= NULL;
 	int						rescnt	= -1;
@@ -1365,11 +1330,7 @@ bool k2hdkc_pm_get_subkeys_np(k2hdkc_chmpx_h handle, const unsigned char* pkey, 
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
+	K2hdkcSlave*			pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComGetSubkeys*	pComObj = GetPmSlaveK2hdkcComGetSubkeys(pSlave);
 	K2HSubKeys*				pSubKeys= NULL;
 	bool					result	= K2hdkcFullGetSubkeys(pComObj, pkey, keylength, false, &pSubKeys);
@@ -1401,11 +1362,7 @@ int k2hdkc_pm_get_str_subkeys_np(k2hdkc_chmpx_h handle, const char* pkey, char**
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return -1;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return -1;
-	}
+	K2hdkcSlave*			pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComGetSubkeys*	pComObj = GetPmSlaveK2hdkcComGetSubkeys(pSlave);
 	K2HSubKeys*				pSubKeys= NULL;
 	int						rescnt	= -1;
@@ -1576,12 +1533,7 @@ bool k2hdkc_pm_get_attrs(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComGetAttrs*	pComObj = GetPmSlaveK2hdkcComGetAttrs(pSlave);
 	K2HAttrs*			pAttrs	= NULL;
 	bool				result	= K2hdkcFullGetAttrs(pComObj, pkey, keylength, &pAttrs);
@@ -1714,11 +1666,7 @@ bool k2hdkc_pm_set_value_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComSet*	pComObj = GetPmSlaveK2hdkcComSet(pSlave);
 	bool			result	= K2hdkcFullSet(pComObj, pkey, keylength, pval, vallength, rmsubkeylist, encpass, expire);
 	if(!result){
@@ -1789,11 +1737,7 @@ bool k2hdkc_pm_da_set_value(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComSetDirect*	pComObj = GetPmSlaveK2hdkcComSetDirect(pSlave);
 	bool				result	= K2hdkcFullSetDirect(pComObj, pkey, keylength, pval, vallength, setpos);
 	if(!result){
@@ -1949,12 +1893,7 @@ bool k2hdkc_pm_set_subkeys(k2hdkc_chmpx_h handle, const unsigned char* pkey, siz
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*	pSlave			= reinterpret_cast<K2hdkcSlave*>(handle);
 	unsigned char*	psubkeys		= NULL;
 	size_t			subkeyslength	= 0UL;
 	if(!K2hdkcCvtPackToSubkeys(pskeypck, skeypckcnt, &psubkeys, &subkeyslength)){
@@ -1977,12 +1916,7 @@ bool k2hdkc_pm_set_str_subkeys(k2hdkc_chmpx_h handle, const char* pkey, const ch
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*	pSlave			= reinterpret_cast<K2hdkcSlave*>(handle);
 	unsigned char*	psubkeys		= NULL;
 	size_t			subkeyslength	= 0UL;
 	if(!K2hdkcCvtStringArrayToSubkeys(pskeyarray, &psubkeys, &subkeyslength)){
@@ -2139,11 +2073,7 @@ bool k2hdkc_pm_set_subkey_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, s
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComAddSubkey*	pComObj = GetPmSlaveK2hdkcComAddSubkey(pSlave);
 	bool				result	= K2hdkcFullAddSubkey(pComObj, pkey, keylength, psubkey, subkeylength, pskeyval, skeyvallength, checkattr, encpass, expire);
 	if(!result){
@@ -2234,12 +2164,7 @@ bool k2hdkc_pm_set_all(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t 
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*	pSlave			= reinterpret_cast<K2hdkcSlave*>(handle);
 	unsigned char*	psubkeys		= NULL;
 	size_t			subkeyslength	= 0UL;
 	if(!K2hdkcCvtPackToSubkeys(pskeypck, skeypckcnt, &psubkeys, &subkeyslength)){
@@ -2262,12 +2187,7 @@ bool k2hdkc_pm_set_str_all(k2hdkc_chmpx_h handle, const char* pkey, const char* 
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*	pSlave			= reinterpret_cast<K2hdkcSlave*>(handle);
 	unsigned char*	psubkeys		= NULL;
 	size_t			subkeyslength	= 0UL;
 	if(!K2hdkcCvtStringArrayToSubkeys(pskeyarray, &psubkeys, &subkeyslength)){
@@ -2422,12 +2342,7 @@ bool k2hdkc_pm_remove_all(k2hdkc_chmpx_h handle, const unsigned char* pkey, size
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComDel*	pComObj = GetPmSlaveK2hdkcComDel(pSlave);
 	bool			result	= K2hdkcFullDel(pComObj, pkey, keylength, true);
 	if(!result){
@@ -2486,12 +2401,7 @@ bool k2hdkc_pm_remove(k2hdkc_chmpx_h handle, const unsigned char* pkey, size_t k
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComDel*	pComObj = GetPmSlaveK2hdkcComDel(pSlave);
 	bool			result	= K2hdkcFullDel(pComObj, pkey, keylength, false);
 	if(!result){
@@ -2562,12 +2472,7 @@ bool k2hdkc_pm_remove_subkey(k2hdkc_chmpx_h handle, const unsigned char* pkey, s
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComDelSubkey*	pComObj = GetPmSlaveK2hdkcComDelSubkey(pSlave);
 	bool				result	= K2hdkcFullDelSubkey(pComObj, pkey, keylength, psubkey, subkeylength, is_nest, true);
 	if(!result){
@@ -2626,12 +2531,7 @@ bool k2hdkc_pm_remove_subkey_np(k2hdkc_chmpx_h handle, const unsigned char* pkey
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComDelSubkey*	pComObj = GetPmSlaveK2hdkcComDelSubkey(pSlave);
 	bool				result	= K2hdkcFullDelSubkey(pComObj, pkey, keylength, psubkey, subkeylength, is_nest, false);
 	if(!result){
@@ -2829,12 +2729,7 @@ bool k2hdkc_pm_rename_with_parent_wa(k2hdkc_chmpx_h handle, const unsigned char*
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComRen*	pComObj = GetPmSlaveK2hdkcComRen(pSlave);
 	bool			result	= K2hdkcFullRen(pComObj, poldkey, oldkeylength, pnewkey, newkeylength, pparentkey, parentkeylength, checkattr, encpass, expire);
 	if(!result){
@@ -2959,12 +2854,7 @@ bool k2hdkc_pm_q_push_wa(k2hdkc_chmpx_h handle, const unsigned char* pprefix, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComQPush*	pComObj = GetPmSlaveK2hdkcComQPush(pSlave);
 	bool			result	= K2hdkcFullQPush(pComObj, pprefix, prefixlength, pval, vallength, is_fifo, checkattr, encpass, expire);
 	if(!result){
@@ -3065,12 +2955,7 @@ bool k2hdkc_pm_keyq_push_wa(k2hdkc_chmpx_h handle, const unsigned char* pprefix,
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComQPush*	pComObj = GetPmSlaveK2hdkcComQPush(pSlave);
 	bool			result	= K2hdkcFullKeyQPush(pComObj, pprefix, prefixlength, pkey, keylength, pval, vallength, is_fifo, checkattr, encpass, expire);
 	if(!result){
@@ -3236,14 +3121,9 @@ bool k2hdkc_pm_q_pop_wp(k2hdkc_chmpx_h handle, const unsigned char* pprefix, siz
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
-	K2hdkcComQPop*	pComObj 	= GetPmSlaveK2hdkcComQPop(pSlave);
-	bool			result		= K2hdkcFullQPop(pComObj, pprefix, prefixlength, is_fifo, encpass, ppval, pvallength);
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
+	K2hdkcComQPop*	pComObj = GetPmSlaveK2hdkcComQPop(pSlave);
+	bool			result	= K2hdkcFullQPop(pComObj, pprefix, prefixlength, is_fifo, encpass, ppval, pvallength);
 	if(!result){
 		ERR_DKCPRN("Failed to pop queue.");
 	}
@@ -3377,14 +3257,9 @@ bool k2hdkc_pm_keyq_pop_wp(k2hdkc_chmpx_h handle, const unsigned char* pprefix, 
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
-	K2hdkcComQPop*	pComObj 	= GetPmSlaveK2hdkcComQPop(pSlave);
-	bool			result		= K2hdkcFullKeyQPop(pComObj, pprefix, prefixlength, is_fifo, encpass, ppkey, pkeylength, ppval, pvallength);
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
+	K2hdkcComQPop*	pComObj = GetPmSlaveK2hdkcComQPop(pSlave);
+	bool			result	= K2hdkcFullKeyQPop(pComObj, pprefix, prefixlength, is_fifo, encpass, ppkey, pkeylength, ppval, pvallength);
 	if(!result){
 		ERR_DKCPRN("Failed to pop key queue.");
 	}
@@ -3525,12 +3400,7 @@ bool k2hdkc_pm_q_remove_wp(k2hdkc_chmpx_h handle, const unsigned char* pprefix, 
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComQDel*	pComObj = GetPmSlaveK2hdkcComQDel(pSlave);
 	bool			result	= K2hdkcFullQDel(pComObj, pprefix, prefixlength, count, is_fifo, encpass);
 	if(!result){
@@ -3630,12 +3500,7 @@ bool k2hdkc_pm_keyq_remove_wp(k2hdkc_chmpx_h handle, const unsigned char* pprefi
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*	pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComQDel*	pComObj = GetPmSlaveK2hdkcComQDel(pSlave);
 	bool			result	= K2hdkcFullKeyQDel(pComObj, pprefix, prefixlength, count, is_fifo, encpass);
 	if(!result){
@@ -3751,12 +3616,7 @@ bool k2hdkc_pm_cas64_init_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, s
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasInit*	pComObj = GetPmSlaveK2hdkcComCasInit(pSlave);
 	bool				result	= K2hdkcFullCasInit(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&val), sizeof(uint64_t), encpass, expire);
 	if(!result){
@@ -3857,12 +3717,7 @@ bool k2hdkc_pm_cas32_init_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, s
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasInit*	pComObj = GetPmSlaveK2hdkcComCasInit(pSlave);
 	bool				result	= K2hdkcFullCasInit(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&val), sizeof(uint32_t), encpass, expire);
 	if(!result){
@@ -3963,12 +3818,7 @@ bool k2hdkc_pm_cas16_init_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, s
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasInit*	pComObj = GetPmSlaveK2hdkcComCasInit(pSlave);
 	bool				result	= K2hdkcFullCasInit(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&val), sizeof(uint16_t), encpass, expire);
 	if(!result){
@@ -4069,12 +3919,7 @@ bool k2hdkc_pm_cas8_init_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasInit*	pComObj = GetPmSlaveK2hdkcComCasInit(pSlave);
 	bool				result	= K2hdkcFullCasInit(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&val), sizeof(uint8_t), encpass, expire);
 	if(!result){
@@ -4198,12 +4043,7 @@ bool k2hdkc_pm_cas64_get_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasGet*	pComObj = GetPmSlaveK2hdkcComCasGet(pSlave);
 	bool				result	= K2hdkcFullCasGet(pComObj, pkey, keylength, encpass, reinterpret_cast<unsigned char*>(pval), sizeof(uint64_t));
 	if(!result){
@@ -4304,12 +4144,7 @@ bool k2hdkc_pm_cas32_get_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasGet*	pComObj = GetPmSlaveK2hdkcComCasGet(pSlave);
 	bool				result	= K2hdkcFullCasGet(pComObj, pkey, keylength, encpass, reinterpret_cast<unsigned char*>(pval), sizeof(uint32_t));
 	if(!result){
@@ -4410,12 +4245,7 @@ bool k2hdkc_pm_cas16_get_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasGet*	pComObj = GetPmSlaveK2hdkcComCasGet(pSlave);
 	bool				result	= K2hdkcFullCasGet(pComObj, pkey, keylength, encpass, reinterpret_cast<unsigned char*>(pval), sizeof(uint16_t));
 	if(!result){
@@ -4515,12 +4345,7 @@ bool k2hdkc_pm_cas8_get_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, siz
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasGet*	pComObj = GetPmSlaveK2hdkcComCasGet(pSlave);
 	bool				result	= K2hdkcFullCasGet(pComObj, pkey, keylength, encpass, reinterpret_cast<unsigned char*>(pval), sizeof(uint8_t));
 	if(!result){
@@ -4633,12 +4458,7 @@ bool k2hdkc_pm_cas64_set_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasSet*	pComObj = GetPmSlaveK2hdkcComCasSet(pSlave);
 	bool				result	= K2hdkcFullCasSet(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&oldval), sizeof(uint64_t), reinterpret_cast<const unsigned char*>(&newval), sizeof(uint64_t), encpass, expire);
 	if(!result){
@@ -4739,12 +4559,7 @@ bool k2hdkc_pm_cas32_set_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasSet*	pComObj = GetPmSlaveK2hdkcComCasSet(pSlave);
 	bool				result	= K2hdkcFullCasSet(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&oldval), sizeof(uint32_t), reinterpret_cast<const unsigned char*>(&newval), sizeof(uint32_t), encpass, expire);
 	if(!result){
@@ -4845,12 +4660,7 @@ bool k2hdkc_pm_cas16_set_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, si
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasSet*	pComObj = GetPmSlaveK2hdkcComCasSet(pSlave);
 	bool				result	= K2hdkcFullCasSet(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&oldval), sizeof(uint16_t), reinterpret_cast<const unsigned char*>(&newval), sizeof(uint16_t), encpass, expire);
 	if(!result){
@@ -4951,12 +4761,7 @@ bool k2hdkc_pm_cas8_set_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey, siz
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasSet*	pComObj = GetPmSlaveK2hdkcComCasSet(pSlave);
 	bool				result	= K2hdkcFullCasSet(pComObj, pkey, keylength, reinterpret_cast<const unsigned char*>(&oldval), sizeof(uint8_t), reinterpret_cast<const unsigned char*>(&newval), sizeof(uint8_t), encpass, expire);
 	if(!result){
@@ -5069,12 +4874,7 @@ bool k2hdkc_pm_cas_increment_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasIncDec*	pComObj = GetPmSlaveK2hdkcComCasIncDec(pSlave);
 	bool				result	= K2hdkcFullCasIncDec(pComObj, pkey, keylength, true, encpass, expire);
 	if(!result){
@@ -5175,12 +4975,7 @@ bool k2hdkc_pm_cas_decrement_wa(k2hdkc_chmpx_h handle, const unsigned char* pkey
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return false;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
-	if(!pSlave){
-		ERR_DKCPRN("Parameter handle is invalid.");
-		return false;
-	}
-
+	K2hdkcSlave*		pSlave	= reinterpret_cast<K2hdkcSlave*>(handle);
 	K2hdkcComCasIncDec*	pComObj = GetPmSlaveK2hdkcComCasIncDec(pSlave);
 	bool				result	= K2hdkcFullCasIncDec(pComObj, pkey, keylength, false, encpass, expire);
 	if(!result){
