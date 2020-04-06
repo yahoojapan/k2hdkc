@@ -80,7 +80,8 @@ void K2hdkcCntrl::SigUsr2handler(int signum)
 void K2hdkcCntrl::SigHupHandler(int signum)
 {
 	if(SIGHUP == signum){
-		// Nothing to do now
+		// Same as SigExitHandler for break loop
+		K2hdkcCntrl::Get()->is_loop = false;
 	}
 }
 

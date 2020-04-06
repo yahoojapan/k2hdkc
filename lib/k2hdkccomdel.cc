@@ -22,8 +22,11 @@
 #include <string.h>
 #include <assert.h>
 
+#include <k2hash/k2hashfunc.h>
+
 #include "k2hdkccomdel.h"
 #include "k2hdkccomgetsubkeys.h"
+#include "k2hdkccomrepldel.h"
 #include "k2hdkccomutil.h"
 #include "k2hdkcutil.h"
 #include "k2hdkcdbg.h"
@@ -230,6 +233,27 @@ bool K2hdkcComDel::CommandSend(const unsigned char* pkey, size_t keylength, bool
 	}
 	DKC_DELETE(pSubKeys);
 
+	// [*] special case
+	// 
+	// If the key is completely deleted on this node, but the key is holded in
+	// another node and that node is up after deleting, the key might be restored
+	// when data is merged.
+	// If the server on the CHMPX RING is down or in operation(additions, deletions,
+	// and their pending states), remember the key as a placeholder.
+	// The placeholder writes the key expiration date as 0 seconds.
+	//
+	if(!IsAllNodesSafe()){
+		// make placeholder
+		K2hdkcComSet*	pComSetObj	= GetCommonK2hdkcComSet(pK2hObj, pChmObj, SendMsgid, GetDispComNumber(), false, true, false);
+		time_t			expire		= 0;																	// always expired
+		unsigned char	dummyval	= 0x0;																	// dummy value for clearing
+		rescode						= DKC_INITRESTYPE;
+		if(!pComSetObj->CommandSend(pkey, keylength, &dummyval, 1, false, NULL, &(expire), &rescode)){		// [NOTE] only key name with expire 0 sec for placeholder
+			ERR_DKCPRN("Failed to make placeholder for key(%s) in DKCCOM_DEL(%p), but continue...", bin_to_string(pkey, keylength).c_str(), pRcvComAll);
+		}
+		DKC_DELETE(pComSetObj);
+	}
+
 	return true;
 }
 
@@ -259,6 +283,93 @@ bool K2hdkcComDel::GetResponseData(dkcres_type_t* prescode) const
 		return false;
 	}
 	return true;
+}
+
+// [NOTE]
+// Replication of the delete command does not need to check the value of the key
+// to be deleted, the subkey list, and the attribute, and overrides in this class.
+//
+bool K2hdkcComDel::CommandReplicate(const unsigned char* pkey, size_t keylength, const struct timespec ts)
+{
+	if(!pK2hObj || !pChmObj){
+		ERR_DKCPRN("K2hash and Chmpx object are NULL, so could not send replicate command.");
+		return false;
+	}
+	if(!IsServerNode){
+		MSG_DKCPRN("Called replicate command from client on slave node, this method must be called from on server node.");
+		return false;
+	}
+
+	// hash value made by same logic in k2hash
+	k2h_hash_t	hash	= K2H_HASH_FUNC(reinterpret_cast<const void*>(pkey), keylength);
+	k2h_hash_t	subhash	= K2H_2ND_HASH_FUNC(reinterpret_cast<const void*>(pkey), keylength);
+
+	// Replicate Command object
+	K2hdkcComReplDel*	pReplDel = GetCommonK2hdkcComReplDel(pK2hObj, pChmObj, SendMsgid, GetDispComNumber(), true, true, false);	// [NOTICE] always without self! and not wait response
+	bool				result;
+	if(false == (result = pReplDel->CommandSend(hash, subhash, pkey, keylength, ts))){
+		ERR_DKCPRN("Failed to replicate command for key(%s).", bin_to_string(pkey, keylength).c_str());
+	}
+
+	// [NOTE]
+	// This replicate command is sent on server node, so this response is received in event loop.
+	// Then we do not get the response here.
+	//
+	return result;
+}
+
+// [NOTE]
+// This method checks the status of all CHMPX server nodes and returns true
+// if there may be a mismatch in the deleting key.
+// Deleting key must be stored as a placeholder when a server on the RING is
+// down/adding/deleting, thus this method is called.
+//
+// This method is a special CHMPX status check function used only by this class.
+// However, if you need the whole K2HDKC eventually, move to a common function.
+//
+bool K2hdkcComDel::IsAllNodesSafe(void)
+{
+	if(!pChmObj){
+		ERR_DKCPRN("Chmpx object are NULL, so could not check all nodes.");
+		return false;
+	}
+
+	// get all chmpx information on server nodes
+	bool		result		= true;
+	PCHMINFOEX	pChmpxInfos	= pChmObj->DupAllChmInfo();
+	if(!pChmpxInfos){
+		WAN_DKCPRN("Failed to get all chmpx information, but return true...");
+		return result;
+	}
+
+	// check all server node status
+	if(pChmpxInfos->pchminfo && 0 < pChmpxInfos->pchminfo->chmpx_man.chmpx_server_count){
+		for(PCHMPXLIST pchmpxlist = pChmpxInfos->pchminfo->chmpx_man.chmpx_servers; pchmpxlist; pchmpxlist = pchmpxlist->next){
+			if(IS_CHMPXSTS_SRVIN(pchmpxlist->chmpx.status)){
+				if(IS_CHMPXSTS_DOWN(pchmpxlist->chmpx.status)){
+					// found SERVICE IN & DOWN node
+					MSG_DKCPRN("Found SERVICEIN & DOWN node.");
+					result = false;
+					break;
+				}else if(!IS_CHMPXSTS_NOACT(pchmpxlist->chmpx.status)){
+					// found SERVICE IN & UP & ADD/DELETE action node --> This means that some node will be adding/deleting
+					MSG_DKCPRN("Found SERVICEIN & UP & ADD/DELETE(pending/doing/done) node.");
+					result = false;
+					break;
+				}
+			}else{
+				if(IS_CHMPXSTS_UP(pchmpxlist->chmpx.status) && !IS_CHMPXSTS_NOACT(pchmpxlist->chmpx.status)){
+					// found SERVICE OUT & UP & ADD/DELETE action node --> This node will be adding
+					MSG_DKCPRN("Found SERVICEOUT & UP & ADD(pending/doing/done) node.");
+					result = false;
+					break;
+				}
+			}
+		}
+	}
+	ChmCntrl::FreeDupAllChmInfo(pChmpxInfos);
+
+	return result;
 }
 
 //---------------------------------------------------------

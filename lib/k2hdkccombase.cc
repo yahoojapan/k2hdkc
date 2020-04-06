@@ -50,6 +50,7 @@
 #include "k2hdkccomreplkey.h"
 #include "k2hdkccomk2hstate.h"
 #include "k2hdkccomstate.h"
+#include "k2hdkccomrepldel.h"
 #include "k2hdkccomutil.h"
 #include "k2hdkcutil.h"
 #include "k2hdkcdbg.h"
@@ -84,7 +85,8 @@ static const char*	str_dkccom_type[] = {
 	"DKC_COM_CAS_INCDEC",
 	"DKC_COM_REPL_KEY",
 	"DKC_COM_K2HSTATE",
-	"DKC_COM_STATE"
+	"DKC_COM_STATE",
+	"DKC_COM_REPL_DEL"
 };
 
 const char* STR_DKCCOM_TYPE(dkccom_type_t comtype)
@@ -332,6 +334,14 @@ K2hdkcCommand* K2hdkcCommand::GetCommandReceiveObject(K2HShm* pk2hash, ChmCntrl*
 		K2hdkcComReplKey*	pComObj = new K2hdkcComReplKey(pk2hash, pchmcntrl, pComAll->com_head.comnumber);
 		if(!pComObj){
 			ERR_DKCPRN("Could not make command object for DKC_COM_REPL_KEY.");
+			return NULL;
+		}
+		pObj = pComObj;
+
+	}else if(DKC_COM_REPL_DEL == pComAll->com_head.comtype){
+		K2hdkcComReplDel*	pComObj = new K2hdkcComReplDel(pk2hash, pchmcntrl, pComAll->com_head.comnumber);
+		if(!pComObj){
+			ERR_DKCPRN("Could not make command object for DKC_COM_REPL_DEL.");
 			return NULL;
 		}
 		pObj = pComObj;
@@ -601,6 +611,14 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_REPL_KEY == comtype){
 		if(NULL == (pObj = new K2hdkcComReplKey(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_REPL_KEY.");
+			// cppcheck-suppress unmatchedSuppression
+			// cppcheck-suppress memleak
+			return NULL;
+		}
+
+	}else if(DKC_COM_REPL_DEL == comtype){
+		if(NULL == (pObj = new K2hdkcComReplDel(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
+			ERR_DKCPRN("Could not make command object for DKC_COM_REPL_DEL.");
 			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;

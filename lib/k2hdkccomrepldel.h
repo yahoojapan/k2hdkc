@@ -12,20 +12,20 @@
  * the license file that was distributed with this source code.
  *
  * AUTHOR:   Takeshi Nakatani
- * CREATE:   Thu Jul 28 2016
+ * CREATE:   Wed Jul 20 2016
  * REVISION:
  * 
  */
 
-#ifndef	K2HDKCCOMDEL_H
-#define	K2HDKCCOMDEL_H
+#ifndef	K2HDKCCOMREPLDEL_H
+#define	K2HDKCCOMREPLDEL_H
 
 #include "k2hdkccombase.h"
 
 //---------------------------------------------------------
-// K2hdkcComDel Class
+// K2hdkcComReplDel Class
 //---------------------------------------------------------
-class K2hdkcComDel : public K2hdkcCommand
+class K2hdkcComReplDel : public K2hdkcCommand
 {
 	using	K2hdkcCommand::SetResponseData;
 	using	K2hdkcCommand::CommandSend;
@@ -35,23 +35,20 @@ class K2hdkcComDel : public K2hdkcCommand
 		virtual PDKCCOM_ALL MakeResponseOnlyHeadData(dkcres_type_t subcode = DKC_RES_SUBCODE_NOTHING, dkcres_type_t errcode = DKC_RES_ERROR);
 		bool SetSucceedResponseData(void);
 
-		virtual bool CommandReplicate(const unsigned char* pkey, size_t keylength, const struct timespec ts);
 		virtual void RawDumpComAll(const PDKCCOM_ALL pComAll) const;
 
-		bool IsAllNodesSafe(void);
-
 	public:
-		K2hdkcComDel(K2HShm* pk2hash = NULL, ChmCntrl* pchmcntrl = NULL, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = true, bool is_wait_on_server = false);
-		virtual ~K2hdkcComDel(void);
+		K2hdkcComReplDel(K2HShm* pk2hash = NULL, ChmCntrl* pchmcntrl = NULL, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = true, bool is_wait_on_server = false);
+		virtual ~K2hdkcComReplDel(void);
 
 		virtual bool CommandProcessing(void);
 
-		bool CommandSend(const unsigned char* pkey, size_t keylength, bool is_subkeys, bool checkattr = true);
-		bool CommandSend(const unsigned char* pkey, size_t keylength, bool is_subkeys, bool checkattr, dkcres_type_t* prescode);
+		bool CommandSend(k2h_hash_t hash, k2h_hash_t subhash, const unsigned char* pkey, size_t keylength, const struct timespec ts);
+		bool CommandSend(k2h_hash_t hash, k2h_hash_t subhash, const unsigned char* pkey, size_t keylength, const struct timespec ts, dkcres_type_t* prescode);
 		bool GetResponseData(dkcres_type_t* prescode) const;
 };
 
-#endif	// K2HDKCCOMDEL_H
+#endif	// K2HDKCCOMREPLDEL_H
 
 /*
  * VIM modelines

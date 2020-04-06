@@ -66,7 +66,8 @@ DECL_EXTERN_C_START
 #define	DKC_COM_REPL_KEY				(DKC_COM_CAS_INCDEC		+ 1L)
 #define	DKC_COM_K2HSTATE				(DKC_COM_REPL_KEY		+ 1L)
 #define	DKC_COM_STATE					(DKC_COM_K2HSTATE		+ 1L)
-#define	DKC_COM_MAX						(DKC_COM_STATE)
+#define	DKC_COM_REPL_DEL				(DKC_COM_STATE			+ 1L)
+#define	DKC_COM_MAX						(DKC_COM_REPL_DEL)
 #if defined(__cplusplus)
 #define	DKC_COM_UNKNOWN					static_cast<dkccom_type_t>(-1)
 #else
@@ -546,6 +547,21 @@ typedef struct k2hdkc_com_k2hstate{
 	chmhash_t		base_hash;
 }K2HDKC_ATTR_PACKED DKCCOM_K2HSTATE, *PDKCCOM_K2HSTATE;
 
+//
+// Replicate deletion
+//
+// [NOTE]
+// This command is sent only clients on server node.
+//
+typedef struct k2hdkc_com_replicate_del{
+	DKCCOM_HEAD		head;
+	k2h_hash_t		hash;
+	k2h_hash_t		subhash;
+	off_t			key_offset;
+	size_t			key_length;
+	struct timespec	ts;
+}K2HDKC_ATTR_PACKED DKCCOM_REPL_DEL, *PDKCCOM_REPL_DEL;
+
 //---------------------------------------------------------
 // Command response structures
 //---------------------------------------------------------
@@ -734,7 +750,6 @@ typedef struct k2hdkc_res_cas_incdec{
 	DKCCOM_HEAD		head;
 }K2HDKC_ATTR_PACKED DKCRES_CAS_INCDEC, *PDKCRES_CAS_INCDEC;
 
-
 //
 // Response Replicate key
 //
@@ -749,6 +764,13 @@ typedef struct k2hdkc_res_k2hstate{
 	DKCCOM_HEAD		head;
 	DKC_NODESTATE	nodestate;
 }K2HDKC_ATTR_PACKED DKCRES_K2HSTATE, *PDKCRES_K2HSTATE;
+
+//
+// Response Replicate deletion
+//
+typedef struct k2hdkc_res_replicate_del{
+	DKCCOM_HEAD		head;
+}K2HDKC_ATTR_PACKED DKCRES_REPL_DEL, *PDKCRES_REPL_DEL;
 
 //
 // Response State
@@ -793,6 +815,7 @@ typedef union k2hdkc_com_all{
 	DKCCOM_CAS_INCDEC		com_cas_incdec;
 	DKCCOM_REPL_KEY			com_repl_key;
 	DKCCOM_K2HSTATE			com_k2hstate;
+	DKCCOM_REPL_DEL			com_repl_del;
 
 	DKCRES_GET				res_get;
 	DKCRES_GET_DIRECT		res_get_direct;
@@ -819,6 +842,7 @@ typedef union k2hdkc_com_all{
 	DKCRES_REPL_KEY			res_repl_key;
 	DKCRES_K2HSTATE			res_k2hstate;
 	DKCRES_STATE			res_state;
+	DKCRES_REPL_DEL			res_repl_del;
 }K2HDKC_ATTR_PACKED DKCCOM_ALL, *PDKCCOM_ALL;
 
 //---------------------------------------------------------
@@ -846,6 +870,7 @@ typedef union k2hdkc_com_all{
 #define	CVT_DKCCOM_CAS_INCDEC(pComAll)		(&(pComAll->com_cas_incdec))
 #define	CVT_DKCCOM_REPL_KEY(pComAll)		(&(pComAll->com_repl_key))
 #define	CVT_DKCCOM_K2HSTATE(pComAll)		(&(pComAll->com_k2hstate))
+#define	CVT_DKCCOM_REPL_DEL(pComAll)		(&(pComAll->com_repl_del))
 
 #define	CVT_DKCRES_GET(pComAll)				(&(pComAll->res_get))
 #define	CVT_DKCRES_GET_DIRECT(pComAll)		(&(pComAll->res_get_direct))
@@ -872,6 +897,7 @@ typedef union k2hdkc_com_all{
 #define	CVT_DKCRES_REPL_KEY(pComAll)		(&(pComAll->res_repl_key))
 #define	CVT_DKCRES_K2HSTATE(pComAll)		(&(pComAll->res_k2hstate))
 #define	CVT_DKCRES_STATE(pComAll)			(&(pComAll->res_state))
+#define	CVT_DKCRES_REPL_DEL(pComAll)		(&(pComAll->res_repl_del))
 
 DECL_EXTERN_C_END
 
