@@ -97,7 +97,7 @@ bool K2hdkcSlave::Initialize(const char* config, short ctlport, const char* cuk,
 bool K2hdkcSlave::Clean(bool is_clean_bup)
 {
 	if(!IsInitialize()){
-		MSG_DKCPRN("This object does not initialized yet, so no not need to clean.");
+		//MSG_DKCPRN("This object does not initialized yet, so no not need to clean.");
 		return true;
 	}
 	if(IsOpen()){

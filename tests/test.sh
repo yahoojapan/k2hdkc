@@ -358,7 +358,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 1
+	sleep 10
 	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
@@ -558,7 +558,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 1
+	sleep 10
 	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
@@ -758,7 +758,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 1
+	sleep 10
 	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
@@ -957,7 +957,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 1
+	sleep 10
 	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
@@ -1156,7 +1156,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 1
+	sleep 10
 	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
@@ -1365,7 +1365,7 @@ if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
 	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 1
+	sleep 10
 	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
@@ -1655,7 +1655,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
 	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 1
+	sleep 10
 	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
@@ -1946,7 +1946,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
 	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 1
+	sleep 10
 	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
@@ -2235,7 +2235,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
 	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 1
+	sleep 10
 	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
@@ -2524,7 +2524,7 @@ elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
 	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 1
+	sleep 10
 	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
 	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)

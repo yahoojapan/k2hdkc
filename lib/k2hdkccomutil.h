@@ -90,6 +90,7 @@
 #define GetCommonK2hdkcComReplKey(pk2hash, pchmcntrl, ...)		reinterpret_cast<K2hdkcComReplKey*>(	K2hdkcCommand::GetCommandSendObject(pk2hash, pchmcntrl, DKC_COM_REPL_KEY,	__VA_ARGS__))
 #define GetCommonK2hdkcComK2hState(pk2hash, pchmcntrl, ...)		reinterpret_cast<K2hdkcComK2hState*>(	K2hdkcCommand::GetCommandSendObject(pk2hash, pchmcntrl, DKC_COM_K2HSTATE,	__VA_ARGS__))
 #define GetCommonK2hdkcComState(pk2hash, pchmcntrl, ...)		reinterpret_cast<K2hdkcComState*>(		K2hdkcCommand::GetCommandSendObject(pk2hash, pchmcntrl, DKC_COM_STATE,		__VA_ARGS__))
+#define GetCommonK2hdkcComReplDel(pk2hash, pchmcntrl, ...)		reinterpret_cast<K2hdkcComReplDel*>(	K2hdkcCommand::GetCommandSendObject(pk2hash, pchmcntrl, DKC_COM_REPL_DEL,	__VA_ARGS__))
 
 //---------------------------------------------------------
 // Utility Macros for Class Factory
@@ -131,6 +132,7 @@
 #define	GetOtSlaveK2hdkcComReplKey(...)							reinterpret_cast<K2hdkcComReplKey*>(	K2hdkcCommand::GetSlaveCommandSendObject(DKC_COM_REPL_KEY,		__VA_ARGS__))
 #define	GetOtSlaveK2hdkcComK2hState(...)						reinterpret_cast<K2hdkcComK2hState*>(	K2hdkcCommand::GetSlaveCommandSendObject(DKC_COM_K2HSTATE,		__VA_ARGS__))
 #define	GetOtSlaveK2hdkcComState(...)							reinterpret_cast<K2hdkcComState*>(		K2hdkcCommand::GetSlaveCommandSendObject(DKC_COM_STATE,			__VA_ARGS__))
+#define	GetOtSlaveK2hdkcComReplDel(...)							reinterpret_cast<K2hdkcComReplDel*>(	K2hdkcCommand::GetSlaveCommandSendObject(DKC_COM_REPL_DEL,		__VA_ARGS__))
 
 //---------------------------------------------------------
 // Utility Macros for Class Factory
@@ -168,6 +170,7 @@
 #define	GetPmSlaveK2hdkcComReplKey(...)							reinterpret_cast<K2hdkcComReplKey*>(	K2hdkcSlave::GetSlaveCommandSendObject(DKC_COM_REPL_KEY,	__VA_ARGS__))
 #define	GetPmSlaveK2hdkcComK2hState(...)						reinterpret_cast<K2hdkcComK2hState*>(	K2hdkcSlave::GetSlaveCommandSendObject(DKC_COM_K2HSTATE,	__VA_ARGS__))
 #define	GetPmSlaveK2hdkcComState(...)							reinterpret_cast<K2hdkcComState*>(		K2hdkcSlave::GetSlaveCommandSendObject(DKC_COM_STATE,		__VA_ARGS__))
+#define	GetPmSlaveK2hdkcComReplDel(...)							reinterpret_cast<K2hdkcComReplDel*>(	K2hdkcSlave::GetSlaveCommandSendObject(DKC_COM_REPL_DEL,	__VA_ARGS__))
 
 #endif	// K2HDKCCOMUTIL_H
 

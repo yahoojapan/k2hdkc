@@ -50,6 +50,7 @@ pkginclude_HEADERS	=	k2hdkccommon.h \
 						k2hdkccomreplkey.h \
 						k2hdkccomk2hstate.h \
 						k2hdkccomstate.h \
+						k2hdkccomrepldel.h \
 						k2hdkcthread.h \
 						k2hdkcslave.h \
 						k2hdkccomutil.h
@@ -93,6 +94,7 @@ libk2hdkc_la_SOURCES=	k2hdkcdbg.cc \
 						k2hdkccomreplkey.cc \
 						k2hdkccomk2hstate.cc \
 						k2hdkccomstate.cc \
+						k2hdkccomrepldel.cc \
 						k2hdkcthread.cc \
 						k2hdkcslave.cc \
 						k2hdkcversion.cc

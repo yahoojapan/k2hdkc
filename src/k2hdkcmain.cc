@@ -178,6 +178,10 @@ int main(int argc, char** argv)
 		SetK2hdkcDbgMode(dbgmode);
 	}
 
+	// Set chmpx/k2hash debug mode from environment
+	k2h_load_debug_env();
+	chmpx_load_debug_env();
+
 	// parameter - configuration file path
 	string	config;
 	if(!opts.Get(OPT_CONFPATH, config)){
