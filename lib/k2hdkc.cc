@@ -989,6 +989,7 @@ bool K2hdkcCvtSubkeysToPack(K2HSubKeys* pSubKeys, PK2HDKCKEYPCK* ppskeypck, int*
 	}
 	// copy
 	int	setpos = 0;
+	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress postfixOperator
 	for(K2HSubKeys::iterator iter = pSubKeys->begin(); iter != pSubKeys->end(); iter++){
 		if(0UL == iter->length){
@@ -1034,6 +1035,7 @@ static int K2hdkcCvtSubkeysToStringArray(K2HSubKeys* pSubKeys, char*** ppskeyarr
 
 	// copy
 	int	setpos = 0;
+	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress postfixOperator
 	for(K2HSubKeys::iterator iter = pSubKeys->begin(); iter != pSubKeys->end(); iter++){
 		if(0UL == iter->length){
@@ -1424,6 +1426,7 @@ bool K2hdkcCvtAttrsToPack(K2HAttrs* pAttrs, PK2HDKCATTRPCK* ppattrspck, int* pat
 	}
 	// copy
 	int	setpos = 0;
+	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress postfixOperator
 	for(K2HAttrs::iterator iter = pAttrs->begin(); iter != pAttrs->end(); iter++){
 		if(0UL == iter->keylength){
