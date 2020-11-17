@@ -1,6 +1,6 @@
 K2HDKC
 --------
-[![Build Status](https://travis-ci.org/yahoojapan/k2hdkc.svg?branch=master)](https://travis-ci.org/yahoojapan/k2hdkc)
+[![C/C++ AntPickax CI](https://github.com/yahoojapan/k2hdkc/workflows/C/C++%20AntPickax%20CI/badge.svg)](https://github.com/yahoojapan/k2hdkc/actions)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/yahoojapan/k2hdkc/master/COPYING)
 [![GitHub forks](https://img.shields.io/github/forks/yahoojapan/k2hdkc.svg)](https://github.com/yahoojapan/k2hdkc/network)
 [![GitHub stars](https://img.shields.io/github/stars/yahoojapan/k2hdkc.svg)](https://github.com/yahoojapan/k2hdkc/stargazers)
