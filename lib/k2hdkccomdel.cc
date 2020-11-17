@@ -216,6 +216,7 @@ bool K2hdkcComDel::CommandSend(const unsigned char* pkey, size_t keylength, bool
 	// Even if an error occurs, output only the message and continue processing.
 	//
 	if(is_subkeys && pSubKeys){
+		// cppcheck-suppress unmatchedSuppression
 		// cppcheck-suppress postfixOperator
 		for(K2HSubKeys::iterator iter = pSubKeys->begin(); iter != pSubKeys->end(); iter++){
 			if(0UL == iter->length){
