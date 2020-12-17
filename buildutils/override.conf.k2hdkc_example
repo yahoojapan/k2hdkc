@@ -1,0 +1,60 @@
+#
+# Override Configuration file for Systemd Service Helper Script
+#
+# Copyright 2020 Yahoo Japan Corporation.
+#
+# AntPickax provides base utility script for systemd service.
+# The script for each component is created based on the
+# helper scripts provided by AntPickax for building systemd
+# services.
+# By changing some variables and functions of the script,
+# it corresponds to the script of each component.
+# 
+# For the full copyright and license information, please view
+# the license file that was distributed with this source code.
+#
+# AUTHOR:   Takeshi Nakatani
+# CREATE:   Fri, Dec 18 2020
+# REVISION:
+#
+
+# [NOTE]
+# This file is a configuration file that further overrides the
+# configuration file loaded by the systemd service helper script.
+# This file allows you to replace the configuration file and the
+# keywords available in that file with another value or other
+# keywords in another configuration file.
+# This allows you to change the information set in systemd
+# service in another package.
+# This file name is defined inside the systemd service helper
+# script and is only loaded if the file exists.
+# We also assume that multiple systemd service helper scripts
+#  use a common configuration directory.
+#
+
+# [EXAMPLE] 2 way for setting
+# (1) chmpx-service-helper.conf:CHMPX_INI_CONF_FILE = k2hdkc.ini
+# (2) chmpx-service-helper.conf:CHMPX_INI_CONF_FILE = k2hdkc-service-helper.conf:K2HDKC_INI_CONF_FILE
+#
+# The above tells you to use the value of K2HDKC_INI_CONF_FILE
+# defined in k2hdkc-service-helper.conf instead of the value,
+# a case (1) is directly value setting, and the other case (2)
+# is CHMPX_INI_CONF_FILE defined in the chmpx-service-helper.conf
+# file.
+# For example, this will cause a systemd service helper script
+# that uses the chmpx-service-helper.conf file to read override.conf
+# and use another value instead of CHMPX_INI_CONF_FILE.
+# If you want to replace it like case (2), you need to define
+# K2HDKC_INI_CONF_FILE in k2hdkc-service-helper.conf.
+# Note that by default, the definition of K2HDKC_INI_CONF_FILE
+# in that file is commented out.
+#
+
+#
+# Local variables:
+# tab-width: 4
+# c-basic-offset: 4
+# End:
+# vim600: noexpandtab sw=4 ts=4 fdm=marker
+# vim<600: noexpandtab sw=4 ts=4
+#
