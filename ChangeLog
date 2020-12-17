@@ -1,3 +1,10 @@
+k2hdkc (0.9.32) unstable; urgency=low
+
+  * Added systemd service files to package - #30
+  * Fixed centos8 build and removed centos6 build - #29
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Thu, 17 Dec 2020 16:57:29 +0900
+
 k2hdkc (0.9.31) unstable; urgency=low
 
   * Switched Travis CI to Github actions and extended supported OS - #27
