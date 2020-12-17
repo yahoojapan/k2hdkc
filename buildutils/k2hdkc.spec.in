@@ -48,7 +48,11 @@ License: @PKGLICENSE@
 URL: https://@GIT_DOMAIN@/@GIT_ORG@/@PACKAGE_NAME@
 Source0: https://@GIT_DOMAIN@/@GIT_ORG@/@PACKAGE_NAME@/archive/%{gittag}/%{name}-%{version}.tar.gz
 Requires: libfullock%{?_isa} >= 1.0.36, k2hash%{?_isa} >= 1.0.74, chmpx%{?_isa} >= 1.0.74
+%if 0%{?rhel} == 6
 BuildRequires: git-core gcc-c++ make libtool libfullock-devel >= 1.0.36, k2hash-devel >= 1.0.74, chmpx-devel >= 1.0.74, libyaml-devel
+%else
+BuildRequires: systemd git-core gcc-c++ make libtool libfullock-devel >= 1.0.36, k2hash-devel >= 1.0.74, chmpx-devel >= 1.0.74, libyaml-devel
+%endif
 
 %description
 @LONGDESC@
@@ -64,6 +68,13 @@ BuildRequires: git-core gcc-c++ make libtool libfullock-devel >= 1.0.36, k2hash-
 %install
 %make_install
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
+%if 0%{?rhel} != 6
+install -D -m 644 buildutils/k2hdkc.service %{buildroot}/lib/systemd/system/k2hdkc.service
+install -D -m 755 buildutils/k2hdkc-service-helper %{buildroot}/usr/libexec/k2hdkc-service-helper
+install -D -m 644 buildutils/k2hdkc-service-helper.conf %{buildroot}/etc/antpickax/k2hdkc-service-helper.conf
+install -D -m 644 buildutils/k2hdkc.ini.example %{buildroot}/etc/antpickax/k2hdkc.ini.example
+install -D -m 644 buildutils/override.conf.k2hdkc_example %{buildroot}/etc/antpickax/override.conf.k2hdkc_example
+%endif
 
 %if %{make_check}
 %check
@@ -93,6 +104,16 @@ rm -rf %{buildroot}
 %{_libdir}/*.so.*
 %{_mandir}/man1/*
 %{_bindir}/*
+%if 0%{?rhel} != 6
+/lib/systemd/system/k2hdkc.service
+/usr/libexec/k2hdkc-service-helper
+/etc/antpickax/*
+%endif
+
+%if 0%{?rhel} != 6
+%preun
+%systemd_preun @PACKAGE_NAME@.service
+%endif
 
 #
 # devel package

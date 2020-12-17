@@ -30,7 +30,12 @@ EXTRA_DIST =make_variables.sh \
 			make_rpm_changelog.sh \
 			make_description.sh \
 			debian_build.sh \
-			rpm_build.sh
+			rpm_build.sh \
+			k2hdkc.service \
+			k2hdkc-service-helper \
+			k2hdkc-service-helper.conf \
+			k2hdkc.ini.example \
+			override.conf.k2hdkc_example
 
 #
 # VIM modelines
