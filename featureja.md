@@ -16,6 +16,9 @@ next_string: Usage
 # 特徴
 **K2HDKC**は、高可用性でスケーラブルな分散型KVSクラスタリングシステムであり、多くの有用でユニークな機能も備えています。
 
+## 柔軟なインストール
+K2HDKCは、あなたのOSに応じて、柔軟にインストールが可能です。あなたのOSが、Ubuntu、CentOS、Fedora、Debianなら、[packagecloud.io](https://packagecloud.io/antpickax/stable)からソースコードをビルドすることなく、簡単にインストールできます。それ以外のOSであっても、自身で[ビルド](https://k2hdkc.antpick.ax/buildja.html)して使うことができます。
+
 ## サーバーノード間の自動データ同期
 - 自動マージ  
 一時的なノードの障害から回復した後、データは自動的に再配置されます。
