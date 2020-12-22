@@ -17,7 +17,7 @@ next_string: Usage
 **K2HDKC** is a highly available and scalable distributed KVS clustering system and also feature many useful and unique functions.
 
 ## Flexible installation
-We provide suitable K2HDKC installation for your OS. If you use Ubuntu, CentOS, Fedora or Debian, you can easily install it from [packagecloud.io] (https://packagecloud.io/antpickax/stable). Even if you use none of them, you can use it by [Build] (https://k2hdkc.antpick.ax/build.html) by yourself.
+We provide suitable K2HDKC installation for your OS. If you use Ubuntu, CentOS, Fedora or Debian, you can easily install it from [packagecloud.io](https://packagecloud.io/antpickax/stable). Even if you use none of them, you can use it by [Build](https://k2hdkc.antpick.ax/build.html) by yourself.
 
 ## Automated data synchronization between server nodes.
 - Automatic Merging  
