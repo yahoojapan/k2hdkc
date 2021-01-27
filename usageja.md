@@ -283,3 +283,134 @@ k2hdkclinetoolは、chmpxプロセス（スレーブノード）のコンフィ�
 k2hdkclinetoolプロセスを起動する前に、chmpxプロセス（スレーブノード）が起動している必要があります。
 
 k2hdkclinetoolの使い方、オプション等は、[k2hdkclinetool](k2hdkclinetoolja.html) を参照してください。
+
+# 3. Systemd サービス
+CHMPXをパッケージとしてインストールした場合、そのパッケージには **k2hdkc.service** というsystemdサービスが含まれています。  
+ここでは、この **k2hdkc.service** を使ったK2HDKCおよびCHMPXプロセスの起動方法を説明します。
+
+## コンフィグレーション
+**k2hdkc.service** によりK2HDKCを起動する場合、コンフィグレーションファイルとして、`/etc/antpickax/k2hdkc.ini`ファイルが使われます。  
+このファイルを最初に準備してください。  
+
+K2HDKCプロセスは、CHMPXプロセスが起動している必要があるため、CHMPXプロセスも **chmpx.service**を使って起動します。  
+CHMPXプロセスが使うコンフィグレーションファイルと、K2HDKCプロセスが使うコンフィグレーションファイルは共通である方が便利であり、`/etc/antpickax/k2hdkc.ini`ファイルを使うようにします。  
+`/etc/antpickax/k2hdkc.ini`ファイルを共通のコンフィグレーションファイルとするために、以下の `/etc/antpickax/override.conf` ファイルを準備します。  
+```
+$ echo "chmpx-service-helper.conf:CHMPX_INI_CONF_FILE = k2hdkc.ini" > /etc/antpickax/override.conf
+```
+
+## k2hdkc.service 起動
+K2HDKCパッケージをインストールした直後は、**k2hdkc.service** は無効となっています。  
+同様に関連パッケージとしてインストールされるCHMPXパッケージも、**chmpx.service** は無効となっています。  
+コンフィグレーションファイル（`/etc/antpickax/k2hdkc.ini`）の準備ができたら、以下の手順で各サービスを有効にし、次に開始します。
+```
+$ sudo systemctl enable chmpx.service
+$ sudo systemctl start chmpx.service
+$ sudo systemctl enable k2hdkc.service
+$ sudo systemctl start k2hdkc.service
+```
+以上で、K2HDKCプロセスと、CHMPXプロセスが起動します。  
+
+## カスタマイズ
+`/etc/antpickax/k2hdkc-service-helper.conf`ファイルを変更することで、**k2hdkc.service** の動作をカスタマイズすることができます。  
+もしくは、`/etc/antpickax/override.conf`ファイルを準備して、同様にカスタマイズすることができます。  
+両ファイルが、同じキーワードをカスタマイズした場合は、`/etc/antpickax/override.conf`ファイルが優先されます。
+
+### k2hdkc-service-helper.conf
+`k2hdkc-service-helper.conf`ファイルでカスタマイズできるキーワードを以下に示します。
+
+#### K2HDKC_INI_CONF_FILE
+K2HDKCを起動するときに指定されるコンフィグレーションファイルのパスを指定します。  
+デフォルトは、`/etc/antpickax/k2hdkc.ini`です。
+
+#### PIDDIR
+K2HDKCプロセスおよび、**k2hdkc.service**に関連するプロセスのプロセスIDを保管するディレクトリを指定します。  
+デフォルトは、`/var/run/antpickax`です。
+
+#### SERVICE_PIDFILE
+**k2hdkc.service**に関連するプロセスのプロセスIDを保管するファイル名を指定します。  
+デフォルトは、`k2hdkc-service-helper.pid`です。
+
+#### SUBPROCESS_PIDFILE
+K2HDKCプロセスのプロセスIDを保管するファイル名を指定します。  
+デフォルトは、`k2hdkc.pid`です。
+
+#### SUBPROCESS_USER
+K2HDKCプロセスを起動するユーザを指定します。  
+デフォルトは、**k2hdkc.service**を起動したユーザです。
+
+#### LOGDIR
+K2HDKCプロセスおよび、**k2hdkc.service**に関連するプロセスのログを格納するディレクトリを指定します。  
+デフォルトでは、`journald`にログ管理を任せています。
+
+#### SERVICE_LOGFILE
+**k2hdkc.service**に関連するプロセスのログを保管するファイル名を指定します。  
+デフォルトでは、`journald`にログ管理を任せています。
+
+#### SUBPROCESS_LOGFILE
+K2HDKCプロセスのログを格納するファイル名を指定します。  
+デフォルトでは、`journald`にログ管理を任せています。
+
+#### WAIT_DEPENDPROC_PIDFILE
+K2HDKCプロセスを起動する前に、起動を待つプロセスのプロセスIDのファイルパスを指定します。  
+デフォルトは、未指定であり、K2HDKCプロセスは他のプロセスの起動を待たずに起動します。
+
+#### WAIT_SEC_AFTER_DEPENDPROC_UP
+K2HDKCプロセスを起動する前に、起動を待つプロセスが起動した後、待機する時間を秒で指定します。  
+デフォルトは、15秒です。ただし、`WAIT_DEPENDPROC_PIDFILE`は未指定なので、他のプロセス起動を待機することはありません。
+
+#### WAIT_SEC_STARTUP
+**k2hdkc.service**が起動された後、K2HDKCプロセスを起動するまでの待機時間を秒で指定します。  
+デフォルトは、10秒です。
+
+#### WAIT_SEC_AFTER_SUBPROCESS_UP
+K2HDKCプロセスを起動した後、K2HDKCプロセスの状態を確認するまでの待機時間を秒で指定します。  
+デフォルトは、15秒です。
+
+#### INTERVAL_SEC_FOR_LOOP
+プロセスの再起動、停止確認などで待機するときの時間を秒で指定します。  
+デフォルトは、10秒です。
+
+#### TRYCOUNT_STOP_SUBPROC
+K2HDKCプロセス停止を試行する最大回数を指定します。この回数を超過する場合は、K2HDKCプロセス停止を失敗したと判断します。  
+デフォルトは、10回です。
+
+#### SUBPROCESS_OPTIONS
+K2HDKCプロセス起動時に引き渡すオプションを指定します。  
+デフォルトは、空です。
+
+#### BEFORE_RUN_SUBPROCESS
+K2HDKCプロセス起動前に実行するコマンドを指定できます。
+デフォルトは、空です。
+
+### override.conf
+`override.conf`ファイルは、`k2hdkc-service-helper.conf`ファイルよりも優先されます。  
+`override.conf`ファイルでカスタマイズできるキーワードは、`k2hdkc-service-helper.conf`ファイルと同じです。  
+ただし、`override.conf`ファイルの書式は、`k2hdkc-service-helper.conf`ファイルと異なります。
+
+#### 書式1
+```
+<customize configuration file path>:<keyword> = <value>
+```
+カスタマイズコンフィグレーションファイルのパスとキーワードを指定して、値を直接設定する書式です。  
+例えば、以下のように指定します。  
+```
+/etc/antpickax/k2hdkc-service-helper.conf:K2HDKC_INI_CONF_FILE = /etc/antpickax/custom.ini
+```
+
+#### 書式2
+```
+<customize configuration file path>:<keyword> = <customize configuration file path>:<keyword>
+```
+カスタマイズコンフィグレーションファイルのパスとキーワードを指定して、値を他のコンフィグレーションファイルで設定する書式です。  
+例えば、以下のように指定します。  
+```
+/etc/antpickax/k2hdkc-service-helper.conf:K2HDKC_INI_CONF_FILE = /etc/antpickax/other.conf:K2HDKC_INI_CONF_FILE
+```
+
+## k2hdkc.service 停止
+```
+$ sudo systemctl stop k2hdkc.service
+$ sudo systemctl stop chmpx.service
+```
+以上で、K2HDKCプロセスとCHMPXプロセスを停止できます。
