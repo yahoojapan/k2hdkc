@@ -1,3 +1,9 @@
+k2hdkc (0.9.34) unstable; urgency=low
+
+  * Enhanced confirmation of wait process for k2hdkc.service - #37
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Wed, 03 Feb 2021 18:00:30 +0900
+
 k2hdkc (0.9.33) unstable; urgency=low
 
   * Updated files for systemd service - #34
