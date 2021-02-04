@@ -1,3 +1,10 @@
+k2hdkc (0.9.35) unstable; urgency=low
+
+  * Fixed an issue with stopping service subprocesses - #40
+  * Bypass a specific version of cppcheck due to poor performance - #39
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Thu, 04 Feb 2021 15:29:56 +0900
+
 k2hdkc (0.9.34) unstable; urgency=low
 
   * Enhanced confirmation of wait process for k2hdkc.service - #37
