@@ -1027,6 +1027,99 @@ load_variables()
 	return 0
 }
 
+#
+# Check and Create data file directory
+#
+# $1	: ini file path
+# $2	: user
+#
+# Output(set) Variable
+#	K2HASH_DATA_FILE
+#
+check_k2hash_file_dir()
+{
+	if [ "X$1" = "X" ]; then
+		return 1
+	fi
+	if [ ! -f "$1" ]; then
+		return 1
+	fi
+
+	K2HASH_DATA_FILE=$(grep '^[[:space:]]*K2HFILE[[:space:]]*=' "$1" | sed -e 's/^[[:space:]]*K2HFILE[[:space:]]*=[[:space:]]*\([^ ]*\)[[:space:]]*$/\1/g' | head -1)
+	if [ "X${K2HASH_DATA_FILE}" = "X" ]; then
+		#
+		# Maybe on memory mode
+		#
+		return 0
+	fi
+	K2HASH_FILE_DIR=$(dirname "${K2HASH_DATA_FILE}")
+	if [ "X${K2HASH_FILE_DIR}" = "X" ]; then
+		return 1
+	fi
+
+	#
+	# Current user
+	#
+	_STARTPROC_CUR_USER=`id -un`
+	if [ "X${_STARTPROC_CUR_USER}" = "Xroot" ]; then
+		_STARTPROC_IS_ROOT=1
+	else
+		_STARTPROC_IS_ROOT=0
+	fi
+
+	#
+	# Check directory and permission
+	#
+	if [ -d "${K2HASH_FILE_DIR}" ]; then
+		if [ "${_STARTPROC_IS_ROOT}" -eq 0 ]; then
+			if [ "X$2" = "X" ]; then
+				touch "${K2HASH_FILE_DIR}/.k2hdkc_test_dir_perm_file" >/dev/null 2>&1
+			else
+				sudo -u "$2" touch "${K2HASH_FILE_DIR}/.k2hdkc_test_dir_perm_file" >/dev/null 2>&1
+			fi
+			if [ $? -ne 0 ]; then
+				sudo chmod 777 "${K2HASH_FILE_DIR}"
+			else
+				sudo rm -f "${K2HASH_FILE_DIR}/.k2hdkc_test_dir_perm_file"
+			fi
+		else
+			if [ "X$2" = "X" ]; then
+				touch "${K2HASH_FILE_DIR}/.k2hdkc_test_dir_perm_file" >/dev/null 2>&1
+			else
+				sudo -u "$2" touch "${K2HASH_FILE_DIR}/.k2hdkc_test_dir_perm_file" >/dev/null 2>&1
+			fi
+			if [ $? -ne 0 ]; then
+				chmod 777 "${K2HASH_FILE_DIR}"
+			else
+				rm -f "${K2HASH_FILE_DIR}/.k2hdkc_test_dir_perm_file"
+			fi
+		fi
+	else
+		if [ "${_STARTPROC_IS_ROOT}" -eq 0 ]; then
+			sudo mkdir -p "${K2HASH_FILE_DIR}" >/dev/null 2>&1
+		else
+			mkdir -p "${K2HASH_FILE_DIR}" >/dev/null 2>&1
+		fi
+		if [ $? -ne 0 ]; then
+			return 1
+		fi
+		if [ "X$2" = "X" ]; then
+			if [ "${_STARTPROC_IS_ROOT}" -eq 0 ]; then
+				sudo chmod 777 "${K2HASH_FILE_DIR}" >/dev/null 2>&1
+			else
+				chmod 777 "${K2HASH_FILE_DIR}" >/dev/null 2>&1
+			fi
+		else
+			if [ "${_STARTPROC_IS_ROOT}" -eq 0 ]; then
+				sudo chown "$2" "${K2HASH_FILE_DIR}" >/dev/null 2>&1
+			else
+				chown "$2" "${K2HASH_FILE_DIR}" >/dev/null 2>&1
+			fi
+		fi
+	fi
+	return $?
+}
+
 #---------------------------------------------------------------------
 # Options
 #---------------------------------------------------------------------
@@ -1241,6 +1334,26 @@ else
 		if [ $? -ne 0 ]; then
 			log_err "Failed waiting/checking the ini file(${INI_CONF_FILE}) : ${_TMP_MSG}"
 			exit_main 1
+		fi
+
+		#
+		# Check data directory
+		#
+		check_k2hash_file_dir "${INI_CONF_FILE}" "${SUBPROCESS_USER}"
+		if [ $? -ne 0 ]; then
+			log_err "The directory for k2hash data file(${K2HASH_DATA_FILE}) does not exist or could not create it/set permission."
+			if [ ${CAUGHT_SIGNAL} -eq 1 ]; then
+				break;
+			fi
+			#
+			# Sleep
+			#
+			if [ ${INTERVAL_SEC_FOR_LOOP} -gt 0 ]; then
+				sleep ${INTERVAL_SEC_FOR_LOOP}
+			else
+				sleep 1
+			fi
+			continue
 		fi
 
 		#
