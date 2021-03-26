@@ -1,3 +1,9 @@
+k2hdkc (1.0.0) unstable; urgency=low
+
+  * Updated README.md for a reference to k2hdkc dbaas - #46
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Fri, 26 Mar 2021 17:40:47 +0900
+
 k2hdkc (0.9.37) unstable; urgency=low
 
   * Fixed to check and create k2hash data directory - #44
