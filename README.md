@@ -33,13 +33,16 @@ Provides encryption function as distributed KVS for the key's data held as the f
 Provides the key expiration function which is the feature of k2hash as distributed KVS.
 
 ### Documents
-  - [Document top page](https://k2hdkc.antpick.ax/)
-  - [Github wiki page](https://github.com/yahoojapan/k2hdkc/wiki)
-  - [About AntPickax](https://antpick.ax/)
+- [Document top page](https://k2hdkc.antpick.ax/)
+- [Github wiki page](https://github.com/yahoojapan/k2hdkc/wiki)
+- [About AntPickax](https://antpick.ax/)
 
 ### Packages
-  - [RPM packages(packagecloud.io)](https://packagecloud.io/antpickax/stable)
-  - [Debian packages(packagecloud.io)](https://packagecloud.io/antpickax/stable)
+- [RPM packages(packagecloud.io)](https://packagecloud.io/antpickax/stable)
+- [Debian packages(packagecloud.io)](https://packagecloud.io/antpickax/stable)
+
+### Related products
+- [K2HDKC Database As A Service(DBaaS)](https://dbaas.k2hdkc.antpick.ax/)
 
 ### License
 This software is released under the MIT License, see the license file.
