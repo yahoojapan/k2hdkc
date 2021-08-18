@@ -397,6 +397,8 @@ bool K2hdkcComQPop::CommandProcessing(void)
 		}
 
 		// set response data
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(result){
 			if(!SetResponseData(pResKey, ResKeyLength, pResData, ResDataLength)){
 				MSG_DKCPRN("Failed to make response data for marker prefix(%s)", bin_to_string(pPrefix, pCom->prefix_length).c_str());
