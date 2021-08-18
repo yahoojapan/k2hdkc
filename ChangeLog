@@ -1,3 +1,10 @@
+k2hdkc (1.0.1) unstable; urgency=low
+
+  * Added docker build and push in Github Actions - #49
+  * Functional improvements and bug fixes - #48
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Wed, 18 Aug 2021 12:05:14 +0900
+
 k2hdkc (1.0.0) unstable; urgency=low
 
   * Updated README.md for a reference to k2hdkc dbaas - #46
