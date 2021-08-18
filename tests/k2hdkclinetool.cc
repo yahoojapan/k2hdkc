@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <termios.h>
 #include <errno.h>
+#include <libgen.h>
 
 #include <k2hash/k2hutil.h>
 #include <chmpx/chmpx.h>
@@ -5938,6 +5939,9 @@ int main(int argc, char** argv)
 				break;
 			}
 			CommandFile.clear();
+
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		}else if(IsWelcomMsg){
 			// print message
 			PRN("-------------------------------------------------------");

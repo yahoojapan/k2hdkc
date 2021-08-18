@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <libgen.h>
 
 #include <chmpx/chmconfutil.h>
 
