@@ -151,7 +151,8 @@ AC_CONFIG_FILES([Makefile
 				buildutils/Makefile
 				buildutils/control
 				buildutils/copyright
-				buildutils/k2hdkc.spec])
+				buildutils/k2hdkc.spec
+				buildutils/Dockerfile.templ])
 
 AC_OUTPUT
 
