@@ -103,8 +103,15 @@ libk2hdkc_la_LDFLAGS= -version-info $(LIB_VERSION_INFO)
 libk2hdkc_la_LIBADD	= $(fullock_LIBS) $(k2hash_LIBS) $(chmpx_LIBS)
 
 ACLOCAL_AMFLAGS		= -I m4
-AM_CFLAGS			= $(fullock_CFLAGS) $(k2hash_CFLAGS) $(chmpx_CFLAGS)
-AM_CPPFLAGS			= $(fullock_CFLAGS) $(k2hash_CFLAGS) $(chmpx_CFLAGS)
+
+# [NOTE]
+# "-Waddress-of-packed-member" optsion was introduced by default
+# from GCC 9.
+# Knowing that packed structure is CPU architecture dependent,
+# this program ignores this warning.
+#
+AM_CFLAGS			= $(fullock_CFLAGS) $(k2hash_CFLAGS) $(chmpx_CFLAGS) -Wno-address-of-packed-member
+AM_CPPFLAGS			= $(fullock_CFLAGS) $(k2hash_CFLAGS) $(chmpx_CFLAGS) -Wno-address-of-packed-member
 
 ### version(commit hash)
 .PHONY:	k2hdkcxversion
@@ -113,7 +120,10 @@ k2hdkcversion.cc:	k2hdkcxversion
 	@../buildutils/make_commit_hash_source.sh k2hdkcversion.cc k2hdkc_commit_hash
 
 #
-# VIM modelines
-#
-# vim:set ts=4 fenc=utf-8:
+# Local variables:
+# tab-width: 4
+# c-basic-offset: 4
+# End:
+# vim600: noexpandtab sw=4 ts=4 fdm=marker
+# vim<600: noexpandtab sw=4 ts=4
 #

@@ -721,7 +721,6 @@ bool K2hdkcCommand::Clean(void)
 {
 	bool	result	= true;
 	pK2hObj			= NULL;
-	pChmObj			= NULL;
 
 	// free
 	DKC_FREE(pRcvComAll);
@@ -741,6 +740,7 @@ bool K2hdkcCommand::Clean(void)
 			}
 		}
 	}
+	pChmObj = NULL;
 	CleanSlave();
 
 	SendHash	= 0L;

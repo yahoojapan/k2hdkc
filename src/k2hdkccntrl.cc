@@ -26,6 +26,7 @@
 #include "k2hdkccommon.h"
 #include "k2hdkccntrl.h"
 #include "k2hdkccombase.h"
+#include "k2hdkcutil.h"
 #include "k2hdkcdbg.h"
 
 using namespace	std;
@@ -649,6 +650,9 @@ K2hdkcCommand* K2hdkcCntrl::FindWaitCommandObject(uint64_t comnum, dkccom_type_t
 				// cppcheck-suppress unmatchedSuppression
 				// cppcheck-suppress stlSize
 				if(0 == pcommap->size()){
+					// [FIXME] by cppcheck 2.7
+					// cppcheck-suppress unmatchedSuppression
+					// cppcheck-suppress unknownMacro
 					DKC_DELETE(pcommap)
 					waitmap.erase(iternum);
 				}
