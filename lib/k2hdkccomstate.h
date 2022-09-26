@@ -47,7 +47,7 @@ class K2hdkcComState : public K2hdkcCommand
 		size_t GetServerNodeMapList(dkcchmpxhashmap_t& idhashmap);
 
 	public:
-		K2hdkcComState(K2HShm* pk2hash = NULL, ChmCntrl* pchmcntrl = NULL, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = false, bool is_wait_on_server = false);
+		explicit K2hdkcComState(K2HShm* pk2hash = NULL, ChmCntrl* pchmcntrl = NULL, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = false, bool is_wait_on_server = false);
 		virtual ~K2hdkcComState(void);
 
 		virtual bool CommandProcessing(void);

@@ -41,7 +41,7 @@ class K2hdkcComDel : public K2hdkcCommand
 		bool IsAllNodesSafe(void);
 
 	public:
-		K2hdkcComDel(K2HShm* pk2hash = NULL, ChmCntrl* pchmcntrl = NULL, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = true, bool is_wait_on_server = false);
+		explicit K2hdkcComDel(K2HShm* pk2hash = NULL, ChmCntrl* pchmcntrl = NULL, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = true, bool is_wait_on_server = false);
 		virtual ~K2hdkcComDel(void);
 
 		virtual bool CommandProcessing(void);
