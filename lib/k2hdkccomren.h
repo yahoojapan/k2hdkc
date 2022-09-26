@@ -38,7 +38,7 @@ class K2hdkcComRen : public K2hdkcCommand
 		virtual void RawDumpComAll(const PDKCCOM_ALL pComAll) const;
 
 	public:
-		K2hdkcComRen(K2HShm* pk2hash = NULL, ChmCntrl* pchmcntrl = NULL, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = true, bool is_wait_on_server = false);
+		explicit K2hdkcComRen(K2HShm* pk2hash = NULL, ChmCntrl* pchmcntrl = NULL, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = true, bool is_wait_on_server = false);
 		virtual ~K2hdkcComRen(void);
 
 		virtual bool CommandProcessing(void);

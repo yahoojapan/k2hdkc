@@ -38,7 +38,7 @@ class K2hdkcComK2hState : public K2hdkcCommand
 		virtual void RawDumpComAll(const PDKCCOM_ALL pComAll) const;
 
 	public:
-		K2hdkcComK2hState(K2HShm* pk2hash = NULL, ChmCntrl* pchmcntrl = NULL, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = false, bool is_wait_on_server = false);
+		explicit K2hdkcComK2hState(K2HShm* pk2hash = NULL, ChmCntrl* pchmcntrl = NULL, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = false, bool is_wait_on_server = false);
 		virtual ~K2hdkcComK2hState(void);
 
 		virtual bool CommandProcessing(void);

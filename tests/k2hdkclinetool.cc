@@ -1295,9 +1295,9 @@ static bool BinaryDumpUtility(const char* prefix, const unsigned char* value, si
 	}
 
 	string	output;
-	string	line;
 	size_t	restcnt = vallen;
 	for(size_t pos = 0; pos < vallen; pos += BINARY_DUMP_BYTE_SIZE){
+		string	line;
 		if(0 == pos){
 			output += strpref;
 		}else{
@@ -2428,8 +2428,8 @@ static bool FillCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 	}
 
 	// do command
-	string	strFillKey;
 	for(int cnt = 0; cnt < FillCount; ++cnt){
+		string	strFillKey;
 		strFillKey = strKey + string("-") + to_string(cnt);
 		if(!RawSetCommand(chmpxhandle, reinterpret_cast<const unsigned char*>(strFillKey.c_str()), strFillKey.length() + 1, (strValue.empty() ? NULL : reinterpret_cast<const unsigned char*>(strValue.c_str())), (strValue.empty() ? 0 : (strValue.length() + 1)), is_rmsub, is_rmsublist, is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire))){
 			ERR("Something internal error occurred during setting key and value.");
@@ -2478,8 +2478,8 @@ static bool FillSubCommand(k2hdkc_chmpx_h chmpxhandle, params_t& params)
 	}
 
 	// do command
-	string	strFillKey;
 	for(int cnt = 0; cnt < FillCount; ++cnt){
+		string	strFillKey;
 		strFillKey = strSubKey + string("-") + to_string(cnt);
 		if(!RawSetSubkeyCommand(chmpxhandle, reinterpret_cast<const unsigned char*>(strParentKey.c_str()), strParentKey.length() + 1, reinterpret_cast<const unsigned char*>(strFillKey.c_str()), strFillKey.length() + 1, (strValue.empty() ? NULL : reinterpret_cast<const unsigned char*>(strValue.c_str())), (strValue.empty() ? 0 : (strValue.length() + 1)), is_noattr, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), (-1 == Expire ? NULL : &Expire))){
 			ERR("Something internal error occurred during setting subkey and value into parent key.");

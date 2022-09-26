@@ -31,7 +31,7 @@ class K2hdkcOpts
 		strlstmap_t	optmap;
 
 	public:
-		K2hdkcOpts(int argc = 0, char** argv = NULL);
+		explicit K2hdkcOpts(int argc = 0, char** argv = NULL);
 		virtual ~K2hdkcOpts(void);
 
 		bool Initialize(int argc, char** argv);

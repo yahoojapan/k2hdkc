@@ -114,7 +114,7 @@ class K2hdkcCommand
 		static K2hdkcCommand* GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pchmcntrl, dkccom_type_t comtype, msgid_t msgid = CHM_INVALID_MSGID, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = true, bool is_wait_on_server = false);
 		static K2hdkcCommand* GetSlaveCommandSendObject(dkccom_type_t comtype, const char* config, short ctlport = CHM_INVALID_PORT, const char* cuk = NULL, bool is_auto_rejoin = false, bool no_giveup_rejoin = false, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER);
 
-		K2hdkcCommand(K2HShm* pk2hash = NULL, ChmCntrl* pchmcntrl = NULL, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = true, bool is_wait_on_server = false, dkccom_type_t comtype = DKC_COM_UNKNOWN);
+		explicit K2hdkcCommand(K2HShm* pk2hash = NULL, ChmCntrl* pchmcntrl = NULL, uint64_t comnum = K2hdkcComNumber::INIT_NUMBER, bool without_self = true, bool is_routing_on_server = true, bool is_wait_on_server = false, dkccom_type_t comtype = DKC_COM_UNKNOWN);
 		virtual ~K2hdkcCommand(void);
 
 		// parameters for command
