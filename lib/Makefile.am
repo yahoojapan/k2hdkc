@@ -117,7 +117,7 @@ AM_CPPFLAGS			= $(fullock_CFLAGS) $(k2hash_CFLAGS) $(chmpx_CFLAGS) -Wno-address-
 .PHONY:	k2hdkcxversion
 
 k2hdkcversion.cc:	k2hdkcxversion
-	@../buildutils/make_commit_hash_source.sh k2hdkcversion.cc k2hdkc_commit_hash
+	@../buildutils/make_commit_hash_source.sh -dch @CURRENTREV@ k2hdkcversion.cc k2hdkc_commit_hash
 
 #
 # Local variables:
