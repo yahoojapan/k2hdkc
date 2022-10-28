@@ -110,24 +110,13 @@ echo "================= $DATE ====================" > ${LOGFILE}
 ##############################################################
 ## library path & programs path
 ###########################################################
-RUNDIR=`pwd`
-TESTSCRIPTDIR=`dirname $0`
-if [ "X$TESTSCRIPTDIR" = "X" -o "X$TESTSCRIPTDIR" = "X." ]; then
-	TMP_BASENAME=`basename $0`
-	TMP_FIRSTWORD=`echo $0 | awk -F"/" '{print $1}'`
-
-	if [ "X$TMP_BASENAME" = "X$TMP_FIRSTWORD" ]; then
-		# search path
-		TESTSCRIPTDIR=`which $0`
-		TESTSCRIPTDIR=`dirname $TESTSCRIPTDIR`
-	else
-		TESTSCRIPTDIR=.
-	fi
-fi
-SRCTOP=`cd -P ${TESTSCRIPTDIR}/..; pwd`
-TESTSDIR=`cd -P ${SRCTOP}/tests; pwd`
-SRCDIR=`cd -P ${SRCTOP}/src; pwd`
-LIBDIR=`cd -P ${SRCTOP}/lib; pwd`
+#SCRIPTNAME=$(basename "${0}")
+SCRIPTDIR=$(dirname "${0}")
+SCRIPTDIR=$(cd "${SCRIPTDIR}" || exit 1; pwd)
+SRCTOP=$(cd "${SCRIPTDIR}/.." || exit 1; pwd)
+TESTSDIR=$(cd "${SRCTOP}/tests" || exit 1; pwd)
+SRCDIR=$(cd "${SRCTOP}/src" || exit 1; pwd)
+LIBDIR=$(cd "${SRCTOP}/lib" || exit 1; pwd)
 
 if [ "X${OBJDIR}" = "X" ]; then
 	LD_LIBRARY_PATH="${LIBDIR}/.libs"
@@ -2660,7 +2649,10 @@ fi
 exit ${TEST_RESULT}
 
 #
-# VIM modelines
-#
-# vim:set ts=4 fenc=utf-8:
+# Local variables:
+# tab-width: 4
+# c-basic-offset: 4
+# End:
+# vim600: noexpandtab sw=4 ts=4 fdm=marker
+# vim<600: noexpandtab sw=4 ts=4
 #
