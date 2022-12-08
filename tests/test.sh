@@ -17,2636 +17,1957 @@
 #
 #
 
-###########################################################
-## Common Variables
-###########################################################
-PROGRAM_NAME=`basename $0`
-DATE=`date`
-PROCID=$$
-LOGFILE="/tmp/test_sh_$PROCID.log"
-CHMPXLOG="/tmp/test_chmpx_$PROCID"
-K2HDKCLOG="/tmp/test_k2hdkc_$PROCID"
-LINETOOLLOG="/tmp/test_linetool_$PROCID.log"
-LINETOOLEXITLOG="/tmp/test_linetool_exit_$PROCID.log"
-LINETOOLERRLOG="/tmp/test_linetool_$PROCID"
+#--------------------------------------------------------------
+# Common Variables
+#--------------------------------------------------------------
+PRGNAME=$(basename "${0}")
+SCRIPTDIR=$(dirname "${0}")
+SCRIPTDIR=$(cd "${SCRIPTDIR}" || exit 1; pwd)
+SRCTOP=$(cd "${SCRIPTDIR}/.." || exit 1; pwd)
 
-###########################################################
-## Parameter
-###########################################################
-CHMPX_DBG_PARAM="-d err"
-DKC_DBG_PARAM="-d err"
-DKC_COMLOG_PARAM=""
-DO_INI_CONF=no
-DO_YAML_CONF=no
-DO_JSON_CONF=no
-DO_JSON_STRING=no
-DO_JSON_ENV=no
-IS_FOUND_TEST_TYPE_OPT=no
+#
+# Directories / Files
+#
+SRCDIR="${SRCTOP}/src"
+#LIBDIR="${SRCTOP}/lib"
+TESTDIR="${SRCTOP}/tests"
+LIBOBJDIR="${SRCTOP}/lib/.libs"
+#TESTOBJDIR="${TESTDIR}/.libs"
+
+#
+# Process ID / Date
+#
+PROCID=$$
+START_DATE=$(date)
+
+#
+# Test data/result files
+#
+CFG_JSON_STRING_FILE="${TESTDIR}/test_json_string.data"
+CFG_SVR_FILE_PREFIX="${TESTDIR}/test_server"
+CFG_SLV_FILE_PREFIX="${TESTDIR}/test_slave"
+
+LINETOOLCMD="${TESTDIR}/k2hdkclinetool.cmd"
+LINETOOLEXITCMD="${TESTDIR}/k2hdkclinetool_exit.cmd"
+MASTER_LINETOOLLOG="${TESTDIR}/k2hdkclinetool.log"
+
+LOGFILE="/tmp/test_sh_${PROCID}.log"
+LINETOOLLOG="/tmp/test_linetool_${PROCID}.log"
+LINETOOLEXITLOG="/tmp/test_linetool_exit_${PROCID}.log"
+
+CHMPX_LOGFILE_PREFIX="/tmp/test_chmpx_${PROCID}"
+CHMPX_8021_LOGFILE="${CHMPX_LOGFILE_PREFIX}_8021.log"
+CHMPX_8023_LOGFILE="${CHMPX_LOGFILE_PREFIX}_8023.log"
+CHMPX_8025_LOGFILE="${CHMPX_LOGFILE_PREFIX}_8025.log"
+CHMPX_8027_LOGFILE="${CHMPX_LOGFILE_PREFIX}_8027.log"
+CHMPX_8031_LOGFILE="${CHMPX_LOGFILE_PREFIX}_8031.log"
+
+K2HDKC_LOGFILE_PREFIX="/tmp/test_k2hdkc_${PROCID}"
+K2HDKC_8021_LOGFILE="${K2HDKC_LOGFILE_PREFIX}_8021.log"
+K2HDKC_8023_LOGFILE="${K2HDKC_LOGFILE_PREFIX}_8023.log"
+K2HDKC_8025_LOGFILE="${K2HDKC_LOGFILE_PREFIX}_8025.log"
+K2HDKC_8027_LOGFILE="${K2HDKC_LOGFILE_PREFIX}_8027.log"
+
+LINETOOL_LOGFILE_PREFIX="/tmp/test_linetool_${PROCID}"
+LINETOOL_C_P_LOGFILE="${LINETOOL_LOGFILE_PREFIX}_C_P.log"
+LINETOOL_CPP_P_LOGFILE="${LINETOOL_LOGFILE_PREFIX}_CPP_P.log"
+LINETOOL_C_LOGFILE="${LINETOOL_LOGFILE_PREFIX}_C.log"
+LINETOOL_CPP_LOGFILE="${LINETOOL_LOGFILE_PREFIX}_CPP.log"
+
+SUB_SHELLGROUP_ERROR_FILE="/tmp/test_sh_status_error_${PROCID}"
+
+#
+# Other
+#
+WAIT_SEC_AFTER_RUN_CHMPX=2
+WAIT_SEC_AFTER_RUN_K2HDKC=1
+WAIT_SEC_AFTER_RUN_K2HDKCTOOL=1
+
+#
+# LD_LIBRARY_PATH
+#
+LD_LIBRARY_PATH="${LIBOBJDIR}"
+export LD_LIBRARY_PATH
+
+#--------------------------------------------------------------
+# Usage
+#--------------------------------------------------------------
+func_usage()
+{
+	echo ""
+	echo "Usage: $1 [-h] [ ini_conf & yaml_conf & json_conf & json_string & json_env ] [-chmpx_dbg_level <err|wan|msg|dump>] [-dkc_dbg_level <err|wan|msg|dump>] [-logfile <filepath>]"
+	echo ""
+}
+
+#--------------------------------------------------------------
+# Variables and Utility functions
+#--------------------------------------------------------------
+#
+# Escape sequence
+#
+if [ -t 1 ]; then
+	CBLD=$(printf '\033[1m')
+	CREV=$(printf '\033[7m')
+	CRED=$(printf '\033[31m')
+	CYEL=$(printf '\033[33m')
+	CGRN=$(printf '\033[32m')
+	CDEF=$(printf '\033[0m')
+else
+	CBLD=""
+	CREV=""
+	CRED=""
+	CYEL=""
+	CGRN=""
+	CDEF=""
+fi
+
+#--------------------------------------------------------------
+# Message functions
+#--------------------------------------------------------------
+PRNTITLE()
+{
+	echo ""
+	echo "${CGRN}---------------------------------------------------------------------${CDEF}"
+	echo "${CGRN}${CREV}[TITLE]${CDEF} ${CGRN}$*${CDEF}"
+	echo "${CGRN}---------------------------------------------------------------------${CDEF}"
+}
+
+PRNERR()
+{
+	echo "${CBLD}${CRED}[ERROR]${CDEF} ${CRED}$*${CDEF}"
+}
+
+PRNWARN()
+{
+	echo "${CYEL}${CREV}[WARNING]${CDEF} $*"
+}
+
+PRNMSG()
+{
+	echo "${CYEL}${CREV}[MSG]${CDEF} ${CYEL}$*${CDEF}"
+}
+
+PRNINFO()
+{
+	echo "${CREV}[INFO]${CDEF} $*"
+}
+
+PRNSUCCEED()
+{
+	echo "${CREV}[SUCCEED]${CDEF} $*"
+}
+
+#--------------------------------------------------------------
+# Utilitiy functions
+#--------------------------------------------------------------
+#
+# $1:	type(ini, yaml, json, jsonstring, jsonenv)
+#
+run_all_processes()
+{
+	_JSON_ENV_MODE=0
+	if [ $# -ne 1 ] || [ -z "$1" ]; then
+		PRNERR "run_all_processes function parameter is wrong."
+		return 1
+
+	elif [ "$1" = "ini" ] || [ "$1" = "INI" ]; then
+		CONF_OPT_STRING="-conf"
+		CONF_FILE_EXT=".ini"
+		CONF_OPT_SVR_PARAM="${CFG_SVR_FILE_PREFIX}${CONF_FILE_EXT}"
+		CONF_OPT_SLV_PARAM="${CFG_SLV_FILE_PREFIX}${CONF_FILE_EXT}"
+
+	elif [ "$1" = "yaml" ] || [ "$1" = "YAML" ]; then
+		CONF_OPT_STRING="-conf"
+		CONF_FILE_EXT=".yaml"
+		CONF_OPT_SVR_PARAM="${CFG_SVR_FILE_PREFIX}${CONF_FILE_EXT}"
+		CONF_OPT_SLV_PARAM="${CFG_SLV_FILE_PREFIX}${CONF_FILE_EXT}"
+
+	elif [ "$1" = "json" ] || [ "$1" = "JSON" ]; then
+		CONF_OPT_STRING="-conf"
+		CONF_FILE_EXT=".json"
+		CONF_OPT_SVR_PARAM="${CFG_SVR_FILE_PREFIX}${CONF_FILE_EXT}"
+		CONF_OPT_SLV_PARAM="${CFG_SLV_FILE_PREFIX}${CONF_FILE_EXT}"
+
+	elif [ "$1" = "jsonstring" ] || [ "$1" = "JSONSTRING" ] || [ "$1" = "sjson" ] || [ "$1" = "SJSON" ] || [ "$1" = "jsonstr" ] || [ "$1" = "JSONSTR" ]; then
+		CONF_OPT_STRING="-json"
+		CONF_OPT_SVR_PARAM="${TEST_SERVER_JSON}"
+		CONF_OPT_SLV_PARAM="${TEST_SLAVE_JSON}"
+
+	elif [ "$1" = "jsonenv" ] || [ "$1" = "JSONENV" ] || [ "$1" = "ejson" ] || [ "$1" = "EJSON" ]; then
+		_JSON_ENV_MODE=1
+	else
+		PRNERR "run_all_processes function parameter is wrong."
+		return 1
+	fi
+
+	#------------------------------------------------------
+	# RUN chmpx processes and k2hdkc server processes
+	#------------------------------------------------------
+	PRNMSG "RUN CHMPX(server/slave) / K2HDKC"
+
+	#
+	# Run chmpx server 8021
+	#
+	if [ "${_JSON_ENV_MODE}" -ne 1 ]; then
+		"${CHMPXBIN}" "${CONF_OPT_STRING}" "${CONF_OPT_SVR_PARAM}" -ctlport 8021 "${CHMPX_DBG_OPT}" "${CHMPX_DBG_PARAM}" > "${CHMPX_8021_LOGFILE}" 2>&1 &
+	else
+		CHMJSONCONF="${TEST_SERVER_JSON}" "${CHMPXBIN}" -ctlport 8021 "${CHMPX_DBG_OPT}" "${CHMPX_DBG_PARAM}" > "${CHMPX_8021_LOGFILE}" 2>&1 &
+	fi
+	CHMPX_8021_PID=$!
+	sleep "${WAIT_SEC_AFTER_RUN_CHMPX}"
+	PRNINFO "CHMPX(server) 8021             : ${CHMPX_8021_PID}"
+
+	#
+	# Run k2hdkc 8021
+	#
+	if [ "${_JSON_ENV_MODE}" -ne 1 ]; then
+		"${K2HDKCBIN}" "${CONF_OPT_STRING}" "${CONF_OPT_SVR_PARAM}" -ctlport 8021 "${DKC_DBG_OPT}" "${DKC_DBG_PARAM}" > "${K2HDKC_8021_LOGFILE}" 2>&1 &
+	else
+		K2HDKCJSONCONF="${TEST_SERVER_JSON}" "${K2HDKCBIN}" -ctlport 8021 "${DKC_DBG_OPT}" "${DKC_DBG_PARAM}" > "${K2HDKC_8021_LOGFILE}" 2>&1 &
+	fi
+	K2HDKC_8021_PID=$!
+	K2HDKC_LT_8021_PID=$(get_lt_k2hdkc_process_id 8021 "${K2HDKC_8021_PID}")
+	sleep "${WAIT_SEC_AFTER_RUN_K2HDKC}"
+	PRNINFO "K2HDKC 8021                    : ${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}"
+
+	#
+	# Run chmpx server 8023
+	#
+	if [ "${_JSON_ENV_MODE}" -ne 1 ]; then
+		"${CHMPXBIN}" "${CONF_OPT_STRING}" "${CONF_OPT_SVR_PARAM}" -ctlport 8023 "${CHMPX_DBG_OPT}" "${CHMPX_DBG_PARAM}" > "${CHMPX_8023_LOGFILE}" 2>&1 &
+	else
+		CHMJSONCONF="${TEST_SERVER_JSON}" "${CHMPXBIN}" -ctlport 8023 "${CHMPX_DBG_OPT}" "${CHMPX_DBG_PARAM}" > "${CHMPX_8023_LOGFILE}" 2>&1 &
+	fi
+	CHMPX_8023_PID=$!
+	sleep "${WAIT_SEC_AFTER_RUN_CHMPX}"
+	PRNINFO "CHMPX(server) 8023             : ${CHMPX_8023_PID}"
+
+	#
+	# Run k2hdkc 8023
+	#
+	if [ "${_JSON_ENV_MODE}" -ne 1 ]; then
+		"${K2HDKCBIN}" "${CONF_OPT_STRING}" "${CONF_OPT_SVR_PARAM}" -ctlport 8023 "${DKC_DBG_OPT}" "${DKC_DBG_PARAM}" > "${K2HDKC_8023_LOGFILE}" 2>&1 &
+	else
+		K2HDKCJSONCONF="${TEST_SERVER_JSON}" "${K2HDKCBIN}" -ctlport 8023 "${DKC_DBG_OPT}" "${DKC_DBG_PARAM}" > "${K2HDKC_8023_LOGFILE}" 2>&1 &
+	fi
+	K2HDKC_8023_PID=$!
+	K2HDKC_LT_8023_PID=$(get_lt_k2hdkc_process_id 8023 "${K2HDKC_8023_PID}")
+	sleep "${WAIT_SEC_AFTER_RUN_K2HDKC}"
+	PRNINFO "K2HDKC 8023                    : ${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}"
+
+	#
+	# Run chmpx server 8025
+	#
+	if [ "${_JSON_ENV_MODE}" -ne 1 ]; then
+		"${CHMPXBIN}" "${CONF_OPT_STRING}" "${CONF_OPT_SVR_PARAM}" -ctlport 8025 "${CHMPX_DBG_OPT}" "${CHMPX_DBG_PARAM}" > "${CHMPX_8025_LOGFILE}" 2>&1 &
+	else
+		CHMJSONCONF="${TEST_SERVER_JSON}" "${CHMPXBIN}" -ctlport 8025 "${CHMPX_DBG_OPT}" "${CHMPX_DBG_PARAM}" > "${CHMPX_8025_LOGFILE}" 2>&1 &
+	fi
+	CHMPX_8025_PID=$!
+	sleep "${WAIT_SEC_AFTER_RUN_CHMPX}"
+	PRNINFO "CHMPX(server) 8025             : ${CHMPX_8025_PID}"
+
+	#
+	# Run k2hdkc 8025
+	#
+	if [ "${_JSON_ENV_MODE}" -ne 1 ]; then
+		"${K2HDKCBIN}" "${CONF_OPT_STRING}" "${CONF_OPT_SVR_PARAM}" -ctlport 8025 "${DKC_DBG_OPT}" "${DKC_DBG_PARAM}" > "${K2HDKC_8025_LOGFILE}" 2>&1 &
+	else
+		K2HDKCJSONCONF="${TEST_SERVER_JSON}" "${K2HDKCBIN}" -ctlport 8025 "${DKC_DBG_OPT}" "${DKC_DBG_PARAM}" > "${K2HDKC_8025_LOGFILE}" 2>&1 &
+	fi
+	K2HDKC_8025_PID=$!
+	K2HDKC_LT_8025_PID=$(get_lt_k2hdkc_process_id 8025 "${K2HDKC_8025_PID}")
+	sleep "${WAIT_SEC_AFTER_RUN_K2HDKC}"
+	PRNINFO "K2HDKC 8025                    : ${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}"
+
+	#
+	# Run chmpx server 8027
+	#
+	if [ "${_JSON_ENV_MODE}" -ne 1 ]; then
+		"${CHMPXBIN}" "${CONF_OPT_STRING}" "${CONF_OPT_SVR_PARAM}" -ctlport 8027 "${CHMPX_DBG_OPT}" "${CHMPX_DBG_PARAM}" > "${CHMPX_8027_LOGFILE}" 2>&1 &
+	else
+		CHMJSONCONF="${TEST_SERVER_JSON}" "${CHMPXBIN}" -ctlport 8027 "${CHMPX_DBG_OPT}" "${CHMPX_DBG_PARAM}" > "${CHMPX_8027_LOGFILE}" 2>&1 &
+	fi
+	CHMPX_8027_PID=$!
+	sleep "${WAIT_SEC_AFTER_RUN_CHMPX}"
+	PRNINFO "CHMPX(server) 8027             : ${CHMPX_8027_PID}"
+
+	#
+	# Run k2hdkc 8027
+	#
+	if [ "${_JSON_ENV_MODE}" -ne 1 ]; then
+		"${K2HDKCBIN}" "${CONF_OPT_STRING}" "${CONF_OPT_SVR_PARAM}" -ctlport 8027 "${DKC_DBG_OPT}" "${DKC_DBG_PARAM}" > "${K2HDKC_8027_LOGFILE}" 2>&1 &
+	else
+		K2HDKCJSONCONF="${TEST_SERVER_JSON}" "${K2HDKCBIN}" -ctlport 8027 "${DKC_DBG_OPT}" "${DKC_DBG_PARAM}" > "${K2HDKC_8027_LOGFILE}" 2>&1 &
+	fi
+	K2HDKC_8027_PID=$!
+	K2HDKC_LT_8027_PID=$(get_lt_k2hdkc_process_id 8027 "${K2HDKC_8027_PID}")
+	sleep "${WAIT_SEC_AFTER_RUN_K2HDKC}"
+	PRNINFO "K2HDKC 8027                    : ${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}"
+
+	#
+	# Run chmpx slave 8031
+	#
+	if [ "${_JSON_ENV_MODE}" -ne 1 ]; then
+		"${CHMPXBIN}" "${CONF_OPT_STRING}" "${CONF_OPT_SLV_PARAM}" -ctlport 8031 "${CHMPX_DBG_OPT}" "${CHMPX_DBG_PARAM}" > "${CHMPX_8031_LOGFILE}" 2>&1 &
+	else
+		CHMJSONCONF="${TEST_SLAVE_JSON}" "${CHMPXBIN}" -ctlport 8031 "${CHMPX_DBG_OPT}" "${CHMPX_DBG_PARAM}" > "${CHMPX_8031_LOGFILE}" 2>&1 &
+	fi
+	CHMPX_8031_PID=$!
+	sleep "${WAIT_SEC_AFTER_RUN_CHMPX}"
+	PRNINFO "CHMPX(slave) 8031              : ${CHMPX_8031_PID}"
+
+	return 0
+}
+
+stop_process()
+{
+	if [ $# -eq 0 ]; then
+		return 1
+	fi
+	_STOP_PIDS="$*"
+
+	_STOP_RESULT=0
+	for _ONE_PID in ${_STOP_PIDS}; do
+		_MAX_TRYCOUNT=10
+
+		while [ "${_MAX_TRYCOUNT}" -gt 0 ]; do
+			#
+			# Check running status
+			#
+			if ! ps -p "${_ONE_PID}" >/dev/null 2>&1; then
+				break
+			fi
+			#
+			# Try HUP
+			#
+			kill -HUP "${_ONE_PID}" > /dev/null 2>&1
+			sleep 1
+			if ! ps -p "${_ONE_PID}" >/dev/null 2>&1; then
+				break
+			fi
+
+			#
+			# Try KILL
+			#
+			kill -KILL "${_ONE_PID}" > /dev/null 2>&1
+			sleep 1
+			if ! ps -p "${_ONE_PID}" >/dev/null 2>&1; then
+				break
+			fi
+			_MAX_TRYCOUNT=$((_MAX_TRYCOUNT - 1))
+		done
+
+		if [ "${_MAX_TRYCOUNT}" -le 0 ]; then
+			# shellcheck disable=SC2009
+			if ps -p "${_ONE_PID}" | grep -v PID | grep -q -i 'defunct'; then
+				PRNWARN "Could not stop ${_ONE_PID} process, because it has defunct status. So assume we were able to stop it."
+			else
+				PRNERR "Could not stop ${_ONE_PID} process"
+				_STOP_RESULT=1
+			fi
+		fi
+	done
+	return "${_STOP_RESULT}"
+}
+
+#
+# Cleanup files
+#
+cleanup_files()
+{
+	rm -f "${LINETOOLLOG}"
+	rm -f "${LINETOOLEXITLOG}"
+	rm -f "${CHMPX_8021_LOGFILE}"
+	rm -f "${CHMPX_8023_LOGFILE}"
+	rm -f "${CHMPX_8025_LOGFILE}"
+	rm -f "${CHMPX_8027_LOGFILE}"
+	rm -f "${CHMPX_8031_LOGFILE}"
+	rm -f "${K2HDKC_8021_LOGFILE}"
+	rm -f "${K2HDKC_8023_LOGFILE}"
+	rm -f "${K2HDKC_8025_LOGFILE}"
+	rm -f "${K2HDKC_8027_LOGFILE}"
+	rm -f "${LINETOOL_C_P_LOGFILE}"
+	rm -f "${LINETOOL_CPP_P_LOGFILE}"
+	rm -f "${LINETOOL_C_LOGFILE}"
+	rm -f "${LINETOOL_CPP_LOGFILE}"
+	rm -f "${SUB_SHELLGROUP_ERROR_FILE}"
+
+	return 0
+}
+
+print_log_detail()
+{
+	if [ $# -gt 0 ] && [ -n "$1" ] && [ "$1" = "diff" ]; then
+		_PRINT_DIFF=1
+	elif [ $# -gt 0 ] && [ -n "$1" ] && [ "$1" = "nodiff" ]; then
+		_PRINT_DIFF=0
+	else
+		_PRINT_DIFF=0
+	fi
+
+	if [ "${_PRINT_DIFF}" -eq 1 ]; then
+		if [ -f "${LINETOOLLOG}" ]; then
+			echo "    [DETAIL] : K2HDKCTOOL LOG DIFF"
+			diff "${LINETOOLLOG}" "${MASTER_LINETOOLLOG}" 2>/dev/null | sed -e 's/^/      /g'
+		fi
+	fi
+
+	if [ -f "${LINETOOLLOG}" ]; then
+		echo "    [DETAIL] : LINETOOLLOG"
+		sed -e 's/^/      /g' "${LINETOOLLOG}"
+	fi
+	if [ -f "${CHMPX_8021_LOGFILE}" ]; then
+		echo "    [DETAIL] : CHMPX SERVER(8021)"
+		sed -e 's/^/      /g' "${CHMPX_8021_LOGFILE}"
+	fi
+	if [ -f "${CHMPX_8023_LOGFILE}" ]; then
+		echo "    [DETAIL] : CHMPX SERVER(8023)"
+		sed -e 's/^/      /g' "${CHMPX_8023_LOGFILE}"
+	fi
+	if [ -f "${CHMPX_8025_LOGFILE}" ]; then
+		echo "    [DETAIL] : CHMPX SERVER(8025)"
+		sed -e 's/^/      /g' "${CHMPX_8025_LOGFILE}"
+	fi
+	if [ -f "${CHMPX_8027_LOGFILE}" ]; then
+		echo "    [DETAIL] : CHMPX SERVER(8027)"
+		sed -e 's/^/      /g' "${CHMPX_8027_LOGFILE}"
+	fi
+	if [ -f "${CHMPX_8031_LOGFILE}" ]; then
+		echo "    [DETAIL] : CHMPX SLAVE(8031)"
+		sed -e 's/^/      /g' "${CHMPX_8031_LOGFILE}"
+	fi
+	if [ -f "${K2HDKC_8021_LOGFILE}" ]; then
+		echo "    [DETAIL] : K2HDKC(8021)"
+		sed -e 's/^/      /g' "${K2HDKC_8021_LOGFILE}"
+	fi
+	if [ -f "${K2HDKC_8023_LOGFILE}" ]; then
+		echo "    [DETAIL] : K2HDKC(8023)"
+		sed -e 's/^/      /g' "${K2HDKC_8023_LOGFILE}"
+	fi
+	if [ -f "${K2HDKC_8025_LOGFILE}" ]; then
+		echo "    [DETAIL] : K2HDKC(8025)"
+		sed -e 's/^/      /g' "${K2HDKC_8025_LOGFILE}"
+	fi
+	if [ -f "${K2HDKC_8027_LOGFILE}" ]; then
+		echo "    [DETAIL] : K2HDKC(8027)"
+		sed -e 's/^/      /g' "${K2HDKC_8027_LOGFILE}"
+	fi
+	if [ -f "${LINETOOL_C_P_LOGFILE}" ]; then
+		echo "    [DETAIL] : K2HDKCLINETOOL(C-PERM)"
+		sed -e 's/^/      /g' "${LINETOOL_C_P_LOGFILE}"
+	fi
+	if [ -f "${LINETOOL_CPP_P_LOGFILE}" ]; then
+		echo "    [DETAIL] : K2HDKCLINETOOL(CPP-PERM)"
+		sed -e 's/^/      /g' "${LINETOOL_CPP_P_LOGFILE}"
+	fi
+	if [ -f "${LINETOOL_C_LOGFILE}" ]; then
+		echo "    [DETAIL] : K2HDKCLINETOOL(C)"
+		sed -e 's/^/      /g' "${LINETOOL_C_LOGFILE}"
+	fi
+	if [ -f "${LINETOOL_CPP_LOGFILE}" ]; then
+		echo "    [DETAIL] : K2HDKCLINETOOL(CPP)"
+		sed -e 's/^/      /g' "${LINETOOL_CPP_LOGFILE}"
+	fi
+
+	return 0
+}
+
+# [NOTE]
+# Libtools PIDs may be present because they use built binaries instead
+# of package-installed binaries.
+# This function returns the PID of the Libtools wrapper for the k2hdkc
+# process. If it does not exist, the PID value passed in the second
+# argument is returned as is.
+#
+get_lt_k2hdkc_process_id()
+{
+	if [ $# -ne 2 ]; then
+		echo ""
+		return 1
+	fi
+	# shellcheck disable=SC2009
+	if ! _LT_PID="$(ps ax | grep -v grep | grep 'lt-k2hdkc' | grep "$1" | awk '{print $1}')"; then
+		echo "$2"
+	elif [ -z "${_LT_PID}" ]; then
+		echo "$2"
+	else
+		echo "${_LT_PID}"
+	fi
+	return 0
+}
+
+#==============================================================
+# Set and Check variables for test
+#==============================================================
+#
+# Check binary path
+#
+if ! CHMPXBIN=$(command -v chmpx | tr -d '\n'); then
+	PRNERR "Not found chmpx binary"
+	exit 1
+fi
+if [ -f "${SRCDIR}/k2hdkc" ]; then
+	K2HDKCBIN="${SRCDIR}/k2hdkc"
+elif [ -f "${SRCDIR}/k2hdkcmain" ]; then
+	K2HDKCBIN="${SRCDIR}/k2hdkcmain"
+else
+	PRNERR "Not found k2hdkc binary"
+	exit 1
+fi
+if [ -f "${TESTDIR}/k2hdkclinetool" ]; then
+	LINETOOLBIN="${TESTDIR}/k2hdkclinetool"
+else
+	PRNERR "Not found k2hdkclinetool binary"
+	exit 1
+fi
+
+#--------------------------------------------------------------
+# Parse options
+#--------------------------------------------------------------
+#
+# Variables
+#
+IS_FOUND_TEST_TYPE_OPT=0
+DO_INI_CONF=0
+DO_YAML_CONF=0
+DO_JSON_CONF=0
+DO_JSON_STRING=0
+DO_JSON_ENV=0
+
+OPT_CHMPX_DBG_PARAM=""
+OPT_DKC_DBG_PARAM=""
+OPT_LOGFILE=""
+
 while [ $# -ne 0 ]; do
-	if [ "X$1" = "X-h" -o "X$1" = "X-help" ]; then
-		echo "Usage: ${PROGRAM_NAME} [-h] [ ini_conf & yaml_conf & json_conf & json_string & json_env ] [-chmpx_dbg_level <err|wan|msg|dump>] [-dkc_dbg_level <err|wan|msg|dump>] [-dkccomlog] [-logfile <filepath>]"
+	if [ -z "$1" ]; then
+		break
+
+	elif [ "$1" = "-h" ] || [ "$1" = "-H" ] || [ "$1" = "--help" ] || [ "$1" = "--HELP" ]; then
+		func_usage "${PRGNAME}"
 		exit 0
 
-	elif [ "X$1" = "Xini_conf" ]; then
-		DO_INI_CONF=yes
-		IS_FOUND_TEST_TYPE_OPT=yes
+	elif [ "$1" = "ini_conf" ] || [ "$1" = "INI_CONF" ]; then
+		if [ "${DO_INI_CONF}" -eq 1 ]; then
+			PRNERR "Already specified \"ini_conf\" mode."
+			exit 1
+		fi
+		DO_INI_CONF=1
+		IS_FOUND_TEST_TYPE_OPT=1
 
-	elif [ "X$1" = "Xyaml_conf" ]; then
-		DO_YAML_CONF=yes
-		IS_FOUND_TEST_TYPE_OPT=yes
+	elif [ "$1" = "yaml_conf" ] || [ "$1" = "YAML_CONF" ]; then
+		if [ "${DO_YAML_CONF}" -eq 1 ]; then
+			PRNERR "Already specified \"yaml_conf\" mode."
+			exit 1
+		fi
+		DO_YAML_CONF=1
+		IS_FOUND_TEST_TYPE_OPT=1
 
-	elif [ "X$1" = "Xjson_conf" ]; then
-		DO_JSON_CONF=yes
-		IS_FOUND_TEST_TYPE_OPT=yes
+	elif [ "$1" = "json_conf" ] || [ "$1" = "JSON_CONF" ]; then
+		if [ "${DO_JSON_CONF}" -eq 1 ]; then
+			PRNERR "Already specified \"json_conf\" mode."
+			exit 1
+		fi
+		DO_JSON_CONF=1
+		IS_FOUND_TEST_TYPE_OPT=1
 
-	elif [ "X$1" = "Xjson_string" ]; then
-		DO_JSON_STRING=yes
-		IS_FOUND_TEST_TYPE_OPT=yes
+	elif [ "$1" = "json_string" ] || [ "$1" = "JSON_STRING" ]; then
+		if [ "${DO_JSON_STRING}" -eq 1 ]; then
+			PRNERR "Already specified \"json_string\" mode."
+			exit 1
+		fi
+		DO_JSON_STRING=1
+		IS_FOUND_TEST_TYPE_OPT=1
 
-	elif [ "X$1" = "Xjson_env" ]; then
-		DO_JSON_ENV=yes
-		IS_FOUND_TEST_TYPE_OPT=yes
+	elif [ "$1" = "json_env" ] || [ "$1" = "JSON_ENV" ]; then
+		if [ "${DO_JSON_ENV}" -eq 1 ]; then
+			PRNERR "Already specified \"json_env\" mode."
+			exit 1
+		fi
+		DO_JSON_ENV=1
+		IS_FOUND_TEST_TYPE_OPT=1
 
-	elif [ "X$1" = "X-chmpx_dbg_level" ]; then
+	elif [ "$1" = "-chmpx_dbg_level" ] || [ "$1" = "-CHMPX_DBG_LEVEL" ]; then
+		if [ -n "${OPT_CHMPX_DBG_PARAM}" ]; then
+			PRNERR "Already specified -chmpx_dbg_level option."
+			exit 1
+		fi
 		shift
-		CHMPX_DBG_PARAM="-d $1"
+		if [ -z "$1" ]; then
+			PRNERR "Option -chmpx_dbg_level needs parameter."
+			exit 1
+		fi
+		OPT_CHMPX_DBG_PARAM="$1"
 
-	elif [ "X$1" = "X-dkc_dbg_level" ]; then
+	elif [ "$1" = "-dkc_dbg_level" ] || [ "$1" = "-DKC_DBG_LEVEL" ]; then
+		if [ -n "${OPT_DKC_DBG_PARAM}" ]; then
+			PRNERR "Already specified -dkc_dbg_level option."
+			exit 1
+		fi
 		shift
-		DKC_DBG_PARAM="-d $1"
+		if [ -z "$1" ]; then
+			PRNERR "Option -dkc_dbg_level needs parameter."
+			exit 1
+		fi
+		OPT_DKC_DBG_PARAM="$1"
 
-	elif [ "X$1" = "X-logfile" ]; then
+	elif [ "$1" = "-logfile" ] || [ "$1" = "-LOGFILE" ]; then
+		if [ -n "${OPT_LOGFILE}" ]; then
+			PRNERR "Already specified -logfile option."
+			exit 1
+		fi
 		shift
-		LOGFILE="$1"
-
-	elif [ "X$1" = "X-dkccomlog" ]; then
-		DKC_COMLOG_PARAM="-comlog"
+		if [ -z "$1" ]; then
+			PRNERR "Option -logfile needs parameter."
+			exit 1
+		fi
+		OPT_LOGFILE="$1"
 
 	else
-		echo "ERROR: Unknown option $1"
-		echo "Usage: ${PROGRAM_NAME} [-chmpx_dbg_level <err|wan|msg|dump>] [-dkc_dbg_level <err|wan|msg|dump>] [-dkccomlog] [-logfile <filepath>]"
+		PRNERR "Unknown option $1"
 		exit 1
 	fi
 
 	shift
 done
 
-if [ "X${IS_FOUND_TEST_TYPE_OPT}" = "Xno" ]; then
-	DO_INI_CONF=yes
-	DO_YAML_CONF=yes
-	DO_JSON_CONF=yes
-	DO_JSON_STRING=yes
-	DO_JSON_ENV=yes
+#
+# Check and Set values
+#
+if [ "${IS_FOUND_TEST_TYPE_OPT}" -eq 0 ]; then
+	DO_INI_CONF=1
+	DO_YAML_CONF=1
+	DO_JSON_CONF=1
+	DO_JSON_STRING=1
+	DO_JSON_ENV=1
+fi
+
+CHMPX_DBG_OPT="-d"
+if [ -n "${OPT_CHMPX_DBG_PARAM}" ]; then
+	CHMPX_DBG_PARAM="${OPT_CHMPX_DBG_PARAM}"
+else
+	CHMPX_DBG_PARAM="err"
+fi
+
+DKC_DBG_OPT="-d"
+if [ -n "${OPT_DKC_DBG_PARAM}" ]; then
+	DKC_DBG_PARAM="${OPT_DKC_DBG_PARAM}"
+else
+	DKC_DBG_PARAM="err"
 fi
 
 #
 # Always use this parameter for k2hdkclinetool.
 #
-DKCTOOL_COMLOG_PARAM="-comlog off"
-DKCTOOL_DBG_PARAM="-d err"
+DKCTOOL_DBG_OPT="-d"
+DKCTOOL_DBG_PARAM="err"
+DKCTOOL_COMLOG_OPT="-comlog"
+DKCTOOL_COMLOG_PARAM="off"
 
-echo "================= $DATE ====================" > ${LOGFILE}
+#--------------------------------------------------------------
+# Setup data
+#--------------------------------------------------------------
+#
+# JSON String data
+#
+TEST_SERVER_JSON=$(grep 'TEST_SERVER_JSON_STR=' "${CFG_JSON_STRING_FILE}" 2>/dev/null | sed -e 's/TEST_SERVER_JSON_STR=//g')
+TEST_SLAVE_JSON=$(grep 'TEST_SLAVE_JSON_STR=' "${CFG_JSON_STRING_FILE}" 2>/dev/null | sed -e 's/TEST_SLAVE_JSON_STR=//g')
+#TEST_TRANS_SERVER_JSON=$(grep 'TEST_TRANS_SERVER_JSON_STR=' "${CFG_JSON_STRING_FILE}" 2>/dev/null | sed -e 's/TEST_TRANS_SERVER_JSON_STR=//g')
+#TEST_TRANS_SLAVE_JSON=$(grep 'TEST_TRANS_SLAVE_JSON_STR=' "${CFG_JSON_STRING_FILE}" 2>/dev/null | sed -e 's/TEST_TRANS_SLAVE_JSON_STR=//g')
 
-##############################################################
-## library path & programs path
-###########################################################
-#SCRIPTNAME=$(basename "${0}")
-SCRIPTDIR=$(dirname "${0}")
-SCRIPTDIR=$(cd "${SCRIPTDIR}" || exit 1; pwd)
-SRCTOP=$(cd "${SCRIPTDIR}/.." || exit 1; pwd)
-TESTSDIR=$(cd "${SRCTOP}/tests" || exit 1; pwd)
-SRCDIR=$(cd "${SRCTOP}/src" || exit 1; pwd)
-LIBDIR=$(cd "${SRCTOP}/lib" || exit 1; pwd)
-
-if [ "X${OBJDIR}" = "X" ]; then
-	LD_LIBRARY_PATH="${LIBDIR}/.libs"
-else
-	LD_LIBRARY_PATH="${LIBDIR}/${OBJDIR}"
-fi
-export LD_LIBRARY_PATH
-
-if [ -f ${SRCDIR}/${PLATFORM_CURRENT}/k2hdkc ]; then
-	K2HDKCBIN=${SRCDIR}/${PLATFORM_CURRENT}/k2hdkc
-elif [ -f ${SRCDIR}/${PLATFORM_CURRENT}/k2hdkcmain ]; then
-	K2HDKCBIN=${SRCDIR}/${PLATFORM_CURRENT}/k2hdkcmain
-elif [ -f ${SRCDIR}/${OBJDIR}/k2hdkc ]; then
-	K2HDKCBIN=${SRCDIR}/${OBJDIR}/k2hdkc
-elif [ -f ${SRCDIR}/${OBJDIR}/k2hdkcmain ]; then
-	K2HDKCBIN=${SRCDIR}/${OBJDIR}/k2hdkcmain
-else
-	echo "ERROR: there is no k2hdkc binary"
-	echo "FAILED"
-	exit 1
-fi
-if [ -f ${TESTSDIR}/${PLATFORM_CURRENT}/k2hdkclinetool ]; then
-	LINETOOLBIN=${TESTSDIR}/${PLATFORM_CURRENT}/k2hdkclinetool
-elif [ -f ${TESTSDIR}/${OBJDIR}/k2hdkclinetool ]; then
-	LINETOOLBIN=${TESTSDIR}/${OBJDIR}/k2hdkclinetool
-else
-	echo "ERROR: there is no k2hdkclinetool binary"
-	echo "FAILED"
-	exit 1
-fi
-LINETOOLCMD=${TESTSDIR}/k2hdkclinetool.cmd
-LINETOOLEXITCMD=${TESTSDIR}/k2hdkclinetool_exit.cmd
-MASTER_LINETOOLLOG=${TESTSDIR}/k2hdkclinetool.log
-
-###########################################################
-## Json Parameter
-###########################################################
-TEST_SERVER_JSON=`grep 'TEST_SERVER_JSON_STR=' ${TESTSDIR}/test_json_string.data 2>/dev/null | sed 's/TEST_SERVER_JSON_STR=//g' 2>/dev/null`
-TEST_SLAVE_JSON=`grep 'TEST_SLAVE_JSON_STR=' ${TESTSDIR}/test_json_string.data 2>/dev/null | sed 's/TEST_SLAVE_JSON_STR=//g' 2>/dev/null`
-TEST_TRANS_SERVER_JSON=`grep 'TEST_TRANS_SERVER_JSON_STR=' ${TESTSDIR}/test_json_string.data 2>/dev/null | sed 's/TEST_TRANS_SERVER_JSON_STR=//g' 2>/dev/null`
-TEST_TRANS_SLAVE_JSON=`grep 'TEST_TRANS_SLAVE_JSON_STR=' ${TESTSDIR}/test_json_string.data 2>/dev/null | sed 's/TEST_TRANS_SLAVE_JSON_STR=//g' 2>/dev/null`
+#==============================================================
+# Initialize before test
+#==============================================================
+PRNTITLE "Initialize before test"
 
 #
-# Clean old logs
+# Cleanup logs
 #
-rm -f ${LOGFILE}
-rm -f ${LINETOOLLOG}
-rm -f ${LINETOOLEXITLOG}
-rm -f ${CHMPXLOG}_8021.log
-rm -f ${CHMPXLOG}_8023.log
-rm -f ${CHMPXLOG}_8025.log
-rm -f ${CHMPXLOG}_8027.log
-rm -f ${CHMPXLOG}_8031.log
-rm -f ${K2HDKCLOG}_8021.log
-rm -f ${K2HDKCLOG}_8023.log
-rm -f ${K2HDKCLOG}_8025.log
-rm -f ${K2HDKCLOG}_8027.log
-rm -f ${LINETOOLERRLOG}_C_P.log
-rm -f ${LINETOOLERRLOG}_CPP_P.log
-rm -f ${LINETOOLERRLOG}_C.log
-rm -f ${LINETOOLERRLOG}_CPP.log
+cleanup_files
+rm -f "${LOGFILE}"
 
 #
 # Initialize Result
 #
 TEST_RESULT=0
 
-###########################################################
-## Start INI conf file(execution)
-###########################################################
-if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
-	echo ""
-	echo "====== START TEST FOR INI CONF FILE (EXECUTION) ============"
-	echo ""
-	CONF_FILE_EXT=".ini"
+PRNSUCCEED "Initialize before test"
 
-	########################################
+#==============================================================
+# Start INI conf file(execution)
+#==============================================================
+if [ "${TEST_RESULT}" -eq 0 ] && [ "${DO_INI_CONF}" -eq 1 ]; then
 	#
-	# RUN chmpx processes and k2hdkc server processes
+	# Run shell process group for logging
 	#
-	echo "======= [INI CONF(EXECUTION)] RUN CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
+	{
+		PRNTITLE "TEST FOR INI CONF FILE (EXECUTION)"
 
-	echo -n "------- CHMPX(server) 8021             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
-	CHMPX_8021_PID=$!
-	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 2
+		#------------------------------------------------------
+		# RUN all test processes
+		#------------------------------------------------------
+		# [NOTE]
+		# The process runs in the background, so it doesn't do any error checking.
+		# If it fails to start, an error will occur in subsequent tests.
+		#
+		run_all_processes "ini"
 
-	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
-	K2HDKC_8021_PID=$!
-	sleep 1
-	K2HDKC_LT_8021_PID=`ps ax | grep 'lt-k2hdkc' | grep 8021 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
-		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
-	fi
-	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
+		#------------------------------------------------------
+		# RUN k2hdkclinetool process
+		#------------------------------------------------------
+		PRNMSG "RUN K2HDKCLINETOOL"
 
-	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
-	CHMPX_8023_PID=$!
-	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 2
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.ini" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLEXITCMD}" > "${LINETOOLEXITLOG}" 2>&1; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL"
+		fi
 
-	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
-	K2HDKC_8023_PID=$!
-	sleep 1
-	K2HDKC_LT_8023_PID=`ps ax | grep 'lt-k2hdkc' | grep 8023 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
-		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
-	fi
-	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
+		#------------------------------------------------------
+		# Stop all processes
+		#------------------------------------------------------
+		PRNMSG "STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
 
-	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
-	CHMPX_8025_PID=$!
-	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 2
+		# [NOTE]
+		# The order of the list is the stop order and is important.
+		#
+		ALL_PIDS="	${CHMPX_8031_PID}
+					${K2HDKC_8027_PID}
+					${K2HDKC_LT_8027_PID}
+					${CHMPX_8027_PID}
+					${K2HDKC_8025_PID}
+					${K2HDKC_LT_8025_PID}
+					${CHMPX_8025_PID}
+					${K2HDKC_8023_PID}
+					${K2HDKC_LT_8023_PID}
+					${CHMPX_8023_PID}
+					${K2HDKC_8021_PID}
+					${K2HDKC_LT_8021_PID}
+					${CHMPX_8021_PID}"
 
-	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
-	K2HDKC_8025_PID=$!
-	sleep 1
-	K2HDKC_LT_8025_PID=`ps ax | grep 'lt-k2hdkc' | grep 8025 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
-		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
-	fi
-	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
+		if ! stop_process "${ALL_PIDS}"; then
+			PRNERR "FAILED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+		fi
 
-	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
-	CHMPX_8027_PID=$!
-	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 2
+		#------------------------------------------------------
+		# Print result
+		#------------------------------------------------------
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			PRNERR "FAILED : TEST FOR INI CONF FILE (EXECUTION)"
+			PRNINFO "(The test has failed. Print each logs)"
 
-	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
-	K2HDKC_8027_PID=$!
-	sleep 1
-	K2HDKC_LT_8027_PID=`ps ax | grep 'lt-k2hdkc' | grep 8027 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
-		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
-	fi
-	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
+			print_log_detail "nodiff"
+		else
+			PRNSUCCEED "TEST FOR INI CONF FILE (EXECUTION)"
+		fi
 
-	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
-	CHMPX_8031_PID=$!
-	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 2
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			touch "${SUB_SHELLGROUP_ERROR_FILE}"
+		fi
+	} | tee -a "${LOGFILE}"
 
-	########################################
 	#
-	# RUN k2hdkclinetool process
+	# Set error flag
 	#
-	echo "" >> ${LOGFILE}
-	echo "======= [INI CONF(EXECUTION)] RUN K2HDKCLINETOOL" >> ${LOGFILE}
-
-	echo -n "------- [INI CONF(EXECUTION)] K2HDKCLINETOOL      : " >> ${LOGFILE}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLEXITCMD} > ${LINETOOLEXITLOG} 2>&1
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : LOGFILE *****************"
-		cat ${LOGFILE}
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
-		cat ${LINETOOLEXITLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8021) *************"
-		cat ${CHMPXLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8023) *************"
-		cat ${CHMPXLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8025) *************"
-		cat ${CHMPXLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8027) *************"
-		cat ${CHMPXLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
-		cat ${K2HDKCLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
-		cat ${K2HDKCLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
-		cat ${K2HDKCLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
-		cat ${K2HDKCLOG}_8027.log
-
+	if [ -f "${SUB_SHELLGROUP_ERROR_FILE}" ]; then
 		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
 	fi
 
-	########################################
-	#
-	# STOP ALL
-	#
-	echo "" >> ${LOGFILE}
-	echo "======= [INI CONF(EXECUTION)] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 10
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-
-	########################################
-	#
-	# CLEANUP
-	#
-	if [ ${TEST_RESULT} -eq 0 ]; then
-		rm -f ${LOGFILE}
-		rm -f ${LINETOOLLOG}
-		rm -f ${LINETOOLEXITLOG}
-		rm -f ${CHMPXLOG}_8021.log
-		rm -f ${CHMPXLOG}_8023.log
-		rm -f ${CHMPXLOG}_8025.log
-		rm -f ${CHMPXLOG}_8027.log
-		rm -f ${CHMPXLOG}_8031.log
-		rm -f ${K2HDKCLOG}_8021.log
-		rm -f ${K2HDKCLOG}_8023.log
-		rm -f ${K2HDKCLOG}_8025.log
-		rm -f ${K2HDKCLOG}_8027.log
-	fi
+	#----------------------------------------------------------
+	# Cleanup
+	#----------------------------------------------------------
+	cleanup_files
 fi
 
-###########################################################
-## Start YAML conf file(execution)
-###########################################################
-if [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
-	echo ""
-	echo "====== START TEST FOR YAML CONF FILE (EXECUTION) ============"
-	echo ""
-	CONF_FILE_EXT=".yaml"
-
-	########################################
+#==============================================================
+# Start YAML conf file(execution)
+#==============================================================
+if [ "${TEST_RESULT}" -eq 0 ] && [ "${DO_YAML_CONF}" -eq 1 ]; then
 	#
-	# RUN chmpx processes and k2hdkc server processes
+	# Run shell process group for logging
 	#
-	echo "======= [YAML CONF(EXECUTION)] RUN CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
+	{
+		PRNTITLE "TEST FOR YAML CONF FILE (EXECUTION)"
 
-	echo -n "------- CHMPX(server) 8021             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
-	CHMPX_8021_PID=$!
-	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 2
+		#------------------------------------------------------
+		# RUN all test processes
+		#------------------------------------------------------
+		# [NOTE]
+		# The process runs in the background, so it doesn't do any error checking.
+		# If it fails to start, an error will occur in subsequent tests.
+		#
+		run_all_processes "yaml"
 
-	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
-	K2HDKC_8021_PID=$!
-	sleep 1
-	K2HDKC_LT_8021_PID=`ps ax | grep 'lt-k2hdkc' | grep 8021 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
-		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
-	fi
-	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
+		#------------------------------------------------------
+		# RUN k2hdkclinetool process
+		#------------------------------------------------------
+		PRNMSG "RUN K2HDKCLINETOOL"
 
-	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
-	CHMPX_8023_PID=$!
-	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 2
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.yaml" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLEXITCMD}" > "${LINETOOLEXITLOG}" 2>&1; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL"
+		fi
 
-	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
-	K2HDKC_8023_PID=$!
-	sleep 1
-	K2HDKC_LT_8023_PID=`ps ax | grep 'lt-k2hdkc' | grep 8023 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
-		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
-	fi
-	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
+		#------------------------------------------------------
+		# Stop all processes
+		#------------------------------------------------------
+		PRNMSG "STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
 
-	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
-	CHMPX_8025_PID=$!
-	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 2
+		# [NOTE]
+		# The order of the list is the stop order and is important.
+		#
+		ALL_PIDS="	${CHMPX_8031_PID}
+					${K2HDKC_8027_PID}
+					${K2HDKC_LT_8027_PID}
+					${CHMPX_8027_PID}
+					${K2HDKC_8025_PID}
+					${K2HDKC_LT_8025_PID}
+					${CHMPX_8025_PID}
+					${K2HDKC_8023_PID}
+					${K2HDKC_LT_8023_PID}
+					${CHMPX_8023_PID}
+					${K2HDKC_8021_PID}
+					${K2HDKC_LT_8021_PID}
+					${CHMPX_8021_PID}"
 
-	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
-	K2HDKC_8025_PID=$!
-	sleep 1
-	K2HDKC_LT_8025_PID=`ps ax | grep 'lt-k2hdkc' | grep 8025 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
-		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
-	fi
-	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
+		if ! stop_process "${ALL_PIDS}"; then
+			PRNERR "FAILED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+		fi
 
-	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
-	CHMPX_8027_PID=$!
-	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 2
+		#------------------------------------------------------
+		# Print result
+		#------------------------------------------------------
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			PRNERR "FAILED : TEST FOR YAML CONF FILE (EXECUTION)"
+			PRNINFO "(The test has failed. Print each logs)"
 
-	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
-	K2HDKC_8027_PID=$!
-	sleep 1
-	K2HDKC_LT_8027_PID=`ps ax | grep 'lt-k2hdkc' | grep 8027 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
-		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
-	fi
-	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
+			print_log_detail "nodiff"
+		else
+			PRNSUCCEED "TEST FOR YAML CONF FILE (EXECUTION)"
+		fi
 
-	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
-	CHMPX_8031_PID=$!
-	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 2
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			touch "${SUB_SHELLGROUP_ERROR_FILE}"
+		fi
+	} | tee -a "${LOGFILE}"
 
-	########################################
 	#
-	# RUN k2hdkclinetool process
+	# Set error flag
 	#
-	TEST_RESULT=0
-
-	echo "" >> ${LOGFILE}
-	echo "======= [YAML CONF(EXECUTION)] RUN K2HDKCLINETOOL" >> ${LOGFILE}
-
-	echo -n "------- [YAML CONF(EXECUTION)] K2HDKCLINETOOL      : " >> ${LOGFILE}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLEXITCMD} > ${LINETOOLEXITLOG} 2>&1
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : LOGFILE *****************"
-		cat ${LOGFILE}
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
-		cat ${LINETOOLEXITLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8021) *************"
-		cat ${CHMPXLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8023) *************"
-		cat ${CHMPXLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8025) *************"
-		cat ${CHMPXLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8027) *************"
-		cat ${CHMPXLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
-		cat ${K2HDKCLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
-		cat ${K2HDKCLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
-		cat ${K2HDKCLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
-		cat ${K2HDKCLOG}_8027.log
-
+	if [ -f "${SUB_SHELLGROUP_ERROR_FILE}" ]; then
 		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
 	fi
 
-	########################################
-	#
-	# STOP ALL
-	#
-	echo "" >> ${LOGFILE}
-	echo "======= [YAML CONF(EXECUTION)] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 10
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-
-	########################################
-	#
-	# CLEANUP
-	#
-	if [ ${TEST_RESULT} -eq 0 ]; then
-		rm -f ${LOGFILE}
-		rm -f ${LINETOOLLOG}
-		rm -f ${LINETOOLEXITLOG}
-		rm -f ${CHMPXLOG}_8021.log
-		rm -f ${CHMPXLOG}_8023.log
-		rm -f ${CHMPXLOG}_8025.log
-		rm -f ${CHMPXLOG}_8027.log
-		rm -f ${CHMPXLOG}_8031.log
-		rm -f ${K2HDKCLOG}_8021.log
-		rm -f ${K2HDKCLOG}_8023.log
-		rm -f ${K2HDKCLOG}_8025.log
-		rm -f ${K2HDKCLOG}_8027.log
-	fi
+	#----------------------------------------------------------
+	# Cleanup
+	#----------------------------------------------------------
+	cleanup_files
 fi
 
-###########################################################
-## Start JSON conf file(execution)
-###########################################################
-if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
-	echo ""
-	echo "====== START TEST FOR JSON CONF FILE (EXECUTION) ============"
-	echo ""
-	CONF_FILE_EXT=".json"
-
-	########################################
+#==============================================================
+# Start JSON conf file(execution)
+#==============================================================
+if [ "${TEST_RESULT}" -eq 0 ] && [ "${DO_JSON_CONF}" -eq 1 ]; then
 	#
-	# RUN chmpx processes and k2hdkc server processes
+	# Run shell process group for logging
 	#
-	echo "======= [JSON CONF(EXECUTION)] RUN CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
+	{
+		PRNTITLE "TEST FOR JSON CONF FILE (EXECUTION)"
 
-	echo -n "------- CHMPX(server) 8021             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
-	CHMPX_8021_PID=$!
-	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 2
+		#------------------------------------------------------
+		# RUN all test processes
+		#------------------------------------------------------
+		# [NOTE]
+		# The process runs in the background, so it doesn't do any error checking.
+		# If it fails to start, an error will occur in subsequent tests.
+		#
+		run_all_processes "json"
 
-	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
-	K2HDKC_8021_PID=$!
-	sleep 1
-	K2HDKC_LT_8021_PID=`ps ax | grep 'lt-k2hdkc' | grep 8021 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
-		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
-	fi
-	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
+		#------------------------------------------------------
+		# RUN k2hdkclinetool process
+		#------------------------------------------------------
+		PRNMSG "RUN K2HDKCLINETOOL"
 
-	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
-	CHMPX_8023_PID=$!
-	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 2
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.json" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLEXITCMD}" > "${LINETOOLEXITLOG}" 2>&1; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL"
+		fi
 
-	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
-	K2HDKC_8023_PID=$!
-	sleep 1
-	K2HDKC_LT_8023_PID=`ps ax | grep 'lt-k2hdkc' | grep 8023 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
-		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
-	fi
-	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
+		#------------------------------------------------------
+		# Stop all processes
+		#------------------------------------------------------
+		PRNMSG "STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
 
-	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
-	CHMPX_8025_PID=$!
-	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 2
+		# [NOTE]
+		# The order of the list is the stop order and is important.
+		#
+		ALL_PIDS="	${CHMPX_8031_PID}
+					${K2HDKC_8027_PID}
+					${K2HDKC_LT_8027_PID}
+					${CHMPX_8027_PID}
+					${K2HDKC_8025_PID}
+					${K2HDKC_LT_8025_PID}
+					${CHMPX_8025_PID}
+					${K2HDKC_8023_PID}
+					${K2HDKC_LT_8023_PID}
+					${CHMPX_8023_PID}
+					${K2HDKC_8021_PID}
+					${K2HDKC_LT_8021_PID}
+					${CHMPX_8021_PID}"
 
-	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
-	K2HDKC_8025_PID=$!
-	sleep 1
-	K2HDKC_LT_8025_PID=`ps ax | grep 'lt-k2hdkc' | grep 8025 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
-		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
-	fi
-	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
+		if ! stop_process "${ALL_PIDS}"; then
+			PRNERR "FAILED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+		fi
 
-	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
-	CHMPX_8027_PID=$!
-	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 2
+		#------------------------------------------------------
+		# Print result
+		#------------------------------------------------------
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			PRNERR "FAILED : TEST FOR JSON CONF FILE (EXECUTION)"
+			PRNINFO "(The test has failed. Print each logs)"
 
-	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
-	K2HDKC_8027_PID=$!
-	sleep 1
-	K2HDKC_LT_8027_PID=`ps ax | grep 'lt-k2hdkc' | grep 8027 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
-		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
-	fi
-	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
+			print_log_detail "nodiff"
+		else
+			PRNSUCCEED "TEST FOR JSON CONF FILE (EXECUTION)"
+		fi
 
-	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
-	CHMPX_8031_PID=$!
-	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 2
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			touch "${SUB_SHELLGROUP_ERROR_FILE}"
+		fi
+	} | tee -a "${LOGFILE}"
 
-	########################################
 	#
-	# RUN k2hdkclinetool process
+	# Set error flag
 	#
-	TEST_RESULT=0
-
-	echo "" >> ${LOGFILE}
-	echo "======= [JSON CONF(EXECUTION)] RUN K2HDKCLINETOOL" >> ${LOGFILE}
-
-	echo -n "------- [JSON CONF(EXECUTION)] K2HDKCLINETOOL     : " >> ${LOGFILE}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLEXITCMD} > ${LINETOOLEXITLOG} 2>&1
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : LOGFILE *****************"
-		cat ${LOGFILE}
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
-		cat ${LINETOOLEXITLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8021) *************"
-		cat ${CHMPXLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8023) *************"
-		cat ${CHMPXLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8025) *************"
-		cat ${CHMPXLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8027) *************"
-		cat ${CHMPXLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
-		cat ${K2HDKCLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
-		cat ${K2HDKCLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
-		cat ${K2HDKCLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
-		cat ${K2HDKCLOG}_8027.log
-
+	if [ -f "${SUB_SHELLGROUP_ERROR_FILE}" ]; then
 		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
 	fi
 
-	########################################
-	#
-	# STOP ALL
-	#
-	echo "" >> ${LOGFILE}
-	echo "======= [JSON CONF(EXECUTION)] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 10
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-
-	########################################
-	#
-	# CLEANUP
-	#
-	if [ ${TEST_RESULT} -eq 0 ]; then
-		rm -f ${LOGFILE}
-		rm -f ${LINETOOLLOG}
-		rm -f ${LINETOOLEXITLOG}
-		rm -f ${CHMPXLOG}_8021.log
-		rm -f ${CHMPXLOG}_8023.log
-		rm -f ${CHMPXLOG}_8025.log
-		rm -f ${CHMPXLOG}_8027.log
-		rm -f ${CHMPXLOG}_8031.log
-		rm -f ${K2HDKCLOG}_8021.log
-		rm -f ${K2HDKCLOG}_8023.log
-		rm -f ${K2HDKCLOG}_8025.log
-		rm -f ${K2HDKCLOG}_8027.log
-	fi
+	#----------------------------------------------------------
+	# Cleanup
+	#----------------------------------------------------------
+	cleanup_files
 fi
 
-###########################################################
-## Start JSON string
-###########################################################
-if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
-	echo ""
-	echo "====== START TEST FOR JSON STRING (EXECUTION) ================="
-	echo ""
-
-	########################################
+#==============================================================
+# Start JSON string
+#==============================================================
+if [ "${TEST_RESULT}" -eq 0 ] && [ "${DO_JSON_STRING}" -eq 1 ]; then
 	#
-	# RUN chmpx processes and k2hdkc server processes
+	# Run shell process group for logging
 	#
-	echo "======= [JSON STRING(EXECUTION)] RUN CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
+	{
+		PRNTITLE "TEST FOR JSON STRING (EXECUTION)"
 
-	echo -n "------- CHMPX(server) 8021             : " >> ${LOGFILE}
-	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
-	CHMPX_8021_PID=$!
-	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 2
+		#------------------------------------------------------
+		# RUN all test processes
+		#------------------------------------------------------
+		# [NOTE]
+		# The process runs in the background, so it doesn't do any error checking.
+		# If it fails to start, an error will occur in subsequent tests.
+		#
+		run_all_processes "jsonstring"
 
-	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
-	K2HDKC_8021_PID=$!
-	sleep 1
-	K2HDKC_LT_8021_PID=`ps ax | grep 'lt-k2hdkc' | grep 8021 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
-		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
-	fi
-	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
+		#------------------------------------------------------
+		# RUN k2hdkclinetool process
+		#------------------------------------------------------
+		PRNMSG "RUN K2HDKCLINETOOL"
 
-	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
-	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
-	CHMPX_8023_PID=$!
-	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 2
+		if ! "${LINETOOLBIN}" -json "${TEST_SLAVE_JSON}" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLEXITCMD}" > "${LINETOOLEXITLOG}" 2>&1; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL"
+		fi
 
-	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
-	K2HDKC_8023_PID=$!
-	sleep 1
-	K2HDKC_LT_8023_PID=`ps ax | grep 'lt-k2hdkc' | grep 8023 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
-		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
-	fi
-	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
+		#------------------------------------------------------
+		# Stop all processes
+		#------------------------------------------------------
+		PRNMSG "STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
 
-	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
-	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
-	CHMPX_8025_PID=$!
-	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 2
+		# [NOTE]
+		# The order of the list is the stop order and is important.
+		#
+		ALL_PIDS="	${CHMPX_8031_PID}
+					${K2HDKC_8027_PID}
+					${K2HDKC_LT_8027_PID}
+					${CHMPX_8027_PID}
+					${K2HDKC_8025_PID}
+					${K2HDKC_LT_8025_PID}
+					${CHMPX_8025_PID}
+					${K2HDKC_8023_PID}
+					${K2HDKC_LT_8023_PID}
+					${CHMPX_8023_PID}
+					${K2HDKC_8021_PID}
+					${K2HDKC_LT_8021_PID}
+					${CHMPX_8021_PID}"
 
-	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
-	K2HDKC_8025_PID=$!
-	sleep 1
-	K2HDKC_LT_8025_PID=`ps ax | grep 'lt-k2hdkc' | grep 8025 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
-		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
-	fi
-	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
+		if ! stop_process "${ALL_PIDS}"; then
+			PRNERR "FAILED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+		fi
 
-	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
-	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
-	CHMPX_8027_PID=$!
-	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 2
+		#------------------------------------------------------
+		# Print result
+		#------------------------------------------------------
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			PRNERR "FAILED : TEST FOR JSON STRING (EXECUTION)"
+			PRNINFO "(The test has failed. Print each logs)"
 
-	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
-	K2HDKC_8027_PID=$!
-	sleep 1
-	K2HDKC_LT_8027_PID=`ps ax | grep 'lt-k2hdkc' | grep 8027 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
-		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
-	fi
-	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
+			print_log_detail "nodiff"
+		else
+			PRNSUCCEED "TEST FOR JSON STRING (EXECUTION)"
+		fi
 
-	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
-	chmpx -json "${TEST_SLAVE_JSON}" -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
-	CHMPX_8031_PID=$!
-	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 2
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			touch "${SUB_SHELLGROUP_ERROR_FILE}"
+		fi
+	} | tee -a "${LOGFILE}"
 
-	########################################
 	#
-	# RUN k2hdkclinetool process
+	# Set error flag
 	#
-	TEST_RESULT=0
-
-	echo "" >> ${LOGFILE}
-	echo "======= [JSON STRING(EXECUTION)] RUN K2HDKCLINETOOL" >> ${LOGFILE}
-
-	echo -n "------- [JSON STRING(EXECUTION)] K2HDKCLINETOOL   : " >> ${LOGFILE}
-	${LINETOOLBIN} -json "${TEST_SLAVE_JSON}" -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLEXITCMD} > ${LINETOOLEXITLOG} 2>&1
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : LOGFILE *****************"
-		cat ${LOGFILE}
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
-		cat ${LINETOOLEXITLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8021) *************"
-		cat ${CHMPXLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8023) *************"
-		cat ${CHMPXLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8025) *************"
-		cat ${CHMPXLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8027) *************"
-		cat ${CHMPXLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
-		cat ${K2HDKCLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
-		cat ${K2HDKCLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
-		cat ${K2HDKCLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
-		cat ${K2HDKCLOG}_8027.log
-
+	if [ -f "${SUB_SHELLGROUP_ERROR_FILE}" ]; then
 		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
 	fi
 
-	########################################
-	#
-	# STOP ALL
-	#
-	echo "" >> ${LOGFILE}
-	echo "======= [JSON STRING(EXECUTION)] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 10
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-
-	########################################
-	#
-	# CLEANUP
-	#
-	if [ ${TEST_RESULT} -eq 0 ]; then
-		rm -f ${LOGFILE}
-		rm -f ${LINETOOLLOG}
-		rm -f ${LINETOOLEXITLOG}
-		rm -f ${CHMPXLOG}_8021.log
-		rm -f ${CHMPXLOG}_8023.log
-		rm -f ${CHMPXLOG}_8025.log
-		rm -f ${CHMPXLOG}_8027.log
-		rm -f ${CHMPXLOG}_8031.log
-		rm -f ${K2HDKCLOG}_8021.log
-		rm -f ${K2HDKCLOG}_8023.log
-		rm -f ${K2HDKCLOG}_8025.log
-		rm -f ${K2HDKCLOG}_8027.log
-	fi
+	#----------------------------------------------------------
+	# Cleanup
+	#----------------------------------------------------------
+	cleanup_files
 fi
 
-###########################################################
-## Start JSON environment(execution)
-###########################################################
-if [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
-	echo ""
-	echo "====== START TEST FOR JSON ENV (EXECUTION) ================="
-	echo ""
-
-	########################################
+#==============================================================
+# Start JSON environment(execution)
+#==============================================================
+if [ "${TEST_RESULT}" -eq 0 ] && [ "${DO_JSON_ENV}" -eq 1 ]; then
 	#
-	# RUN chmpx processes and k2hdkc server processes
+	# Run shell process group for logging
 	#
-	echo "======= [JSON ENV(EXECUTION)] RUN CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
+	{
+		PRNTITLE "TEST FOR JSON ENV (EXECUTION)"
 
-	echo -n "------- CHMPX(server) 8021             : " >> ${LOGFILE}
-	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
-	CHMPX_8021_PID=$!
-	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 2
+		#------------------------------------------------------
+		# RUN all test processes
+		#------------------------------------------------------
+		# [NOTE]
+		# The process runs in the background, so it doesn't do any error checking.
+		# If it fails to start, an error will occur in subsequent tests.
+		#
+		run_all_processes "jsonenv"
 
-	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
-	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
-	K2HDKC_8021_PID=$!
-	sleep 1
-	K2HDKC_LT_8021_PID=`ps ax | grep 'lt-k2hdkc' | grep 8021 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
-		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
-	fi
-	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
 
-	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
-	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
-	CHMPX_8023_PID=$!
-	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 2
+		#------------------------------------------------------
+		# RUN k2hdkclinetool process
+		#------------------------------------------------------
+		PRNMSG "RUN K2HDKCLINETOOL"
 
-	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
-	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
-	K2HDKC_8023_PID=$!
-	sleep 1
-	K2HDKC_LT_8023_PID=`ps ax | grep 'lt-k2hdkc' | grep 8023 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
-		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
-	fi
-	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
+		if ! K2HDKCJSONCONF="${TEST_SLAVE_JSON}" "${LINETOOLBIN}" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLEXITCMD}" > "${LINETOOLEXITLOG}" 2>&1; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL"
+		fi
 
-	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
-	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
-	CHMPX_8025_PID=$!
-	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 2
+		#------------------------------------------------------
+		# Stop all processes
+		#------------------------------------------------------
+		PRNMSG "STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
 
-	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
-	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
-	K2HDKC_8025_PID=$!
-	sleep 1
-	K2HDKC_LT_8025_PID=`ps ax | grep 'lt-k2hdkc' | grep 8025 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
-		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
-	fi
-	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
+		# [NOTE]
+		# The order of the list is the stop order and is important.
+		#
+		ALL_PIDS="	${CHMPX_8031_PID}
+					${K2HDKC_8027_PID}
+					${K2HDKC_LT_8027_PID}
+					${CHMPX_8027_PID}
+					${K2HDKC_8025_PID}
+					${K2HDKC_LT_8025_PID}
+					${CHMPX_8025_PID}
+					${K2HDKC_8023_PID}
+					${K2HDKC_LT_8023_PID}
+					${CHMPX_8023_PID}
+					${K2HDKC_8021_PID}
+					${K2HDKC_LT_8021_PID}
+					${CHMPX_8021_PID}"
 
-	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
-	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
-	CHMPX_8027_PID=$!
-	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 2
+		if ! stop_process "${ALL_PIDS}"; then
+			PRNERR "FAILED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+		fi
 
-	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
-	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
-	K2HDKC_8027_PID=$!
-	sleep 1
-	K2HDKC_LT_8027_PID=`ps ax | grep 'lt-k2hdkc' | grep 8027 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
-		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
-	fi
-	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
+		#------------------------------------------------------
+		# Print result
+		#------------------------------------------------------
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			PRNERR "FAILED : TEST FOR JSON ENV (EXECUTION)"
+			PRNINFO "(The test has failed. Print each logs)"
 
-	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
-	CHMJSONCONF="${TEST_SLAVE_JSON}" chmpx -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
-	CHMPX_8031_PID=$!
-	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 2
+			print_log_detail "nodiff"
+		else
+			PRNSUCCEED "TEST FOR JSON ENV (EXECUTION)"
+		fi
 
-	########################################
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			touch "${SUB_SHELLGROUP_ERROR_FILE}"
+		fi
+	} | tee -a "${LOGFILE}"
+
 	#
-	# RUN k2hdkclinetool process
+	# Set error flag
 	#
-	TEST_RESULT=0
-
-	echo "" >> ${LOGFILE}
-	echo "======= [JSON ENV(EXECUTION)] RUN K2HDKCLINETOOL" >> ${LOGFILE}
-
-	echo -n "------- [JSON ENV(EXECUTION)] K2HDKCLINETOOL      : " >> ${LOGFILE}
-	K2HDKCJSONCONF="${TEST_SLAVE_JSON}" ${LINETOOLBIN} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLEXITCMD} > ${LINETOOLEXITLOG} 2>&1
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : LOGFILE *****************"
-		cat ${LOGFILE}
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
-		cat ${LINETOOLEXITLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8021) *************"
-		cat ${CHMPXLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8023) *************"
-		cat ${CHMPXLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8025) *************"
-		cat ${CHMPXLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8027) *************"
-		cat ${CHMPXLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
-		cat ${K2HDKCLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
-		cat ${K2HDKCLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
-		cat ${K2HDKCLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
-		cat ${K2HDKCLOG}_8027.log
-
+	if [ -f "${SUB_SHELLGROUP_ERROR_FILE}" ]; then
 		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
 	fi
 
-	########################################
-	#
-	# STOP ALL
-	#
-	echo "" >> ${LOGFILE}
-	echo "======= [JSON ENV(EXECUTION)] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 10
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-
-	########################################
-	#
-	# CLEANUP
-	#
-	if [ ${TEST_RESULT} -eq 0 ]; then
-		rm -f ${LOGFILE}
-		rm -f ${LINETOOLLOG}
-		rm -f ${LINETOOLEXITLOG}
-		rm -f ${CHMPXLOG}_8021.log
-		rm -f ${CHMPXLOG}_8023.log
-		rm -f ${CHMPXLOG}_8025.log
-		rm -f ${CHMPXLOG}_8027.log
-		rm -f ${CHMPXLOG}_8031.log
-		rm -f ${K2HDKCLOG}_8021.log
-		rm -f ${K2HDKCLOG}_8023.log
-		rm -f ${K2HDKCLOG}_8025.log
-		rm -f ${K2HDKCLOG}_8027.log
-	fi
+	#----------------------------------------------------------
+	# Cleanup
+	#----------------------------------------------------------
+	cleanup_files
 fi
 
-###########################################################
-## Test all command(one pattern : default INI)
-###########################################################
-if [ ${TEST_RESULT} -eq 0 -a "X${DO_INI_CONF}" = "Xyes" ]; then
-	###########################################################
-	## Start INI conf file
-	###########################################################
-	echo ""
-	echo "====== START TEST FOR INI CONF FILE ========================"
-	echo ""
-	CONF_FILE_EXT=".ini"
-
-	########################################
+#==============================================================
+# Test all command(one of configuration)
+#==============================================================
+if [ "${TEST_RESULT}" -eq 0 ] && [ "${DO_INI_CONF}" -eq 1 ]; then
+	#==========================================================
+	# Test all command(INI)
+	#==========================================================
 	#
-	# RUN chmpx processes and k2hdkc server processes
+	# Run shell process group for logging
 	#
-	echo "======= [INI CONF] RUN CHMPX(server) / K2HDKC" >> ${LOGFILE}
+	{
+		PRNTITLE "TEST FOR INI CONF FILE (COMMAND TEST)"
 
-	echo -n "------- CHMPX(server) 8021             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
-	CHMPX_8021_PID=$!
-	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 2
+		#------------------------------------------------------
+		# RUN all test processes
+		#------------------------------------------------------
+		# [NOTE]
+		# The process runs in the background, so it doesn't do any error checking.
+		# If it fails to start, an error will occur in subsequent tests.
+		#
+		run_all_processes "ini"
 
-	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
-	K2HDKC_8021_PID=$!
-	sleep 1
-	K2HDKC_LT_8021_PID=`ps ax | grep 'lt-k2hdkc' | grep 8021 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
-		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
-	fi
-	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
+		#------------------------------------------------------
+		# RUN k2hdkclinetool process
+		#------------------------------------------------------
+		#
+		# CAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CAPI/PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} > "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.ini" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -perm -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" -capi >> "${LINETOOLLOG}" 2>> "${LINETOOL_C_P_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CAPI/PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CAPI/PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
 
-	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
-	CHMPX_8023_PID=$!
-	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 2
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CPPAPI/PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CPPAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.ini" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -perm -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" >> "${LINETOOLLOG}" 2>> "${LINETOOL_CPP_P_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CPPAPI/PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CPPAPI/PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
 
-	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
-	K2HDKC_8023_PID=$!
-	sleep 1
-	K2HDKC_LT_8023_PID=`ps ax | grep 'lt-k2hdkc' | grep 8023 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
-		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
-	fi
-	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CAPI/NOT PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.ini" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" -capi >> "${LINETOOLLOG}" 2>> "${LINETOOL_C_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CAPI/NOT PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CAPI/NOT PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
 
-	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
-	CHMPX_8025_PID=$!
-	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 2
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CPPAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.ini" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" >> "${LINETOOLLOG}" 2>> "${LINETOOL_CPP_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
 
-	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
-	K2HDKC_8025_PID=$!
-	sleep 1
-	K2HDKC_LT_8025_PID=`ps ax | grep 'lt-k2hdkc' | grep 8025 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
-		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
-	fi
-	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
+		#------------------------------------------------------
+		# Stop all processes
+		#------------------------------------------------------
+		PRNMSG "STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
 
-	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
-	CHMPX_8027_PID=$!
-	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 2
+		# [NOTE]
+		# The order of the list is the stop order and is important.
+		#
+		ALL_PIDS="	${CHMPX_8031_PID}
+					${K2HDKC_8027_PID}
+					${K2HDKC_LT_8027_PID}
+					${CHMPX_8027_PID}
+					${K2HDKC_8025_PID}
+					${K2HDKC_LT_8025_PID}
+					${CHMPX_8025_PID}
+					${K2HDKC_8023_PID}
+					${K2HDKC_LT_8023_PID}
+					${CHMPX_8023_PID}
+					${K2HDKC_8021_PID}
+					${K2HDKC_LT_8021_PID}
+					${CHMPX_8021_PID}"
 
-	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
-	K2HDKC_8027_PID=$!
-	sleep 1
-	K2HDKC_LT_8027_PID=`ps ax | grep 'lt-k2hdkc' | grep 8027 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
-		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
-	fi
-	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
+		if ! stop_process "${ALL_PIDS}"; then
+			PRNERR "FAILED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+		fi
 
-	########################################
+		#------------------------------------------------------
+		# Print result
+		#------------------------------------------------------
+		if ! diff "${LINETOOLLOG}" "${MASTER_LINETOOLLOG}" >/dev/null 2>&1; then
+			TEST_RESULT=1
+		fi
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			PRNERR "FAILED : TEST FOR INI CONF FILE (COMMAND TEST)"
+			PRNINFO "(The test has failed. Print each logs)"
+
+			print_log_detail "diff"
+		else
+			PRNSUCCEED "TEST FOR INI CONF FILE (COMMAND TEST)"
+		fi
+
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			touch "${SUB_SHELLGROUP_ERROR_FILE}"
+		fi
+	} | tee -a "${LOGFILE}"
+
 	#
-	# RUN k2hdkclinetool process
+	# Set error flag
 	#
-	echo "" >> ${LOGFILE}
-	echo "======= [INI CONF] RUN CHMPX(slave) / K2HDKCLINETOOL" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
-	CHMPX_8031_PID=$!
-	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- [INI CONF] K2HDKCLINETOOL CAPI/PERM       : " >> ${LOGFILE}
-	echo "=========================================================================="	> ${LINETOOLLOG}
-	echo "======= CAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"							>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -perm -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} -capi >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_C_P.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
+	if [ -f "${SUB_SHELLGROUP_ERROR_FILE}" ]; then
 		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
 	fi
-	sleep 1
 
-	echo -n "------- [INI CONF] K2HDKCLINETOOL CPPAPI/PERM     : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CPPAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"						>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -perm -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_CPP_P.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
+	#----------------------------------------------------------
+	# Cleanup
+	#----------------------------------------------------------
+	cleanup_files
+
+elif [ "${TEST_RESULT}" -eq 0 ] && [ "${DO_YAML_CONF}" -eq 1 ]; then
+	#==========================================================
+	# Test all command(YAML)
+	#==========================================================
+	#
+	# Run shell process group for logging
+	#
+	{
+		PRNTITLE "TEST FOR YAML CONF FILE (COMMAND TEST)"
+
+		#------------------------------------------------------
+		# RUN all test processes
+		#------------------------------------------------------
+		# [NOTE]
+		# The process runs in the background, so it doesn't do any error checking.
+		# If it fails to start, an error will occur in subsequent tests.
+		#
+		run_all_processes "yaml"
+
+		#------------------------------------------------------
+		# RUN k2hdkclinetool process
+		#------------------------------------------------------
+		#
+		# CAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CAPI/PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} > "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.yaml" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -perm -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" -capi >> "${LINETOOLLOG}" 2>> "${LINETOOL_C_P_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CAPI/PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CAPI/PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CPPAPI/PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CPPAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.yaml" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -perm -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" >> "${LINETOOLLOG}" 2>> "${LINETOOL_CPP_P_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CPPAPI/PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CPPAPI/PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CAPI/NOT PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.yaml" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" -capi >> "${LINETOOLLOG}" 2>> "${LINETOOL_C_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CAPI/NOT PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CAPI/NOT PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CPPAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.yaml" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" >> "${LINETOOLLOG}" 2>> "${LINETOOL_CPP_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#------------------------------------------------------
+		# Stop all processes
+		#------------------------------------------------------
+		PRNMSG "STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+
+		# [NOTE]
+		# The order of the list is the stop order and is important.
+		#
+		ALL_PIDS="	${CHMPX_8031_PID}
+					${K2HDKC_8027_PID}
+					${K2HDKC_LT_8027_PID}
+					${CHMPX_8027_PID}
+					${K2HDKC_8025_PID}
+					${K2HDKC_LT_8025_PID}
+					${CHMPX_8025_PID}
+					${K2HDKC_8023_PID}
+					${K2HDKC_LT_8023_PID}
+					${CHMPX_8023_PID}
+					${K2HDKC_8021_PID}
+					${K2HDKC_LT_8021_PID}
+					${CHMPX_8021_PID}"
+
+		if ! stop_process "${ALL_PIDS}"; then
+			PRNERR "FAILED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+		fi
+
+		#------------------------------------------------------
+		# Print result
+		#------------------------------------------------------
+		if ! diff "${LINETOOLLOG}" "${MASTER_LINETOOLLOG}" >/dev/null 2>&1; then
+			TEST_RESULT=1
+		fi
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			PRNERR "FAILED : TEST FOR YAML CONF FILE (COMMAND TEST)"
+			PRNINFO "(The test has failed. Print each logs)"
+
+			print_log_detail "diff"
+		else
+			PRNSUCCEED "TEST FOR YAML CONF FILE (COMMAND TEST)"
+		fi
+
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			touch "${SUB_SHELLGROUP_ERROR_FILE}"
+		fi
+	} | tee -a "${LOGFILE}"
+
+	#
+	# Set error flag
+	#
+	if [ -f "${SUB_SHELLGROUP_ERROR_FILE}" ]; then
 		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
 	fi
-	sleep 1
 
-	echo -n "------- [INI CONF] K2HDKCLINETOOL CAPI/NOT PERM   : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"						>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} -capi >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_C.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
+	#----------------------------------------------------------
+	# Cleanup
+	#----------------------------------------------------------
+	cleanup_files
+
+elif [ "${TEST_RESULT}" -eq 0 ] && [ "${DO_JSON_CONF}" -eq 1 ]; then
+	#==========================================================
+	# Test all command(JSON)
+	#==========================================================
+	#
+	# Run shell process group for logging
+	#
+	{
+		PRNTITLE "TEST FOR JSON CONF FILE (COMMAND TEST)"
+
+		#------------------------------------------------------
+		# RUN all test processes
+		#------------------------------------------------------
+		# [NOTE]
+		# The process runs in the background, so it doesn't do any error checking.
+		# If it fails to start, an error will occur in subsequent tests.
+		#
+		run_all_processes "json"
+
+		#------------------------------------------------------
+		# RUN k2hdkclinetool process
+		#------------------------------------------------------
+		#
+		# CAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CAPI/PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} > "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.json" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -perm -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" -capi >> "${LINETOOLLOG}" 2>> "${LINETOOL_C_P_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CAPI/PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CAPI/PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CPPAPI/PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CPPAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.json" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -perm -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" >> "${LINETOOLLOG}" 2>> "${LINETOOL_CPP_P_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CPPAPI/PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CPPAPI/PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CAPI/NOT PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.json" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" -capi >> "${LINETOOLLOG}" 2>> "${LINETOOL_C_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CAPI/NOT PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CAPI/NOT PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CPPAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -conf "${CFG_SLV_FILE_PREFIX}.json" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" >> "${LINETOOLLOG}" 2>> "${LINETOOL_CPP_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#------------------------------------------------------
+		# Stop all processes
+		#------------------------------------------------------
+		PRNMSG "STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+
+		# [NOTE]
+		# The order of the list is the stop order and is important.
+		#
+		ALL_PIDS="	${CHMPX_8031_PID}
+					${K2HDKC_8027_PID}
+					${K2HDKC_LT_8027_PID}
+					${CHMPX_8027_PID}
+					${K2HDKC_8025_PID}
+					${K2HDKC_LT_8025_PID}
+					${CHMPX_8025_PID}
+					${K2HDKC_8023_PID}
+					${K2HDKC_LT_8023_PID}
+					${CHMPX_8023_PID}
+					${K2HDKC_8021_PID}
+					${K2HDKC_LT_8021_PID}
+					${CHMPX_8021_PID}"
+
+		if ! stop_process "${ALL_PIDS}"; then
+			PRNERR "FAILED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+		fi
+
+		#------------------------------------------------------
+		# Print result
+		#------------------------------------------------------
+		if ! diff "${LINETOOLLOG}" "${MASTER_LINETOOLLOG}" >/dev/null 2>&1; then
+			TEST_RESULT=1
+		fi
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			PRNERR "FAILED : TEST FOR JSON CONF FILE (COMMAND TEST)"
+			PRNINFO "(The test has failed. Print each logs)"
+
+			print_log_detail "diff"
+		else
+			PRNSUCCEED "TEST FOR JSON CONF FILE (COMMAND TEST)"
+		fi
+
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			touch "${SUB_SHELLGROUP_ERROR_FILE}"
+		fi
+	} | tee -a "${LOGFILE}"
+
+	#
+	# Set error flag
+	#
+	if [ -f "${SUB_SHELLGROUP_ERROR_FILE}" ]; then
 		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
 	fi
-	sleep 1
 
-	echo -n "------- [INI CONF] K2HDKCLINETOOL CPPAPI/NOT PERM : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CPPAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"					>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_CPP.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
+	#----------------------------------------------------------
+	# Cleanup
+	#----------------------------------------------------------
+	cleanup_files
+
+elif [ "${TEST_RESULT}" -eq 0 ] && [ "${DO_JSON_STRING}" -eq 1 ]; then
+	#==========================================================
+	# Test all command(JSON String)
+	#==========================================================
+	#
+	# Run shell process group for logging
+	#
+	{
+		PRNTITLE "TEST FOR JSON STRING (COMMAND TEST)"
+
+		#------------------------------------------------------
+		# RUN all test processes
+		#------------------------------------------------------
+		# [NOTE]
+		# The process runs in the background, so it doesn't do any error checking.
+		# If it fails to start, an error will occur in subsequent tests.
+		#
+		run_all_processes "jsonstring"
+
+		#------------------------------------------------------
+		# RUN k2hdkclinetool process
+		#------------------------------------------------------
+		#
+		# CAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CAPI/PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} > "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -json "${TEST_SLAVE_JSON}" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -perm -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" -capi >> "${LINETOOLLOG}" 2>> "${LINETOOL_C_P_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CAPI/PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CAPI/PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CPPAPI/PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CPPAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -json "${TEST_SLAVE_JSON}" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -perm -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" >> "${LINETOOLLOG}" 2>> "${LINETOOL_CPP_P_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CPPAPI/PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CPPAPI/PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CAPI/NOT PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -json "${TEST_SLAVE_JSON}" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" -capi >> "${LINETOOLLOG}" 2>> "${LINETOOL_C_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CAPI/NOT PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CAPI/NOT PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CPPAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! "${LINETOOLBIN}" -json "${TEST_SLAVE_JSON}" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" >> "${LINETOOLLOG}" 2>> "${LINETOOL_CPP_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#------------------------------------------------------
+		# Stop all processes
+		#------------------------------------------------------
+		PRNMSG "STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+
+		# [NOTE]
+		# The order of the list is the stop order and is important.
+		#
+		ALL_PIDS="	${CHMPX_8031_PID}
+					${K2HDKC_8027_PID}
+					${K2HDKC_LT_8027_PID}
+					${CHMPX_8027_PID}
+					${K2HDKC_8025_PID}
+					${K2HDKC_LT_8025_PID}
+					${CHMPX_8025_PID}
+					${K2HDKC_8023_PID}
+					${K2HDKC_LT_8023_PID}
+					${CHMPX_8023_PID}
+					${K2HDKC_8021_PID}
+					${K2HDKC_LT_8021_PID}
+					${CHMPX_8021_PID}"
+
+		if ! stop_process "${ALL_PIDS}"; then
+			PRNERR "FAILED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+		fi
+
+		#------------------------------------------------------
+		# Print result
+		#------------------------------------------------------
+		if ! diff "${LINETOOLLOG}" "${MASTER_LINETOOLLOG}" >/dev/null 2>&1; then
+			TEST_RESULT=1
+		fi
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			PRNERR "FAILED : TEST FOR JSON STRING (COMMAND TEST)"
+			PRNINFO "(The test has failed. Print each logs)"
+
+			print_log_detail "diff"
+		else
+			PRNSUCCEED "TEST FOR JSON STRING (COMMAND TEST)"
+		fi
+
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			touch "${SUB_SHELLGROUP_ERROR_FILE}"
+		fi
+	} | tee -a "${LOGFILE}"
+
+	#
+	# Set error flag
+	#
+	if [ -f "${SUB_SHELLGROUP_ERROR_FILE}" ]; then
 		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
 	fi
-	sleep 1
 
-	########################################
+	#----------------------------------------------------------
+	# Cleanup
+	#----------------------------------------------------------
+	cleanup_files
+
+elif [ "${TEST_RESULT}" -eq 0 ] && [ "${DO_JSON_ENV}" -eq 1 ]; then
+	#==========================================================
+	# Test all command(JSON Environment)
+	#==========================================================
 	#
-	# STOP ALL
+	# Run shell process group for logging
 	#
-	echo "" >> ${LOGFILE}
-	echo "======= [INI CONF] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 10
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
+	{
+		PRNTITLE "TEST FOR JSON ENV (COMMAND TEST)"
 
-	########################################
+		#------------------------------------------------------
+		# RUN all test processes
+		#------------------------------------------------------
+		# [NOTE]
+		# The process runs in the background, so it doesn't do any error checking.
+		# If it fails to start, an error will occur in subsequent tests.
+		#
+		run_all_processes "jsonenv"
+
+		#------------------------------------------------------
+		# RUN k2hdkclinetool process
+		#------------------------------------------------------
+		#
+		# CAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CAPI/PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} > "${LINETOOLLOG}"
+		if ! K2HDKCJSONCONF="${TEST_SLAVE_JSON}" "${LINETOOLBIN}" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -perm -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" -capi >> "${LINETOOLLOG}" 2>> "${LINETOOL_C_P_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CAPI/PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CAPI/PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CPPAPI/PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CPPAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! K2HDKCJSONCONF="${TEST_SLAVE_JSON}" "${LINETOOLBIN}" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -perm -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" >> "${LINETOOLLOG}" 2>> "${LINETOOL_CPP_P_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CPPAPI/PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CPPAPI/PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CAPI/NOT PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! K2HDKCJSONCONF="${TEST_SLAVE_JSON}" "${LINETOOLBIN}" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" -capi >> "${LINETOOLLOG}" 2>> "${LINETOOL_C_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CAPI/NOT PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CAPI/NOT PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#
+		# CPPAPI/PERM
+		#
+		PRNMSG "RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+		{
+			echo "=========================================================================="
+			echo "======= CPPAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"
+			echo "=========================================================================="
+		} >> "${LINETOOLLOG}"
+		if ! K2HDKCJSONCONF="${TEST_SLAVE_JSON}" "${LINETOOLBIN}" -ctlport 8031 "${DKCTOOL_COMLOG_OPT}" "${DKCTOOL_COMLOG_PARAM}" "${DKCTOOL_DBG_OPT}" "${DKCTOOL_DBG_PARAM}" -rejoin -nogiveup -nocleanup -run "${LINETOOLCMD}" >> "${LINETOOLLOG}" 2>> "${LINETOOL_CPP_LOGFILE}"; then
+			PRNERR "FAILED : RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+			echo "FAILED" >> "${LINETOOLLOG}"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : RUN K2HDKCLINETOOL CPPAPI/NOT PERM"
+			echo "SUCCEED" >> "${LINETOOLLOG}"
+		fi
+		sleep "${WAIT_SEC_AFTER_RUN_K2HDKCTOOL}"
+
+		#------------------------------------------------------
+		# Stop all processes
+		#------------------------------------------------------
+		PRNMSG "STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+
+		# [NOTE]
+		# The order of the list is the stop order and is important.
+		#
+		ALL_PIDS="	${CHMPX_8031_PID}
+					${K2HDKC_8027_PID}
+					${K2HDKC_LT_8027_PID}
+					${CHMPX_8027_PID}
+					${K2HDKC_8025_PID}
+					${K2HDKC_LT_8025_PID}
+					${CHMPX_8025_PID}
+					${K2HDKC_8023_PID}
+					${K2HDKC_LT_8023_PID}
+					${CHMPX_8023_PID}
+					${K2HDKC_8021_PID}
+					${K2HDKC_LT_8021_PID}
+					${CHMPX_8021_PID}"
+
+		if ! stop_process "${ALL_PIDS}"; then
+			PRNERR "FAILED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+			TEST_RESULT=1
+		else
+			PRNINFO "SUCCEED : STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC"
+		fi
+
+		#------------------------------------------------------
+		# Print result
+		#------------------------------------------------------
+		if ! diff "${LINETOOLLOG}" "${MASTER_LINETOOLLOG}" >/dev/null 2>&1; then
+			TEST_RESULT=1
+		fi
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			PRNERR "FAILED : TEST FOR JSON ENV (COMMAND TEST)"
+			PRNINFO "(The test has failed. Print each logs)"
+
+			print_log_detail "diff"
+		else
+			PRNSUCCEED "TEST FOR JSON ENV (COMMAND TEST)"
+		fi
+
+		if [ "${TEST_RESULT}" -ne 0 ]; then
+			touch "${SUB_SHELLGROUP_ERROR_FILE}"
+		fi
+	} | tee -a "${LOGFILE}"
+
 	#
-	# CHECK RESULT
+	# Set error flag
 	#
-	echo -n "------- [INI CONF] K2HDKCLINETOOL LOG DIFF RESULT : " >> ${LOGFILE}
-	diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} >/dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		echo "INI CONF TEST RESULT --> FAILED" >> ${LOGFILE}
-		echo "" >> ${LOGFILE}
-
-		echo "======= INI FILE TEST                  : FAILED"	>> ${LOGFILE}
-		echo ""													>> ${LOGFILE}
-		echo "================= `date` ================"		>> ${LOGFILE}
-
-		echo ""
-		echo "*********** K2HDKCTOOL LOG DIFF ******************"
-		diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} 2> /dev/null
-
-		echo ""
-		echo "*********** DETAIL LOG : LOGFILE *****************"
-		cat ${LOGFILE}
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
-		cat ${LINETOOLLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8021) *************"
-		cat ${CHMPXLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8023) *************"
-		cat ${CHMPXLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8025) *************"
-		cat ${CHMPXLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8027) *************"
-		cat ${CHMPXLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
-		cat ${K2HDKCLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
-		cat ${K2HDKCLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
-		cat ${K2HDKCLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
-		cat ${K2HDKCLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C-PERM) ***"
-		cat ${LINETOOLERRLOG}_C_P.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
-		cat ${LINETOOLERRLOG}_CPP_P.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C) ********"
-		cat ${LINETOOLERRLOG}_C.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP) ******"
-		cat ${LINETOOLERRLOG}_CPP.log
-
+	if [ -f "${SUB_SHELLGROUP_ERROR_FILE}" ]; then
 		TEST_RESULT=1
-	else
-		echo "INI CONF TEST RESULT --> SUCCEED" >> ${LOGFILE}
-		echo "" >> ${LOGFILE}
 	fi
 
-	########################################
-	#
-	# CLEANUP
-	#
-	if [ ${TEST_RESULT} -eq 0 ]; then
-		rm -f ${LOGFILE}
-		rm -f ${LINETOOLLOG}
-		rm -f ${CHMPXLOG}_8021.log
-		rm -f ${CHMPXLOG}_8023.log
-		rm -f ${CHMPXLOG}_8025.log
-		rm -f ${CHMPXLOG}_8027.log
-		rm -f ${CHMPXLOG}_8031.log
-		rm -f ${K2HDKCLOG}_8021.log
-		rm -f ${K2HDKCLOG}_8023.log
-		rm -f ${K2HDKCLOG}_8025.log
-		rm -f ${K2HDKCLOG}_8027.log
-		rm -f ${LINETOOLERRLOG}_C_P.log
-		rm -f ${LINETOOLERRLOG}_CPP_P.log
-		rm -f ${LINETOOLERRLOG}_C.log
-		rm -f ${LINETOOLERRLOG}_CPP.log
-	fi
-
-elif [ ${TEST_RESULT} -eq 0 -a "X${DO_YAML_CONF}" = "Xyes" ]; then
-	###########################################################
-	## Start YAML conf file
-	###########################################################
-	echo ""
-	echo "====== START TEST FOR YAML CONF FILE ========================"
-	echo ""
-	CONF_FILE_EXT=".yaml"
-
-	########################################
-	#
-	# RUN chmpx processes and k2hdkc server processes
-	#
-	echo "======= [YAML CONF] RUN CHMPX(server) / K2HDKC" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8021             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
-	CHMPX_8021_PID=$!
-	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
-	K2HDKC_8021_PID=$!
-	sleep 1
-	K2HDKC_LT_8021_PID=`ps ax | grep 'lt-k2hdkc' | grep 8021 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
-		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
-	fi
-	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
-	CHMPX_8023_PID=$!
-	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
-	K2HDKC_8023_PID=$!
-	sleep 1
-	K2HDKC_LT_8023_PID=`ps ax | grep 'lt-k2hdkc' | grep 8023 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
-		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
-	fi
-	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
-	CHMPX_8025_PID=$!
-	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
-	K2HDKC_8025_PID=$!
-	sleep 1
-	K2HDKC_LT_8025_PID=`ps ax | grep 'lt-k2hdkc' | grep 8025 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
-		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
-	fi
-	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
-	CHMPX_8027_PID=$!
-	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
-	K2HDKC_8027_PID=$!
-	sleep 1
-	K2HDKC_LT_8027_PID=`ps ax | grep 'lt-k2hdkc' | grep 8027 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
-		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
-	fi
-	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-
-	########################################
-	#
-	# RUN k2hdkclinetool process
-	#
-	TEST_RESULT=0
-
-	echo "" >> ${LOGFILE}
-	echo "======= [YAML CONF] RUN CHMPX(slave) / K2HDKCLINETOOL" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
-	CHMPX_8031_PID=$!
-	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- [YAML CONF] K2HDKCLINETOOL CAPI/PERM       : " >> ${LOGFILE}
-	echo "=========================================================================="	> ${LINETOOLLOG}
-	echo "======= CAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"							>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -perm -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} -capi >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_C_P.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	echo -n "------- [YAML CONF] K2HDKCLINETOOL CPPAPI/PERM     : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CPPAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"						>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -perm -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_CPP_P.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	echo -n "------- [YAML CONF] K2HDKCLINETOOL CAPI/NOT PERM   : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"						>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} -capi >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_C.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	echo -n "------- [YAML CONF] K2HDKCLINETOOL CPPAPI/NOT PERM : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CPPAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"					>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_CPP.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	########################################
-	#
-	# STOP ALL
-	#
-	echo "" >> ${LOGFILE}
-	echo "======= [YAML CONF] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 10
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-
-	########################################
-	#
-	# CHECK RESULT
-	#
-	echo -n "------- [YAML CONF] K2HDKCLINETOOL LOG DIFF RESULT : " >> ${LOGFILE}
-	diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} >/dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		echo "YAML CONF TEST RESULT --> FAILED" >> ${LOGFILE}
-		echo "" >> ${LOGFILE}
-
-		echo "======= YAML CONF FILE TEST            : FAILED"	>> ${LOGFILE}
-		echo ""													>> ${LOGFILE}
-		echo "================= `date` ================"		>> ${LOGFILE}
-
-		echo ""
-		echo "*********** K2HDKCTOOL LOG DIFF ******************"
-		diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} 2> /dev/null
-
-		echo ""
-		echo "*********** DETAIL LOG : LOGFILE *****************"
-		cat ${LOGFILE}
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
-		cat ${LINETOOLLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8021) *************"
-		cat ${CHMPXLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8023) *************"
-		cat ${CHMPXLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8025) *************"
-		cat ${CHMPXLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8027) *************"
-		cat ${CHMPXLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
-		cat ${K2HDKCLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
-		cat ${K2HDKCLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
-		cat ${K2HDKCLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
-		cat ${K2HDKCLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C-PERM) ***"
-		cat ${LINETOOLERRLOG}_C_P.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
-		cat ${LINETOOLERRLOG}_CPP_P.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C) ********"
-		cat ${LINETOOLERRLOG}_C.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP) ******"
-		cat ${LINETOOLERRLOG}_CPP.log
-
-		TEST_RESULT=1
-	else
-		echo "YAML CONF TEST RESULT --> SUCCEED" >> ${LOGFILE}
-		echo "" >> ${LOGFILE}
-	fi
-
-	########################################
-	#
-	# CLEANUP
-	#
-	if [ ${TEST_RESULT} -eq 0 ]; then
-		rm -f ${LOGFILE}
-		rm -f ${LINETOOLLOG}
-		rm -f ${CHMPXLOG}_8021.log
-		rm -f ${CHMPXLOG}_8023.log
-		rm -f ${CHMPXLOG}_8025.log
-		rm -f ${CHMPXLOG}_8027.log
-		rm -f ${CHMPXLOG}_8031.log
-		rm -f ${K2HDKCLOG}_8021.log
-		rm -f ${K2HDKCLOG}_8023.log
-		rm -f ${K2HDKCLOG}_8025.log
-		rm -f ${K2HDKCLOG}_8027.log
-		rm -f ${LINETOOLERRLOG}_C_P.log
-		rm -f ${LINETOOLERRLOG}_CPP_P.log
-		rm -f ${LINETOOLERRLOG}_C.log
-		rm -f ${LINETOOLERRLOG}_CPP.log
-	fi
-
-elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_CONF}" = "Xyes" ]; then
-	###########################################################
-	## Start JSON conf file
-	###########################################################
-	echo ""
-	echo ""
-	echo "====== START TEST FOR JSON CONF FILE ========================"
-	echo ""
-	CONF_FILE_EXT=".json"
-
-	########################################
-	#
-	# RUN chmpx processes and k2hdkc server processes
-	#
-	echo "======= [JSON CONF] RUN CHMPX(server) / K2HDKC" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8021             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
-	CHMPX_8021_PID=$!
-	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
-	K2HDKC_8021_PID=$!
-	sleep 1
-	K2HDKC_LT_8021_PID=`ps ax | grep 'lt-k2hdkc' | grep 8021 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
-		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
-	fi
-	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
-	CHMPX_8023_PID=$!
-	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
-	K2HDKC_8023_PID=$!
-	sleep 1
-	K2HDKC_LT_8023_PID=`ps ax | grep 'lt-k2hdkc' | grep 8023 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
-		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
-	fi
-	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
-	CHMPX_8025_PID=$!
-	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
-	K2HDKC_8025_PID=$!
-	sleep 1
-	K2HDKC_LT_8025_PID=`ps ax | grep 'lt-k2hdkc' | grep 8025 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
-		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
-	fi
-	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
-	CHMPX_8027_PID=$!
-	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -conf ${TESTSDIR}/test_server${CONF_FILE_EXT} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
-	K2HDKC_8027_PID=$!
-	sleep 1
-	K2HDKC_LT_8027_PID=`ps ax | grep 'lt-k2hdkc' | grep 8027 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
-		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
-	fi
-	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-
-	########################################
-	#
-	# RUN k2hdkclinetool process
-	#
-	TEST_RESULT=0
-
-	echo "" >> ${LOGFILE}
-	echo "======= [JSON CONF] RUN CHMPX(slave) / K2HDKCLINETOOL" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
-	chmpx -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
-	CHMPX_8031_PID=$!
-	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- [JSON CONF] K2HDKCLINETOOL CAPI/PERM       : " >> ${LOGFILE}
-	echo "=========================================================================="	> ${LINETOOLLOG}
-	echo "======= CAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"							>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -perm -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} -capi >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_C_P.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	echo -n "------- [JSON CONF] K2HDKCLINETOOL CPPAPI/PERM     : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CPPAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"						>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -perm -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_CPP_P.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	echo -n "------- [JSON CONF] K2HDKCLINETOOL CAPI/NOT PERM   : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"						>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} -capi >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_C.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	echo -n "------- [JSON CONF] K2HDKCLINETOOL CPPAPI/NOT PERM : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CPPAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"					>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -conf ${TESTSDIR}/test_slave${CONF_FILE_EXT} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_CPP.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	########################################
-	#
-	# STOP ALL
-	#
-	echo "" >> ${LOGFILE}
-	echo "======= [JSON CONF] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 10
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-
-	########################################
-	#
-	# CHECK RESULT
-	#
-	echo -n "------- [JSON CONF] K2HDKCLINETOOL LOG DIFF RESULT : " >> ${LOGFILE}
-	diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} >/dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		echo "JSON CONF TEST RESULT --> FAILED" >> ${LOGFILE}
-		echo "" >> ${LOGFILE}
-
-		echo "======= JSON CONF FILE TEST            : FAILED"	>> ${LOGFILE}
-		echo ""													>> ${LOGFILE}
-		echo "================= `date` ================"		>> ${LOGFILE}
-
-		echo ""
-		echo "*********** K2HDKCTOOL LOG DIFF ******************"
-		diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} 2> /dev/null
-
-		echo ""
-		echo "*********** DETAIL LOG : LOGFILE *****************"
-		cat ${LOGFILE}
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
-		cat ${LINETOOLLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8021) *************"
-		cat ${CHMPXLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8023) *************"
-		cat ${CHMPXLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8025) *************"
-		cat ${CHMPXLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8027) *************"
-		cat ${CHMPXLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
-		cat ${K2HDKCLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
-		cat ${K2HDKCLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
-		cat ${K2HDKCLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
-		cat ${K2HDKCLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C-PERM) ***"
-		cat ${LINETOOLERRLOG}_C_P.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
-		cat ${LINETOOLERRLOG}_CPP_P.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C) ********"
-		cat ${LINETOOLERRLOG}_C.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP) ******"
-		cat ${LINETOOLERRLOG}_CPP.log
-
-		TEST_RESULT=1
-	else
-		echo "JSON CONF TEST RESULT --> SUCCEED" >> ${LOGFILE}
-		echo "" >> ${LOGFILE}
-	fi
-
-	########################################
-	#
-	# CLEANUP
-	#
-	if [ ${TEST_RESULT} -eq 0 ]; then
-		rm -f ${LOGFILE}
-		rm -f ${LINETOOLLOG}
-		rm -f ${CHMPXLOG}_8021.log
-		rm -f ${CHMPXLOG}_8023.log
-		rm -f ${CHMPXLOG}_8025.log
-		rm -f ${CHMPXLOG}_8027.log
-		rm -f ${CHMPXLOG}_8031.log
-		rm -f ${K2HDKCLOG}_8021.log
-		rm -f ${K2HDKCLOG}_8023.log
-		rm -f ${K2HDKCLOG}_8025.log
-		rm -f ${K2HDKCLOG}_8027.log
-		rm -f ${LINETOOLERRLOG}_C_P.log
-		rm -f ${LINETOOLERRLOG}_CPP_P.log
-		rm -f ${LINETOOLERRLOG}_C.log
-		rm -f ${LINETOOLERRLOG}_CPP.log
-	fi
-
-elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_STRING}" = "Xyes" ]; then
-	###########################################################
-	## Start JSON string
-	###########################################################
-	echo ""
-	echo "====== START TEST FOR JSON STRING ============================="
-	echo ""
-
-	########################################
-	#
-	# RUN chmpx processes and k2hdkc server processes
-	#
-	echo "======= [JSON STRING] RUN CHMPX(server) / K2HDKC" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8021             : " >> ${LOGFILE}
-	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
-	CHMPX_8021_PID=$!
-	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
-	K2HDKC_8021_PID=$!
-	sleep 1
-	K2HDKC_LT_8021_PID=`ps ax | grep 'lt-k2hdkc' | grep 8021 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
-		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
-	fi
-	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
-	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
-	CHMPX_8023_PID=$!
-	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
-	K2HDKC_8023_PID=$!
-	sleep 1
-	K2HDKC_LT_8023_PID=`ps ax | grep 'lt-k2hdkc' | grep 8023 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
-		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
-	fi
-	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
-	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
-	CHMPX_8025_PID=$!
-	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
-	K2HDKC_8025_PID=$!
-	sleep 1
-	K2HDKC_LT_8025_PID=`ps ax | grep 'lt-k2hdkc' | grep 8025 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
-		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
-	fi
-	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
-	chmpx -json "${TEST_SERVER_JSON}" -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
-	CHMPX_8027_PID=$!
-	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
-	${K2HDKCBIN} -json "${TEST_SERVER_JSON}" -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
-	K2HDKC_8027_PID=$!
-	sleep 1
-	K2HDKC_LT_8027_PID=`ps ax | grep 'lt-k2hdkc' | grep 8027 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
-		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
-	fi
-	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-
-	########################################
-	#
-	# RUN k2hdkclinetool process
-	#
-	TEST_RESULT=0
-
-	echo "" >> ${LOGFILE}
-	echo "======= [JSON STRING] RUN CHMPX(slave) / K2HDKCLINETOOL" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
-	chmpx -json "${TEST_SLAVE_JSON}" -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
-	CHMPX_8031_PID=$!
-	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- [JSON STRING] K2HDKCLINETOOL CAPI/PERM       : " >> ${LOGFILE}
-	echo "=========================================================================="	> ${LINETOOLLOG}
-	echo "======= CAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"							>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -json "${TEST_SLAVE_JSON}" -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -perm -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} -capi >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_C_P.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	echo -n "------- [JSON STRING] K2HDKCLINETOOL CPPAPI/PERM     : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CPPAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"						>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -json "${TEST_SLAVE_JSON}" -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -perm -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_CPP_P.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	echo -n "------- [JSON STRING] K2HDKCLINETOOL CAPI/NOT PERM   : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"						>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -json "${TEST_SLAVE_JSON}" -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} -capi >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_C.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	echo -n "------- [JSON STRING] K2HDKCLINETOOL CPPAPI/NOT PERM : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CPPAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"					>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	${LINETOOLBIN} -json "${TEST_SLAVE_JSON}" -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_CPP.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	########################################
-	#
-	# STOP ALL
-	#
-	echo "" >> ${LOGFILE}
-	echo "======= [JSON STRING] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 10
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-
-	########################################
-	#
-	# CHECK RESULT
-	#
-	echo -n "------- [JSON STRING] K2HDKCLINETOOL LOG DIFF RESULT : " >> ${LOGFILE}
-	diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} >/dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		echo "JSON STRING TEST RESULT --> FAILED" >> ${LOGFILE}
-		echo "" >> ${LOGFILE}
-
-		echo "======= JSON STRING TEST               : FAILED"	>> ${LOGFILE}
-		echo ""													>> ${LOGFILE}
-		echo "================= `date` ================"		>> ${LOGFILE}
-
-		echo ""
-		echo "*********** K2HDKCTOOL LOG DIFF ******************"
-		diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} 2> /dev/null
-
-		echo ""
-		echo "*********** DETAIL LOG : LOGFILE *****************"
-		cat ${LOGFILE}
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
-		cat ${LINETOOLLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8021) *************"
-		cat ${CHMPXLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8023) *************"
-		cat ${CHMPXLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8025) *************"
-		cat ${CHMPXLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8027) *************"
-		cat ${CHMPXLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
-		cat ${K2HDKCLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
-		cat ${K2HDKCLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
-		cat ${K2HDKCLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
-		cat ${K2HDKCLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C-PERM) ***"
-		cat ${LINETOOLERRLOG}_C_P.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
-		cat ${LINETOOLERRLOG}_CPP_P.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C) ********"
-		cat ${LINETOOLERRLOG}_C.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP) ******"
-		cat ${LINETOOLERRLOG}_CPP.log
-
-		TEST_RESULT=1
-	else
-		echo "JSON STRING TEST RESULT --> SUCCEED" >> ${LOGFILE}
-		echo "" >> ${LOGFILE}
-	fi
-
-	########################################
-	#
-	# CLEANUP
-	#
-	if [ ${TEST_RESULT} -eq 0 ]; then
-		rm -f ${LOGFILE}
-		rm -f ${LINETOOLLOG}
-		rm -f ${CHMPXLOG}_8021.log
-		rm -f ${CHMPXLOG}_8023.log
-		rm -f ${CHMPXLOG}_8025.log
-		rm -f ${CHMPXLOG}_8027.log
-		rm -f ${CHMPXLOG}_8031.log
-		rm -f ${K2HDKCLOG}_8021.log
-		rm -f ${K2HDKCLOG}_8023.log
-		rm -f ${K2HDKCLOG}_8025.log
-		rm -f ${K2HDKCLOG}_8027.log
-		rm -f ${LINETOOLERRLOG}_C_P.log
-		rm -f ${LINETOOLERRLOG}_CPP_P.log
-		rm -f ${LINETOOLERRLOG}_C.log
-		rm -f ${LINETOOLERRLOG}_CPP.log
-	fi
-
-elif [ ${TEST_RESULT} -eq 0 -a "X${DO_JSON_ENV}" = "Xyes" ]; then
-	###########################################################
-	## Start JSON environment
-	###########################################################
-	echo ""
-	echo "====== START TEST FOR JSON ENV ============================="
-	echo ""
-
-	########################################
-	#
-	# RUN chmpx processes and k2hdkc server processes
-	#
-	echo "======= [JSON ENV] RUN CHMPX(server) / K2HDKC" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8021             : " >> ${LOGFILE}
-	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8021 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8021.log 2>&1 &
-	CHMPX_8021_PID=$!
-	echo "${CHMPX_8021_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8021                    : " >> ${LOGFILE}
-	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8021 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8021.log 2>&1 &
-	K2HDKC_8021_PID=$!
-	sleep 1
-	K2HDKC_LT_8021_PID=`ps ax | grep 'lt-k2hdkc' | grep 8021 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8021_PID}" = "X" ]; then
-		K2HDKC_LT_8021_PID=${K2HDKC_8021_PID}
-	fi
-	echo "${K2HDKC_8021_PID}, ${K2HDKC_LT_8021_PID}" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8023             : " >> ${LOGFILE}
-	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8023 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8023.log 2>&1 &
-	CHMPX_8023_PID=$!
-	echo "${CHMPX_8023_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8023                    : " >> ${LOGFILE}
-	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8023 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8023.log 2>&1 &
-	K2HDKC_8023_PID=$!
-	sleep 1
-	K2HDKC_LT_8023_PID=`ps ax | grep 'lt-k2hdkc' | grep 8023 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8023_PID}" = "X" ]; then
-		K2HDKC_LT_8023_PID=${K2HDKC_8023_PID}
-	fi
-	echo "${K2HDKC_8023_PID}, ${K2HDKC_LT_8023_PID}" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8025             : " >> ${LOGFILE}
-	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8025 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8025.log 2>&1 &
-	CHMPX_8025_PID=$!
-	echo "${CHMPX_8025_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8025                    : " >> ${LOGFILE}
-	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8025 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8025.log 2>&1 &
-	K2HDKC_8025_PID=$!
-	sleep 1
-	K2HDKC_LT_8025_PID=`ps ax | grep 'lt-k2hdkc' | grep 8025 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8025_PID}" = "X" ]; then
-		K2HDKC_LT_8025_PID=${K2HDKC_8025_PID}
-	fi
-	echo "${K2HDKC_8025_PID}, ${K2HDKC_LT_8025_PID}" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(server) 8027             : " >> ${LOGFILE}
-	CHMJSONCONF="${TEST_SERVER_JSON}" chmpx -ctlport 8027 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8027.log 2>&1 &
-	CHMPX_8027_PID=$!
-	echo "${CHMPX_8027_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- K2HDKC 8027                    : " >> ${LOGFILE}
-	K2HDKCJSONCONF="${TEST_SERVER_JSON}" ${K2HDKCBIN} -ctlport 8027 ${DKC_DBG_PARAM} ${DKC_COMLOG_PARAM} > ${K2HDKCLOG}_8027.log 2>&1 &
-	K2HDKC_8027_PID=$!
-	sleep 1
-	K2HDKC_LT_8027_PID=`ps ax | grep 'lt-k2hdkc' | grep 8027 | grep -v grep | awk '{print $1}'`
-	if [ "X${K2HDKC_LT_8027_PID}" = "X" ]; then
-		K2HDKC_LT_8027_PID=${K2HDKC_8027_PID}
-	fi
-	echo "${K2HDKC_8027_PID}, ${K2HDKC_LT_8027_PID}" >> ${LOGFILE}
-
-	########################################
-	#
-	# RUN k2hdkclinetool process
-	#
-	TEST_RESULT=0
-
-	echo "" >> ${LOGFILE}
-	echo "======= [JSON ENV] RUN CHMPX(slave) / K2HDKCLINETOOL" >> ${LOGFILE}
-
-	echo -n "------- CHMPX(slave) 8031              : " >> ${LOGFILE}
-	CHMJSONCONF="${TEST_SLAVE_JSON}" chmpx -ctlport 8031 ${CHMPX_DBG_PARAM} > ${CHMPXLOG}_8031.log 2>&1 &
-	CHMPX_8031_PID=$!
-	echo "${CHMPX_8031_PID}" >> ${LOGFILE}
-	sleep 2
-
-	echo -n "------- [JSON ENV] K2HDKCLINETOOL CAPI/PERM       : " >> ${LOGFILE}
-	echo "=========================================================================="	> ${LINETOOLLOG}
-	echo "======= CAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"							>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	K2HDKCJSONCONF="${TEST_SLAVE_JSON}" ${LINETOOLBIN} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -perm -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} -capi >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_C_P.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	echo -n "------- [JSON ENV] K2HDKCLINETOOL CPPAPI/PERM     : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CPPAPI : PERM : REJOIN : NOGIVEUP : NOCLEANUP"						>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	K2HDKCJSONCONF="${TEST_SLAVE_JSON}" ${LINETOOLBIN} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -perm -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_CPP_P.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	echo -n "------- [JSON ENV] K2HDKCLINETOOL CAPI/NOT PERM   : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"						>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	K2HDKCJSONCONF="${TEST_SLAVE_JSON}" ${LINETOOLBIN} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} -capi >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_C.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	echo -n "------- [JSON ENV] K2HDKCLINETOOL CPPAPI/NOT PERM : " >> ${LOGFILE}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	echo "======= CPPAPI : NOT PERM : REJOIN : NOGIVEUP : NOCLEANUP"					>> ${LINETOOLLOG}
-	echo "=========================================================================="	>> ${LINETOOLLOG}
-	K2HDKCJSONCONF="${TEST_SLAVE_JSON}" ${LINETOOLBIN} -ctlport 8031 ${DKCTOOL_COMLOG_PARAM} ${DKCTOOL_DBG_PARAM} -rejoin -nogiveup -nocleanup -run ${LINETOOLCMD} >> ${LINETOOLLOG} 2>> ${LINETOOLERRLOG}_CPP.log
-	if [ $? -ne 0 ]; then
-		echo "FAILED" >> ${LOGFILE}
-		echo "FAILED" >> ${LINETOOLLOG}
-		TEST_RESULT=1
-	else
-		echo "SUCCEED" >> ${LOGFILE}
-		echo "SUCCEED" >> ${LINETOOLLOG}
-	fi
-	sleep 1
-
-	########################################
-	#
-	# STOP ALL
-	#
-	echo "" >> ${LOGFILE}
-	echo "======= [JSON ENV] STOP ALL PROCESSES CHMPX(server/slave) / K2HDKC" >> ${LOGFILE}
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8031_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8027_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8025_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8023_PID}	>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${CHMPX_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -HUP ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -HUP ${K2HDKC_LT_8021_PID}	>> ${LOGFILE} 2>&1)
-	sleep 10
-	(ps -p ${CHMPX_8031_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8031_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8027_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8027_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8027_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8027_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8027_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8025_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8025_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8025_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8025_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8025_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8023_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8023_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8023_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8023_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8023_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${CHMPX_8021_PID}		> /dev/null 2>&1) && (kill -9 ${CHMPX_8021_PID}			>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_8021_PID}		> /dev/null 2>&1) && (kill -9 ${K2HDKC_8021_PID}		>> ${LOGFILE} 2>&1)
-	(ps -p ${K2HDKC_LT_8021_PID}	> /dev/null 2>&1) && (kill -9 ${K2HDKC_LT_8021_PID}		>> ${LOGFILE} 2>&1)
-
-	########################################
-	#
-	# CHECK RESULT
-	#
-	echo -n "------- [JSON ENV] K2HDKCLINETOOL LOG DIFF RESULT : " >> ${LOGFILE}
-	diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} >/dev/null 2>&1
-	if [ $? -ne 0 ]; then
-		echo "JSON ENV TEST RESULT --> FAILED" >> ${LOGFILE}
-		echo "" >> ${LOGFILE}
-
-		echo "======= JSON ENV TEST                  : FAILED"	>> ${LOGFILE}
-		echo ""													>> ${LOGFILE}
-		echo "================= `date` ================"		>> ${LOGFILE}
-
-		echo ""
-		echo "*********** K2HDKCTOOL LOG DIFF ******************"
-		diff ${LINETOOLLOG} ${MASTER_LINETOOLLOG} 2> /dev/null
-
-		echo ""
-		echo "*********** DETAIL LOG : LOGFILE *****************"
-		cat ${LOGFILE}
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL **********"
-		cat ${LINETOOLLOG}
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8021) *************"
-		cat ${CHMPXLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8023) *************"
-		cat ${CHMPXLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8025) *************"
-		cat ${CHMPXLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : CHMPX(8027) *************"
-		cat ${CHMPXLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8021) *************"
-		cat ${K2HDKCLOG}_8021.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8023) *************"
-		cat ${K2HDKCLOG}_8023.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8025) *************"
-		cat ${K2HDKCLOG}_8025.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKC(8027) *************"
-		cat ${K2HDKCLOG}_8027.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C-PERM) ***"
-		cat ${LINETOOLERRLOG}_C_P.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP-PERM) *"
-		cat ${LINETOOLERRLOG}_CPP_P.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(C) ********"
-		cat ${LINETOOLERRLOG}_C.log
-
-		echo ""
-		echo "*********** DETAIL LOG : K2HDKCLINETOOL(CPP) ******"
-		cat ${LINETOOLERRLOG}_CPP.log
-
-		TEST_RESULT=1
-	else
-		echo "JSON ENV TEST RESULT --> SUCCEED" >> ${LOGFILE}
-		echo "" >> ${LOGFILE}
-	fi
-
-	########################################
-	#
-	# CLEANUP
-	#
-	if [ ${TEST_RESULT} -eq 0 ]; then
-		rm -f ${LOGFILE}
-		rm -f ${LINETOOLLOG}
-		rm -f ${CHMPXLOG}_8021.log
-		rm -f ${CHMPXLOG}_8023.log
-		rm -f ${CHMPXLOG}_8025.log
-		rm -f ${CHMPXLOG}_8027.log
-		rm -f ${CHMPXLOG}_8031.log
-		rm -f ${K2HDKCLOG}_8021.log
-		rm -f ${K2HDKCLOG}_8023.log
-		rm -f ${K2HDKCLOG}_8025.log
-		rm -f ${K2HDKCLOG}_8027.log
-		rm -f ${LINETOOLERRLOG}_C_P.log
-		rm -f ${LINETOOLERRLOG}_CPP_P.log
-		rm -f ${LINETOOLERRLOG}_C.log
-		rm -f ${LINETOOLERRLOG}_CPP.log
-	fi
+	#----------------------------------------------------------
+	# Cleanup
+	#----------------------------------------------------------
+	cleanup_files
 fi
 
-###########################################################
-## All test finish
-###########################################################
-if [ ${TEST_RESULT} -ne 0 ]; then
-	echo "======= ALL TEST                       : FAILED"	>> ${LOGFILE}
-	echo ""													>> ${LOGFILE}
-	echo "================= `date` ================"		>> ${LOGFILE}
-	cat ${LOGFILE}
+#==============================================================
+# SUMMARY
+#==============================================================
+FINISH_DATE=$(date)
+
+echo ""
+echo "=============================================================="
+echo "[SUMMAY LOG] ${START_DATE} -> ${FINISH_DATE}"
+echo "--------------------------------------------------------------"
+if [ -f "${LOGFILE}" ]; then
+	sed -e 's/^/  /g' "${LOGFILE}"
+	rm -f "${LOGFILE}"
 else
-	echo "======= ALL TEST                       : SUCCESS"	>> ${LOGFILE}
-	echo ""													>> ${LOGFILE}
-	echo "================= `date` ================"		>> ${LOGFILE}
-	cat ${LOGFILE}
+	PRNERR "Not found ${LOGFILE}"
+fi
+echo "=============================================================="
+echo ""
+
+if [ "${TEST_RESULT}" -ne 0 ]; then
+	PRNERR "FAILED : ALL TEST"
+else
+	PRNSUCCEED "ALL TEST"
 fi
 
-exit ${TEST_RESULT}
+exit "${TEST_RESULT}"
 
 #
 # Local variables:
