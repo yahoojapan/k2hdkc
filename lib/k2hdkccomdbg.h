@@ -95,7 +95,6 @@ inline void DKC_RES_PRINT(dkccom_type_t comtype, dkcres_type_t restype)
 			DMP_DKCPRN("%s Command Response: DKC_RES_SUCCESS", STR_DKCCOM_TYPE(comtype));
 		}else{
 			// success with some message is printed on message mode.
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress internalAstError
 			MSG_DKCPRN("%s Command Response: DKC_RES_SUCCESS with %s", STR_DKCCOM_TYPE(comtype), STR_DKCRES_SUBCODE_TYPE(restype));
 		}

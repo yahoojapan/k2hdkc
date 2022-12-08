@@ -435,7 +435,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	if(DKC_COM_GET == comtype){
 		if(NULL == (pObj = new K2hdkcComGet(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_GET.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -443,7 +442,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_GET_DIRECT == comtype){
 		if(NULL == (pObj = new K2hdkcComGetDirect(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_GET_DIRECT.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -451,7 +449,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_GET_SUBKEYS == comtype){
 		if(NULL == (pObj = new K2hdkcComGetSubkeys(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_GET_SUBKEYS.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -459,7 +456,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_GET_ATTRS == comtype){
 		if(NULL == (pObj = new K2hdkcComGetAttrs(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_GET_ATTRS.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -467,7 +463,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_GET_ATTR == comtype){
 		if(NULL == (pObj = new K2hdkcComGetAttr(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_GET_ATTR.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -475,7 +470,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_SET == comtype){
 		if(NULL == (pObj = new K2hdkcComSet(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_SET.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -483,7 +477,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_SET_DIRECT == comtype){
 		if(NULL == (pObj = new K2hdkcComSetDirect(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_SET_DIRECT.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -491,7 +484,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_SET_SUBKEYS == comtype){
 		if(NULL == (pObj = new K2hdkcComSetSubkeys(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_SET_SUBKEYS.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -499,7 +491,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_SET_ALL == comtype){
 		if(NULL == (pObj = new K2hdkcComSetAll(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_SET_ALL.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -507,7 +498,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_ADD_SUBKEYS == comtype){
 		if(NULL == (pObj = new K2hdkcComAddSubkeys(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_ADD_SUBKEYS.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -515,7 +505,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_ADD_SUBKEY == comtype){
 		if(NULL == (pObj = new K2hdkcComAddSubkey(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_ADD_SUBKEY.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -523,7 +512,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_DEL == comtype){
 		if(NULL == (pObj = new K2hdkcComDel(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_DEL.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -531,7 +519,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_DEL_SUBKEYS == comtype){
 		if(NULL == (pObj = new K2hdkcComDelSubkeys(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_DEL_SUBKEYS.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -539,7 +526,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_DEL_SUBKEY == comtype){
 		if(NULL == (pObj = new K2hdkcComDelSubkey(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_DEL_SUBKEY.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -547,7 +533,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_REN == comtype){
 		if(NULL == (pObj = new K2hdkcComRen(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_REN.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -555,7 +540,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_QPUSH == comtype){
 		if(NULL == (pObj = new K2hdkcComQPush(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_QPUSH.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -563,7 +547,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_QPOP == comtype){
 		if(NULL == (pObj = new K2hdkcComQPop(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_QPOP.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -571,7 +554,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_QDEL == comtype){
 		if(NULL == (pObj = new K2hdkcComQDel(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_QDEL.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -579,7 +561,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_CAS_INIT == comtype){
 		if(NULL == (pObj = new K2hdkcComCasInit(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_CAS_INIT.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -587,7 +568,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_CAS_GET == comtype){
 		if(NULL == (pObj = new K2hdkcComCasGet(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_CAS_GET.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -595,7 +575,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_CAS_SET == comtype){
 		if(NULL == (pObj = new K2hdkcComCasSet(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_CAS_SET.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -603,7 +582,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_CAS_INCDEC == comtype){
 		if(NULL == (pObj = new K2hdkcComCasIncDec(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_CAS_INCDEC.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -611,7 +589,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_REPL_KEY == comtype){
 		if(NULL == (pObj = new K2hdkcComReplKey(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_REPL_KEY.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -619,7 +596,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_REPL_DEL == comtype){
 		if(NULL == (pObj = new K2hdkcComReplDel(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_REPL_DEL.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -627,7 +603,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_K2HSTATE == comtype){
 		if(NULL == (pObj = new K2hdkcComK2hState(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_K2HSTATE.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -635,7 +610,6 @@ K2hdkcCommand* K2hdkcCommand::GetCommandSendObject(K2HShm* pk2hash, ChmCntrl* pc
 	}else if(DKC_COM_STATE == comtype){
 		if(NULL == (pObj = new K2hdkcComState(pk2hash, pchmcntrl, comnum, without_self, is_routing_on_server, is_wait_on_server))){
 			ERR_DKCPRN("Could not make command object for DKC_COM_STATE.");
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress memleak
 			return NULL;
 		}
@@ -878,7 +852,6 @@ bool K2hdkcCommand::SetReceiveData(PCOMPKT pComPkt, PDKCCOM_ALL pComAll)
 		return false;
 	}
 	// logging
-	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress literalWithCharPtrCompare
 	COMLOG_PRN(GetDispComNumber(), GetComNumber(), "Received %s: %s(%" PRIu64 ")", (DKC_NORESTYPE == pComAll->com_head.restype ? "command" : "response"), STR_DKCCOM_TYPE(pComAll->com_head.comtype), pComAll->com_head.comtype);
 
@@ -967,12 +940,10 @@ bool K2hdkcCommand::ReplyResponse(void)
 
 	if(!pChmObj->Reply(pRcvComPkt, reinterpret_cast<unsigned char*>(pSendComAll), SendLength)){
 		ERR_DKCPRN("Failed to reply response.");
-		// cppcheck-suppress unmatchedSuppression
 		// cppcheck-suppress literalWithCharPtrCompare
 		COMLOG_DMP_PRN(GetDispComNumber(), GetComNumber(), "Failed to Reply command: %s(%" PRIu64 ")", STR_DKCCOM_TYPE(pSendComAll->com_head.comtype), pSendComAll->com_head.comtype);
 		return false;
 	}
-	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress literalWithCharPtrCompare
 	COMLOG_DMP_PRN(GetDispComNumber(), GetComNumber(), "Replied command: %s(%" PRIu64 ")", STR_DKCCOM_TYPE(pSendComAll->com_head.comtype), pSendComAll->com_head.comtype);
 
@@ -1007,7 +978,6 @@ bool K2hdkcCommand::CommandSending(void)
 
 		// set callback
 		if(!K2hdkcCommand::WaitFp(pSendComAll->com_head.comnumber, this, K2hdkcCommand::pWaitFpParam)){
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress literalWithCharPtrCompare
 			ERR_DKCPRN("Failed to set receive waiting callback for type(%s).", STR_DKCCOM_TYPE(pSendComAll->com_head.comtype));
 			TriggerResponse = true;			// reset
@@ -1033,12 +1003,10 @@ bool K2hdkcCommand::CommandSending(void)
 			result = pChmObj->Send(SendMsgid, reinterpret_cast<unsigned char*>(pSendComAll), SendLength, SendHash, NULL, RoutingOnSlave);
 		}
 	}
-	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress literalWithCharPtrCompare
 	COMLOG_PRN(GetDispComNumber(), GetComNumber(), "Sent command: %s(%" PRIu64 ")", STR_DKCCOM_TYPE(pSendComAll->com_head.comtype), pSendComAll->com_head.comtype);
 
 	if(!result){
-		// cppcheck-suppress unmatchedSuppression
 		// cppcheck-suppress literalWithCharPtrCompare
 		ERR_DKCPRN("Failed to send command for type(%s).", STR_DKCCOM_TYPE(pSendComAll->com_head.comtype));
 
@@ -1047,7 +1015,6 @@ bool K2hdkcCommand::CommandSending(void)
 			// unset callback
 			TriggerResponse = true;			// reset
 			if(!K2hdkcCommand::UnWaitFp(pSendComAll->com_head.comnumber, this, K2hdkcCommand::pWaitFpParam)){
-				// cppcheck-suppress unmatchedSuppression
 				// cppcheck-suppress literalWithCharPtrCompare
 				ERR_DKCPRN("Failed to unset receive waiting callback for type(%s).", STR_DKCCOM_TYPE(pSendComAll->com_head.comtype));
 			}
@@ -1069,14 +1036,12 @@ bool K2hdkcCommand::CommandSending(void)
 		unsigned char*	pbody	= NULL;
 		size_t			length	= 0;
 		if(false == (result = pChmObj->Receive(SendMsgid, &pComPkt, &pbody, &length, K2hdkcCommand::RcvTimeout)) || !pComPkt || !pbody || 0 == length){
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress literalWithCharPtrCompare
 			ERR_DKCPRN("Failed to receive command response for type(%s) : pComPkt(%p), pbody(%p), length(%zu).", STR_DKCCOM_TYPE(pSendComAll->com_head.comtype), pComPkt, pbody, length);
 			DKC_FREE(pComPkt);
 			DKC_FREE(pbody);
 			return false;
 		}
-		// cppcheck-suppress unmatchedSuppression
 		// cppcheck-suppress literalWithCharPtrCompare
 		DMP_DKCPRN("Succeed to receive command response for type(%s) : pComPkt(%p), pbody(%p), length(%zu).", STR_DKCCOM_TYPE(pSendComAll->com_head.comtype), pComPkt, pbody, length);
 
@@ -1105,7 +1070,6 @@ bool K2hdkcCommand::CommandSending(void)
 			// wait condition
 			int	condres;
 			if(0 != (condres = pthread_mutex_lock(&cond_mutex))){
-				// cppcheck-suppress unmatchedSuppression
 				// cppcheck-suppress literalWithCharPtrCompare
 				ERR_DKCPRN("Could not lock mutex for condition by error code(%d), for command type(%s).", condres, STR_DKCCOM_TYPE(pSendComAll->com_head.comtype));
 				TriggerResponse = true;			// reset
@@ -1115,7 +1079,6 @@ bool K2hdkcCommand::CommandSending(void)
 				condres			= pthread_cond_timedwait(&cond_val, &cond_mutex, &abstimeout);
 				int	unlockres	= pthread_mutex_unlock(&cond_mutex);
 				if(0 != unlockres){
-					// cppcheck-suppress unmatchedSuppression
 					// cppcheck-suppress literalWithCharPtrCompare
 					WAN_DKCPRN("Could not unlock mutex for condition by error code(%d), for command type(%s), but continue...", unlockres, STR_DKCCOM_TYPE(pSendComAll->com_head.comtype));
 				}
@@ -1123,7 +1086,6 @@ bool K2hdkcCommand::CommandSending(void)
 				// check condition result
 				if(ETIMEDOUT == condres){
 					// timeouted
-					// cppcheck-suppress unmatchedSuppression
 					// cppcheck-suppress literalWithCharPtrCompare
 					ERR_DKCPRN("Could not get response for command type(%s) by timeout.", STR_DKCCOM_TYPE(pSendComAll->com_head.comtype));
 					TriggerResponse	= true;		// reset
@@ -1131,7 +1093,6 @@ bool K2hdkcCommand::CommandSending(void)
 
 				}else if(EINTR == condres){
 					// signal break
-					// cppcheck-suppress unmatchedSuppression
 					// cppcheck-suppress literalWithCharPtrCompare
 					MSG_DKCPRN("Could not get response for command type(%s) by signal, so retry to wait.", STR_DKCCOM_TYPE(pSendComAll->com_head.comtype));
 
@@ -1230,7 +1191,6 @@ void K2hdkcCommand::DumpComAll(const char* pprefix, const PDKCCOM_ALL pComAll) c
 
 	// print head
 	RAW_DKCPRN("  DKCCOM_HEAD = {");
-	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress literalWithCharPtrCompare
 	RAW_DKCPRN("    comtype       = %s(0x%016" PRIx64 ")",	STR_DKCCOM_TYPE(pComAll->com_head.comtype), pComAll->com_head.comtype);
 	RAW_DKCPRN("    restype       = RESULT:0x%08" PRIx32 ", SUBCODE:0x%08" PRIx32 " (0x%016" PRIx64 ")", static_cast<uint32_t>(GET_DKC_RES_RESULT(pComAll->com_head.restype)), static_cast<uint32_t>(GET_DKC_RES_SUBCODE(pComAll->com_head.restype)), pComAll->com_head.restype);

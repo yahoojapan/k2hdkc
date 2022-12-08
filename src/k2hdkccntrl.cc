@@ -647,11 +647,8 @@ K2hdkcCommand* K2hdkcCntrl::FindWaitCommandObject(uint64_t comnum, dkccom_type_t
 					pcommap->erase(itercom);
 				}
 				// check empty
-				// cppcheck-suppress unmatchedSuppression
 				// cppcheck-suppress stlSize
 				if(0 == pcommap->size()){
-					// [FIXME] by cppcheck 2.7
-					// cppcheck-suppress unmatchedSuppression
 					// cppcheck-suppress unknownMacro
 					DKC_DELETE(pcommap)
 					waitmap.erase(iternum);

@@ -5443,7 +5443,6 @@ static bool CommandStringHandle(k2hdkc_chmpx_h chmpxhandle, ConsoleInput& InputI
 	if(!LineOptionParser(pCommand, opts)){
 		return true;	// for continue.
 	}
-	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress stlSize
 	if(0 == opts.size()){
 		return true;
@@ -5940,7 +5939,6 @@ int main(int argc, char** argv)
 			}
 			CommandFile.clear();
 
-		// cppcheck-suppress unmatchedSuppression
 		// cppcheck-suppress knownConditionTrueFalse
 		}else if(IsWelcomMsg){
 			// print message
