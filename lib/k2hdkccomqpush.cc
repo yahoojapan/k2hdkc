@@ -321,7 +321,6 @@ bool K2hdkcComQPush::CommandProcessing(void)
 		}
 
 		// set response data
-		// cppcheck-suppress unmatchedSuppression
 		// cppcheck-suppress knownConditionTrueFalse
 		if(result){
 			SetSucceedResponseData();

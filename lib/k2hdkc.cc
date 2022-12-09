@@ -199,7 +199,6 @@ static bool DestoryOpenedMsgidSlaveObject(K2hdkcSlave* pSlave, bool is_clean_bup
 	if(!pSlave->Clean(is_clean_bup)){
 		WAN_DKCPRN("Failed to uninitialize slave chmpx, but continue...");
 	}
-	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress uselessAssignmentPtrArg
 	DKC_DELETE(pSlave);
 	return true;
@@ -272,10 +271,8 @@ static bool K2hdkcFullGetState(K2hdkcComState* pcomobj, PDKC_NODESTATE* ppstates
 	for(size_t cnt = 0; cnt < statecount; ++cnt){
 		memcpy(&(pdststates[cnt]), &(pstates[cnt]), sizeof(DKC_NODESTATE));
 	}
-	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress redundantAssignment
 	*ppstates	= pdststates;
-	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress redundantAssignment
 	*pstatecount= statecount;
 
@@ -989,7 +986,6 @@ bool K2hdkcCvtSubkeysToPack(K2HSubKeys* pSubKeys, PK2HDKCKEYPCK* ppskeypck, int*
 	}
 	// copy
 	int	setpos = 0;
-	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress postfixOperator
 	for(K2HSubKeys::iterator iter = pSubKeys->begin(); iter != pSubKeys->end(); iter++){
 		if(0UL == iter->length){
@@ -1035,7 +1031,6 @@ static int K2hdkcCvtSubkeysToStringArray(K2HSubKeys* pSubKeys, char*** ppskeyarr
 
 	// copy
 	int	setpos = 0;
-	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress postfixOperator
 	for(K2HSubKeys::iterator iter = pSubKeys->begin(); iter != pSubKeys->end(); iter++){
 		if(0UL == iter->length){
@@ -1426,7 +1421,6 @@ bool K2hdkcCvtAttrsToPack(K2HAttrs* pAttrs, PK2HDKCATTRPCK* ppattrspck, int* pat
 	}
 	// copy
 	int	setpos = 0;
-	// cppcheck-suppress unmatchedSuppression
 	// cppcheck-suppress postfixOperator
 	for(K2HAttrs::iterator iter = pAttrs->begin(); iter != pAttrs->end(); iter++){
 		if(0UL == iter->keylength){

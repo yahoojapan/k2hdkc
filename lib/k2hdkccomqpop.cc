@@ -397,7 +397,6 @@ bool K2hdkcComQPop::CommandProcessing(void)
 		}
 
 		// set response data
-		// cppcheck-suppress unmatchedSuppression
 		// cppcheck-suppress knownConditionTrueFalse
 		if(result){
 			if(!SetResponseData(pResKey, ResKeyLength, pResData, ResDataLength)){

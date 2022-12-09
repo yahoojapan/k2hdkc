@@ -573,7 +573,6 @@ bool K2hdkcConfig::LoadYaml(const char* config, bool is_json_string)
 		// open configuration file
 		if(NULL == (fp = fopen(config, "r"))){
 			ERR_DKCPRN("Could not open configuration file(%s). errno = %d", config, errno);
-			// cppcheck-suppress unmatchedSuppression
 			// cppcheck-suppress resourceLeak
 			return false;
 		}
