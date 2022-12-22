@@ -21,7 +21,10 @@ TEST_TRANS_SERVER_JSON_STR={ 'GLOBAL': { 'FILEVERSION': '1', 'DATE':  'Mon, 11 J
 TEST_TRANS_SLAVE_JSON_STR={ 'GLOBAL': { 'FILEVERSION': '1', 'DATE': 'Mon, 11 Jul 2016 10:35:27 +0900', 'GROUP': 'TESTTRANS', 'MODE': 'SLAVE', 'DELIVERMODE': 'hash', 'MAXCHMPX': '4', 'REPLICA': '1', 'MAXMQSERVER': '2', 'MAXMQCLIENT': '2', 'MQPERATTACH': '1', 'MAXQPERSERVERMQ': '2', 'MAXQPERCLIENTMQ': '1', 'MAXMQPERCLIENT': '1', 'MAXHISTLOG': '10000', 'PORT': '8030', 'CTLPORT': '8031', 'SELFCTLPORT': '8031', 'RWTIMEOUT': '100', 'RETRYCNT': '1000', 'CONTIMEOUT': '500000', 'MQRWTIMEOUT': '50', 'MQRETRYCNT': '20000', 'DOMERGE': 'on', 'SSL': 'no', 'K2HFULLMAP': 'on', 'K2HMASKBIT': '4', 'K2HCMASKBIT': '2', 'K2HMAXELE': '4' }, 'SVRNODE': [ { 'NAME': 'localhost', 'PORT': '8030', 'CTLPORT': '8031', 'SSL': 'no' } ], 'SLVNODE': [ { 'NAME': '[.]*', 'CTLPORT': '8032' } ], 'K2HTPDTOR': { 'K2HTPDTOR_BROADCAST': 'no' } }
 
 #
-# VIM modelines
-#
-# vim:set ts=4 fenc=utf-8:
+# Local variables:
+# tab-width: 4
+# c-basic-offset: 4
+# End:
+# vim600: noexpandtab sw=4 ts=4 fdm=marker
+# vim<600: noexpandtab sw=4 ts=4
 #
