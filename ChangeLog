@@ -1,3 +1,22 @@
+k2hdkc (1.0.4) unstable; urgency=low
+
+  * Changed CI process flow/OSs and added Alpine OS - #68
+  * Updated header and footer in comment lines - #67
+  * Updated issue/pullrequest templates - #65
+  * Removed unnecessary unmatchedSuppression comment - #64
+  * Added ShellCheck processing and reviewed cppcheck - #63
+  * Eliminated unnecessary copies in build_helper.sh - #62
+  * Updated docker/login-action from v1 to v2 - #61
+  * Shared Docker image build logic with other products - #60
+  * Updated github actions process and support os, and fixed bugs - #59
+  * Updated scripts for adding grep params and replacing which to command - #58
+  * Updated common build scripts - #57
+  * Updated Antpickax common scripts and tools under the buildutils directory - #56
+  * Fixed errors reported by cppcheck 2.9 - #55
+  * Enabled external customization of configure.ac and fixed for building - #54
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Fri, 10 Feb 2023 16:27:02 +0900
+
 k2hdkc (1.0.3) unstable; urgency=low
 
   * Bumpup for updating the base Docker image because of k2htpdtor updated
