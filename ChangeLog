@@ -1,3 +1,9 @@
+k2hdkc (1.0.5) unstable; urgency=low
+
+  * Updated building/packaging logic for ALPINE - #70
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Wed, 01 Mar 2023 19:17:04 +0900
+
 k2hdkc (1.0.4) unstable; urgency=low
 
   * Changed CI process flow/OSs and added Alpine OS - #68
