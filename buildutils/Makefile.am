@@ -32,6 +32,7 @@ EXTRA_DIST =make_variables.sh \
 			debian_build.sh \
 			debian_build_copy.conf \
 			rpm_build.sh \
+			alpine_build.sh \
 			k2hdkc.install \
 			k2hdkc.service \
 			k2hdkc-service-helper \
