@@ -202,6 +202,7 @@
 > echo ###
 ###
 > fill fill-key fill-value 5
+> sleep 5
 > print fill-key-1
 "fill-key-1" => "fill-value"
 > print fill-key-2
@@ -218,6 +219,7 @@
 > rm fill-key-4
 > rm fill-key-5
 > fillsub fill-parent fill-key fill-value 5
+> sleep 10
 > print fill-parent
 "fill-parent" => value is not found
     subkey: "fill-key-0", "fill-key-1", "fill-key-2", "fill-key-3", "fill-key-4"
@@ -630,6 +632,7 @@ SUCCEED
 > echo ###
 ###
 > fill fill-key fill-value 5
+> sleep 5
 > print fill-key-1
 "fill-key-1" => "fill-value"
 > print fill-key-2
@@ -646,6 +649,7 @@ SUCCEED
 > rm fill-key-4
 > rm fill-key-5
 > fillsub fill-parent fill-key fill-value 5
+> sleep 10
 > print fill-parent
 "fill-parent" => value is not found
     subkey: "fill-key-0", "fill-key-1", "fill-key-2", "fill-key-3", "fill-key-4"
@@ -1058,6 +1062,7 @@ SUCCEED
 > echo ###
 ###
 > fill fill-key fill-value 5
+> sleep 5
 > print fill-key-1
 "fill-key-1" => "fill-value"
 > print fill-key-2
@@ -1074,6 +1079,7 @@ SUCCEED
 > rm fill-key-4
 > rm fill-key-5
 > fillsub fill-parent fill-key fill-value 5
+> sleep 10
 > print fill-parent
 "fill-parent" => value is not found
     subkey: "fill-key-0", "fill-key-1", "fill-key-2", "fill-key-3", "fill-key-4"
@@ -1486,6 +1492,7 @@ SUCCEED
 > echo ###
 ###
 > fill fill-key fill-value 5
+> sleep 5
 > print fill-key-1
 "fill-key-1" => "fill-value"
 > print fill-key-2
@@ -1502,6 +1509,7 @@ SUCCEED
 > rm fill-key-4
 > rm fill-key-5
 > fillsub fill-parent fill-key fill-value 5
+> sleep 10
 > print fill-parent
 "fill-parent" => value is not found
     subkey: "fill-key-0", "fill-key-1", "fill-key-2", "fill-key-3", "fill-key-4"

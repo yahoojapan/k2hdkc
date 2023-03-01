@@ -393,6 +393,11 @@ cleanup_files()
 	rm -f "${LINETOOL_CPP_LOGFILE}"
 	rm -f "${SUB_SHELLGROUP_ERROR_FILE}"
 
+	#
+	# Cleanup temporary files in /var/lib/antpickax
+	#
+	rm -rf /var/lib/antpickax/.fullock /var/lib/antpickax/.k2h* /var/lib/antpickax/*
+
 	return 0
 }
 

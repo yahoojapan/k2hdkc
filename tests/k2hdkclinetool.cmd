@@ -133,6 +133,7 @@ echo ######################################################
 echo ### FILL
 echo ###
 fill fill-key fill-value 5
+sleep 5
 print fill-key-1
 print fill-key-2
 print fill-key-3
@@ -145,6 +146,7 @@ rm fill-key-4
 rm fill-key-5
 
 fillsub fill-parent fill-key fill-value 5
+sleep 10
 print fill-parent
 print fill-key-1
 print fill-key-2
