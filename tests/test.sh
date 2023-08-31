@@ -508,10 +508,12 @@ get_lt_k2hdkc_process_id()
 #
 # Check binary path
 #
-if ! CHMPXBIN=$(command -v chmpx | tr -d '\n'); then
+if ! command -v chmpx >/dev/null 2>&1; then
 	PRNERR "Not found chmpx binary"
 	exit 1
 fi
+CHMPXBIN=$(command -v chmpx | tr -d '\n')
+
 if [ -f "${SRCDIR}/k2hdkc" ]; then
 	K2HDKCBIN="${SRCDIR}/k2hdkc"
 elif [ -f "${SRCDIR}/k2hdkcmain" ]; then
