@@ -1139,16 +1139,22 @@ static bool ReadContentsFromFile(const char* pFile, off_t offset, size_t reqleng
 	struct stat	st;
 	if(-1 == fstat(fd, &st)){
 		ERR("Could not get stat for file(%s) by errno(%d)", pFile, errno);
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress unreadVariable
 		DKC_CLOSE(fd);
 		return false;
 	}
 	if(st.st_size <= 0){
 		ERR("file(%s) does not have any contents", pFile);
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress unreadVariable
 		DKC_CLOSE(fd);
 		return false;
 	}
 	if(static_cast<off_t>(st.st_size) <= offset){
 		ERR("file(%s) does not have any contents after %zd offset", pFile, offset);
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress unreadVariable
 		DKC_CLOSE(fd);
 		return false;
 	}
@@ -1159,6 +1165,8 @@ static bool ReadContentsFromFile(const char* pFile, off_t offset, size_t reqleng
 	}
 	if(NULL == ((*ppval) = reinterpret_cast<unsigned char*>(malloc(reqlength)))){
 		ERR("Could not allocate memory.");
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress unreadVariable
 		DKC_CLOSE(fd);
 		return false;
 	}
@@ -1169,6 +1177,8 @@ static bool ReadContentsFromFile(const char* pFile, off_t offset, size_t reqleng
 	for(read_cnt = 0L, one_read = 0L; static_cast<size_t>(read_cnt) < reqlength; read_cnt += one_read){
 		if(-1 == (one_read = pread(fd, &((*ppval)[read_cnt]), (reqlength - static_cast<size_t>(read_cnt)), static_cast<off_t>(offset + read_cnt)))){
 			ERR("Failed to read from fd(%d : %jd : %zu) by errno(%d)", fd, static_cast<intmax_t>(offset + read_cnt), reqlength - static_cast<size_t>(read_cnt), errno);
+			// cppcheck-suppress unmatchedSuppression
+			// cppcheck-suppress unreadVariable
 			DKC_CLOSE(fd);
 			DKC_FREE(*ppval);
 			vallength = 0UL;
@@ -1180,6 +1190,8 @@ static bool ReadContentsFromFile(const char* pFile, off_t offset, size_t reqleng
 	}
 	if(read_cnt <= 0){
 		ERR("Could not read any byte from file(%s), it should be %zu byte", pFile, reqlength);
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress unreadVariable
 		DKC_CLOSE(fd);
 		DKC_FREE(*ppval);
 		vallength = 0UL;
@@ -1189,6 +1201,9 @@ static bool ReadContentsFromFile(const char* pFile, off_t offset, size_t reqleng
 		WAN("Read only %zd byte from file(%s), it should be %zu byte", read_cnt, pFile, reqlength);
 	}
 	vallength = static_cast<size_t>(read_cnt);
+
+	// cppcheck-suppress unmatchedSuppression
+	// cppcheck-suppress unreadVariable
 	DKC_CLOSE(fd);
 
 	return true;
@@ -1214,6 +1229,8 @@ static bool AppendContentsToFile(const char* pFile, const unsigned char* pval, s
 	for(ssize_t write_cnt = 0L, one_write = 0L; static_cast<size_t>(write_cnt) < vallength; write_cnt += one_write){
 		if(-1 == (one_write = write(fd, &(pval[write_cnt]), (vallength - static_cast<size_t>(write_cnt))))){
 			ERR("Failed to write to fd(%d:%zd:%zu), errno = %d", fd, write_cnt, vallength - static_cast<size_t>(write_cnt), errno);
+			// cppcheck-suppress unmatchedSuppression
+			// cppcheck-suppress unreadVariable
 			DKC_CLOSE(fd);
 			return false;
 		}
@@ -3372,7 +3389,7 @@ static bool QueuePopCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* pNa
 			if(PassPhrase.empty()){
 				result = k2hdkc_full_q_pop(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, &pval, &vallength);
 			}else{
-				result = k2hdkc_full_q_pop_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &pval, &vallength);
+				result = k2hdkc_full_q_pop_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, PassPhrase.c_str(), &pval, &vallength);
 			}
 			rescode = k2hdkc_get_lastres_code();
 
@@ -3400,7 +3417,7 @@ static bool QueuePopCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* pNa
 			if(PassPhrase.empty()){
 				result = k2hdkc_pm_q_pop(chmpxhandle, pName, NameLen, is_Fifo, &pval, &vallength);
 			}else{
-				result = k2hdkc_pm_q_pop_wp(chmpxhandle, pName, NameLen, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &pval, &vallength);
+				result = k2hdkc_pm_q_pop_wp(chmpxhandle, pName, NameLen, is_Fifo, PassPhrase.c_str(), &pval, &vallength);
 			}
 			rescode	= k2hdkc_get_res_code(chmpxhandle);
 
@@ -3490,7 +3507,7 @@ static bool QueueRemoveCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* 
 			if(PassPhrase.empty()){
 				result = k2hdkc_full_q_remove(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo);
 			}else{
-				result = k2hdkc_full_q_remove_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()));
+				result = k2hdkc_full_q_remove_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo, PassPhrase.c_str());
 			}
 			rescode = k2hdkc_get_lastres_code();
 
@@ -3512,7 +3529,7 @@ static bool QueueRemoveCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* 
 			if(PassPhrase.empty()){
 				result = k2hdkc_pm_q_remove(chmpxhandle, pName, NameLen, RmCount, is_Fifo);
 			}else{
-				result = k2hdkc_pm_q_remove_wp(chmpxhandle, pName, NameLen, RmCount, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()));
+				result = k2hdkc_pm_q_remove_wp(chmpxhandle, pName, NameLen, RmCount, is_Fifo, PassPhrase.c_str());
 			}
 			rescode	= k2hdkc_get_res_code(chmpxhandle);
 
@@ -3712,7 +3729,7 @@ static bool KeyQueuePopCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* 
 			if(PassPhrase.empty()){
 				result = k2hdkc_full_keyq_pop(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, &pkey, &keylength, &pval, &vallength);
 			}else{
-				result = k2hdkc_full_keyq_pop_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &pkey, &keylength, &pval, &vallength);
+				result = k2hdkc_full_keyq_pop_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, is_Fifo, PassPhrase.c_str(), &pkey, &keylength, &pval, &vallength);
 			}
 			rescode = k2hdkc_get_lastres_code();
 
@@ -3747,7 +3764,7 @@ static bool KeyQueuePopCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned char* 
 			if(PassPhrase.empty()){
 				result = k2hdkc_pm_keyq_pop(chmpxhandle, pName, NameLen, is_Fifo, &pkey, &keylength, &pval, &vallength);
 			}else{
-				result = k2hdkc_pm_keyq_pop_wp(chmpxhandle, pName, NameLen, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &pkey, &keylength, &pval, &vallength);
+				result = k2hdkc_pm_keyq_pop_wp(chmpxhandle, pName, NameLen, is_Fifo, PassPhrase.c_str(), &pkey, &keylength, &pval, &vallength);
 			}
 			rescode	= k2hdkc_get_res_code(chmpxhandle);
 
@@ -3847,7 +3864,7 @@ static bool KeyQueueRemoveCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned cha
 			if(PassPhrase.empty()){
 				result = k2hdkc_full_keyq_remove(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo);
 			}else{
-				result = k2hdkc_full_keyq_remove_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()));
+				result = k2hdkc_full_keyq_remove_wp(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, pName, NameLen, RmCount, is_Fifo, PassPhrase.c_str());
 			}
 			rescode = k2hdkc_get_lastres_code();
 
@@ -3869,7 +3886,7 @@ static bool KeyQueueRemoveCommand(k2hdkc_chmpx_h chmpxhandle, const unsigned cha
 			if(PassPhrase.empty()){
 				result = k2hdkc_pm_keyq_remove(chmpxhandle, pName, NameLen, RmCount, is_Fifo);
 			}else{
-				result = k2hdkc_pm_keyq_remove_wp(chmpxhandle, pName, NameLen, RmCount, is_Fifo, (PassPhrase.empty() ? NULL : PassPhrase.c_str()));
+				result = k2hdkc_pm_keyq_remove_wp(chmpxhandle, pName, NameLen, RmCount, is_Fifo, PassPhrase.c_str());
 			}
 			rescode	= k2hdkc_get_res_code(chmpxhandle);
 
@@ -4143,13 +4160,13 @@ static bool CasGetCommand(k2hdkc_chmpx_h chmpxhandle, CASTYPE type, params_t& pa
 				}
 			}else{
 				if(CAS_TYPE_8 == type){
-					result	= k2hdkc_full_cas8_get_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val8);
+					result	= k2hdkc_full_cas8_get_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, PassPhrase.c_str(), &val8);
 				}else if(CAS_TYPE_16 == type){
-					result	= k2hdkc_full_cas16_get_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val16);
+					result	= k2hdkc_full_cas16_get_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, PassPhrase.c_str(), &val16);
 				}else if(CAS_TYPE_32 == type){
-					result	= k2hdkc_full_cas32_get_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val32);
+					result	= k2hdkc_full_cas32_get_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, PassPhrase.c_str(), &val32);
 				}else{	// CAS_TYPE_64 == type
-					result	= k2hdkc_full_cas64_get_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val64);
+					result	= k2hdkc_full_cas64_get_wa(strConfig.c_str(), CntlPort, (strCuk.empty() ? NULL : strCuk.c_str()), isAutoRejoin, isNoGiveupRejoin, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, PassPhrase.c_str(), &val64);
 				}
 			}
 			rescode = k2hdkc_get_lastres_code();
@@ -4200,13 +4217,13 @@ static bool CasGetCommand(k2hdkc_chmpx_h chmpxhandle, CASTYPE type, params_t& pa
 				}
 			}else{
 				if(CAS_TYPE_8 == type){
-					result	= k2hdkc_pm_cas8_get_wa(chmpxhandle, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val8);
+					result	= k2hdkc_pm_cas8_get_wa(chmpxhandle, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, PassPhrase.c_str(), &val8);
 				}else if(CAS_TYPE_16 == type){
-					result	= k2hdkc_pm_cas16_get_wa(chmpxhandle, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val16);
+					result	= k2hdkc_pm_cas16_get_wa(chmpxhandle, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, PassPhrase.c_str(), &val16);
 				}else if(CAS_TYPE_32 == type){
-					result	= k2hdkc_pm_cas32_get_wa(chmpxhandle, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val32);
+					result	= k2hdkc_pm_cas32_get_wa(chmpxhandle, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, PassPhrase.c_str(), &val32);
 				}else{	// CAS_TYPE_64 == type
-					result	= k2hdkc_pm_cas64_get_wa(chmpxhandle, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, (PassPhrase.empty() ? NULL : PassPhrase.c_str()), &val64);
+					result	= k2hdkc_pm_cas64_get_wa(chmpxhandle, reinterpret_cast<const unsigned char*>(strKey.c_str()), strKey.length() + 1, PassPhrase.c_str(), &val64);
 				}
 			}
 			rescode	= k2hdkc_get_res_code(chmpxhandle);
@@ -5324,16 +5341,22 @@ static bool SaveCommand(const ConsoleInput& InputIF, params_t& params)
 		for(pHistory = iter->c_str(), wrote_byte = 0, one_wrote_byte = 0L; wrote_byte < iter->length(); wrote_byte += one_wrote_byte){
 			if(-1 == (one_wrote_byte = write(fd, &pHistory[wrote_byte], (iter->length() - wrote_byte)))){
 				ERR("Failed writing history to file(%s). errno(%d)", params[0].c_str(), errno);
+				// cppcheck-suppress unmatchedSuppression
+				// cppcheck-suppress unreadVariable
 				DKC_CLOSE(fd);
 				return true;	// for continue
 			}
 		}
 		if(-1 == write(fd, "\n", 1)){
 			ERR("Failed writing history to file(%s). errno(%d)", params[0].c_str(), errno);
+			// cppcheck-suppress unmatchedSuppression
+			// cppcheck-suppress unreadVariable
 			DKC_CLOSE(fd);
 			return true;	// for continue
 		}
 	}
+	// cppcheck-suppress unmatchedSuppression
+	// cppcheck-suppress unreadVariable
 	DKC_CLOSE(fd);
 	return true;
 }
@@ -5365,6 +5388,8 @@ static bool LoadCommand(k2hdkc_chmpx_h chmpxhandle, ConsoleInput& InputIF, param
 			}
 		}
 	}
+	// cppcheck-suppress unmatchedSuppression
+	// cppcheck-suppress unreadVariable
 	DKC_CLOSE(fd);
 	return true;
 }
@@ -5457,24 +5482,32 @@ static bool CommandStringHandle(k2hdkc_chmpx_h chmpxhandle, ConsoleInput& InputI
 		is_exit = true;
 
 	}else if(opts.end() != opts.find("comlog")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!ComlogCommand(opts["comlog"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("dbglevel")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!DbglevelCommand(opts["dbglevel"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("print")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!PrintCommand(chmpxhandle, opts["print"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("dp")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!DirectPrintCommand(chmpxhandle, opts["dp"])){
 			CleanOptionMap(opts);
 			return false;
@@ -5487,144 +5520,192 @@ static bool CommandStringHandle(k2hdkc_chmpx_h chmpxhandle, ConsoleInput& InputI
 		}
 
 	}else if(opts.end() != opts.find("cf")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!CopyFileCommand(chmpxhandle, opts["cf"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("set")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!SetCommand(chmpxhandle, opts["set"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("dset")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!DirectSetCommand(chmpxhandle, opts["dset"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("sf")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!SetFileCommand(chmpxhandle, opts["sf"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("f")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!FillCommand(chmpxhandle, opts["f"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("fs")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!FillSubCommand(chmpxhandle, opts["fs"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("rm")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!RemoveCommand(chmpxhandle, opts["rm"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("ss")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!SetSubkeyCommand(chmpxhandle, opts["ss"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("rs")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!RemoveSubkeyCommand(chmpxhandle, opts["rs"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("ren")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!RenameCommand(chmpxhandle, opts["ren"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("q")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!QueueCommand(chmpxhandle, opts["q"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("kq")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!KeyQueueCommand(chmpxhandle, opts["kq"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("cas")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!CasCommand(chmpxhandle, CAS_TYPE_NO, opts["cas"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("cas8")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!CasCommand(chmpxhandle, CAS_TYPE_8, opts["cas8"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("cas16")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!CasCommand(chmpxhandle, CAS_TYPE_16, opts["cas16"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("cas32")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!CasCommand(chmpxhandle, CAS_TYPE_32, opts["cas32"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("cas64")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!CasCommand(chmpxhandle, CAS_TYPE_64, opts["cas64"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("st")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!StatusCommand(chmpxhandle, opts["st"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("history")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!HistoryCommand(InputIF)){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("save")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!SaveCommand(InputIF, opts["save"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("load")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!LoadCommand(chmpxhandle, InputIF, opts["load"], is_exit)){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("shell")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!ShellCommand()){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("echo")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!EchoCommand(opts["echo"])){
 			CleanOptionMap(opts);
 			return false;
 		}
 
 	}else if(opts.end() != opts.find("sleep")){
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownConditionTrueFalse
 		if(!SleepCommand(opts["sleep"])){
 			CleanOptionMap(opts);
 			return false;
@@ -5679,6 +5760,8 @@ static bool CommandHandle(k2hdkc_chmpx_h chmpxhandle, ConsoleInput& InputIF)
 			// exit shell
 			InputIF.RemoveLastHistory();	// remove last(this) command from history
 			InputIF.PutHistory("shell");	// and push "shell" command(replace history)
+			// cppcheck-suppress unmatchedSuppression
+			// cppcheck-suppress knownConditionTrueFalse
 			if(!ShellCommand()){
 				return false;
 			}
@@ -5977,6 +6060,8 @@ int main(int argc, char** argv)
 			if(!k2hdkc_close_chmpx_ex(chmpxhandle, isCleanupBup)){
 				ERR("Could not close(leave and close msgid) slave node chmpx, but continue for cleanup...");
 			}
+			// cppcheck-suppress unmatchedSuppression
+			// cppcheck-suppress unreadVariable
 			chmpxhandle	= K2HDKC_INVALID_HANDLE;		// force
 		}else{
 			if(!pSlave->Close()){
@@ -5986,6 +6071,8 @@ int main(int argc, char** argv)
 				ERR("Could not leave slave node chmpx, but continue for cleanup...");
 			}
 			DKC_DELETE(pSlave);							// force
+			// cppcheck-suppress unmatchedSuppression
+			// cppcheck-suppress unreadVariable
 			chmpxhandle	= K2HDKC_INVALID_HANDLE;		// force
 		}
 	}
