@@ -141,7 +141,7 @@ dkcres_type_t k2hdkc_get_res_code(k2hdkc_chmpx_h handle)
 		ERR_DKCPRN("Parameter handle is invalid.");
 		return DKC_NORESTYPE;
 	}
-	K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
+	const K2hdkcSlave*	pSlave = reinterpret_cast<K2hdkcSlave*>(handle);
 
 	return pSlave->GetResponseCode();
 }

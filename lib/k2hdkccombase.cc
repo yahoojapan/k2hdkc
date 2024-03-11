@@ -977,6 +977,8 @@ bool K2hdkcCommand::CommandSending(void)
 		TriggerResponse = false;
 
 		// set callback
+		// cppcheck-suppress unmatchedSuppression
+		// cppcheck-suppress knownPointerToBool
 		if(!K2hdkcCommand::WaitFp(pSendComAll->com_head.comnumber, this, K2hdkcCommand::pWaitFpParam)){
 			// cppcheck-suppress literalWithCharPtrCompare
 			ERR_DKCPRN("Failed to set receive waiting callback for type(%s).", STR_DKCCOM_TYPE(pSendComAll->com_head.comtype));

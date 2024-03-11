@@ -1225,9 +1225,7 @@ bool K2hdkcConfig::InitializeK2hash(K2HShm& k2hash) const
 				ERR_DKCPRN("Failed to set k2hash about encrypt pass phrase.");
 				return false;
 			}
-			if(set_default){
-				set_default = false;
-			}
+			set_default = false;
 		}
 	}
 	MSG_DKCPRN("Succeed: set attributes");
