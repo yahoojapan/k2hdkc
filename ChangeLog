@@ -1,3 +1,9 @@
+k2hdkc (1.0.13) unstable; urgency=low
+
+  * Changed supported OS and modified some codes - #88
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Wed, 13 Nov 2024 15:01:33 +0900
+
 k2hdkc (1.0.12) unstable; urgency=low
 
   * Changed support OS and Fixed about cppcheck, etc - #86
