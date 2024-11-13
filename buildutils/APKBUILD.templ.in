@@ -52,7 +52,10 @@ url="https://k2hdkc.antpick.ax/"
 arch="x86_64"
 license="MIT"
 
-depends=""
+depends="
+	procps
+	chmpx
+"
 depends_dev="
 	chmpx-dev
 "
@@ -64,7 +67,6 @@ makedepends="
 	groff
 	util-linux-misc
 	musl-locales
-	procps
 	yaml-dev
 	openssl-dev
 "
@@ -105,6 +107,14 @@ check() {
 
 package() {
 	make DESTDIR="$pkgdir" install
+
+	#
+	# Install helper files
+	#
+	install -Dm 0555 buildutils/k2hdkc-service-helper			"$pkgdir"/usr/libexec/k2hdkc-service-helper
+	install -Dm 0444 buildutils/k2hdkc-service-helper.conf		"$pkgdir"/etc/antpickax/k2hdkc-service-helper.conf
+	install -Dm 0444 buildutils/k2hdkc.ini.example				"$pkgdir"/etc/antpickax/k2hdkc.ini.example
+	install -Dm 0444 buildutils/override.conf.k2hdkc_example	"$pkgdir"/etc/antpickax/override.conf.k2hdkc_example
 }
 
 # [NOTE]
