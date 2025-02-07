@@ -5,8 +5,9 @@ K2HDKC
 [![GitHub forks](https://img.shields.io/github/forks/yahoojapan/k2hdkc.svg)](https://github.com/yahoojapan/k2hdkc/network)
 [![GitHub stars](https://img.shields.io/github/stars/yahoojapan/k2hdkc.svg)](https://github.com/yahoojapan/k2hdkc/stargazers)
 [![GitHub issues](https://img.shields.io/github/issues/yahoojapan/k2hdkc.svg)](https://github.com/yahoojapan/k2hdkc/issues)
-[![debian packages](https://img.shields.io/badge/deb-packagecloud.io-844fec.svg)](https://packagecloud.io/antpickax/stable)
 [![RPM packages](https://img.shields.io/badge/rpm-packagecloud.io-844fec.svg)](https://packagecloud.io/antpickax/stable)
+[![debian packages](https://img.shields.io/badge/deb-packagecloud.io-844fec.svg)](https://packagecloud.io/antpickax/stable)
+[![ALPINE packages](https://img.shields.io/badge/apk-packagecloud.io-844fec.svg)](https://packagecloud.io/antpickax/stable)
 [![Docker image](https://img.shields.io/docker/pulls/antpickax/k2hdkc.svg)](https://hub.docker.com/r/antpickax/k2hdkc)
 [![Docker dev image](https://img.shields.io/docker/pulls/antpickax/k2hdkc-dev.svg)](https://hub.docker.com/r/antpickax/k2hdkc-dev)
 
@@ -42,6 +43,7 @@ Provides the key expiration function which is the feature of k2hash as distribut
 ### Packages
 - [RPM packages(packagecloud.io)](https://packagecloud.io/antpickax/stable)
 - [Debian packages(packagecloud.io)](https://packagecloud.io/antpickax/stable)
+- [ALPINE packages(packagecloud.io)](https://packagecloud.io/antpickax/stable)
 
 ### Docker images
 - [k2hdkc(Docker Hub)](https://hub.docker.com/r/antpickax/k2hdkc)
