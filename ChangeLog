@@ -1,3 +1,9 @@
+k2hdkc (1.0.15) unstable; urgency=low
+
+  * Changed support OSes and Fixed scripts, etc - #93
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Fri, 07 Feb 2025 12:16:53 +0900
+
 k2hdkc (1.0.14) unstable; urgency=low
 
   * Updated K2HFILE virables value in example - #90
