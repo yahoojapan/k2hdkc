@@ -302,6 +302,15 @@ fi
 #	RUN_PUBLISH_PACKAGE		1
 #
 
+# [NOTE]
+# Running cppcheck on ALPINE and Fedora takes more than twice as long.
+# The same checks are performed on other OSes, so cppcheck will be
+# skipped on those OSes.
+#
+if echo "${CI_OSTYPE}" | grep -q -i -e 'alpine' -e 'fedora'; then
+	RUN_CPPCHECK=0
+fi
+
 #---------------------------------------------------------------
 # Variables for each process
 #---------------------------------------------------------------
