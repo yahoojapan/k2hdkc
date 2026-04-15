@@ -217,7 +217,7 @@ k2hdkc_chmpx_h k2hdkc_open_chmpx_ex(const char* config, short ctlport, bool is_a
 
 k2hdkc_chmpx_h k2hdkc_open_chmpx_full(const char* config, short ctlport, const char* cuk, bool is_auto_rejoin, bool no_giveup_rejoin, bool is_clean_bup)
 {
-	K2hdkcSlave*	pSlave = CreateOpenedMsgidSlaveObject(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, is_clean_bup);
+	const K2hdkcSlave*	pSlave = CreateOpenedMsgidSlaveObject(config, ctlport, cuk, is_auto_rejoin, no_giveup_rejoin, is_clean_bup);
 	if(!pSlave){
 		return K2HDKC_INVALID_HANDLE;
 	}

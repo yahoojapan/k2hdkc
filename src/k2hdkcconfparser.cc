@@ -118,8 +118,7 @@ bool K2hdkcConfig::ReadContents(const char* path, strarr_t& lines, strarr_t& fil
 	}
 
 	string	line;
-	int		lineno;
-	for(lineno = 1; cfgstream.good() && getline(cfgstream, line); lineno++){
+	for(int lineno = 1; cfgstream.good() && getline(cfgstream, line); lineno++){
 		line = trim(line);
 		if(0 == line.length()){
 			continue;
