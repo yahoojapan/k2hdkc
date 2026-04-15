@@ -1,3 +1,9 @@
+k2hdkc (1.0.18) unstable; urgency=low
+
+  * Changed support OS and Fixed some code - #99
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Wed, 15 Apr 2026 20:10:16 +0900
+
 k2hdkc (1.0.17) unstable; urgency=low
 
   * Changed support OS and Updated codes/mail addresses - #97
