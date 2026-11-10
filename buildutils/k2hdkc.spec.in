@@ -42,6 +42,8 @@
 %global run_autogen echo "skip autogen.sh"
 %endif
 
+%global major_version %{lua: print(string.match("@VERSION@", "^%d+"))}
+
 #
 # main package
 #
@@ -93,7 +95,7 @@ install -D -m 644 buildutils/override.conf.k2hdkc_example %{buildroot}/etc/antpi
 %license COPYING
 
 %doc README AUTHORS ChangeLog
-%{_libdir}/*.so.*
+%{_libdir}/*.so.%{major_version}*
 %{_mandir}/man1/*
 %{_bindir}/*
 /lib/systemd/system/k2hdkc.service
