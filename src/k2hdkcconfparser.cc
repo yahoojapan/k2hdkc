@@ -135,7 +135,7 @@ bool K2hdkcConfig::ReadContents(const char* path, strarr_t& lines, strarr_t& fil
 			if(key == INI_INCLUDE_STR){
 				// found include, do reentrant
 				if(!K2hdkcConfig::ReadContents(value.c_str(), lines, files)){
-					ERR_DKCPRN("Failed to load include file(%s)", value.c_str());
+					ERR_DKCPRN("Failed to load include file(%s):L%d", value.c_str(), lineno);
 					cfgstream.close();
 					return false;
 				}
