@@ -1,3 +1,10 @@
+k2hdkc (1.0.20) unstable; urgency=low
+
+  * Strengthened variable checks and fixed bugs - #104
+  * Changed support OSes and fixed files - #103
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Thu, 12 Nov 2026 13:16:24 +0900
+
 k2hdkc (1.0.19) unstable; urgency=low
 
   * Supports Alpine 3.24, manual trigger for GHA - #101
