@@ -126,6 +126,11 @@ bool K2hdkcComGetSubkeys::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_GET_SUBKEYS	pCom = CVT_DKCCOM_GET_SUBKEYS(pRcvComAll);
+		if(!SAFE_DKCCOM_GET_SUBKEYS(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_GET_SUBKEYS data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 		const unsigned char*		pKey = GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->key_offset, pCom->key_length);
 		if(!pKey){
 			ERR_DKCPRN("Could not get safe key data(%zd offset, %zu byte) in DKCCOM_GET_SUBKEYS(%p).", pCom->key_offset, pCom->key_length, pRcvComAll);
@@ -173,6 +178,10 @@ bool K2hdkcComGetSubkeys::CommandSend(const unsigned char* pkey, size_t keylengt
 {
 	if(!pkey || 0 == keylength){
 		ERR_DKCPRN("Parameter are wrong.");
+		return false;
+	}
+	if(MAX_COM_DATA_LENGTH_SOCKET < (sizeof(DKCCOM_GET_SUBKEYS) + keylength)){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
 		return false;
 	}
 
@@ -235,7 +244,7 @@ bool K2hdkcComGetSubkeys::GetResponseData(K2HSubKeys** ppSubKeys, dkcres_type_t*
 		return false;
 	}
 	PDKCRES_GET_SUBKEYS	pResGetSubkeys = CVT_DKCRES_GET_SUBKEYS(pcomall);
-	if(DKC_COM_GET_SUBKEYS != pResGetSubkeys->head.comtype || DKC_NORESTYPE == pResGetSubkeys->head.restype){
+	if(DKC_COM_GET_SUBKEYS != pResGetSubkeys->head.comtype || DKC_NORESTYPE == pResGetSubkeys->head.restype || !SAFE_DKCRES_GET_SUBKEYS(pResGetSubkeys, RcvComLength)){
 		ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 		return false;
 	}

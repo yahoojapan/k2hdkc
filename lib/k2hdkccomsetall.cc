@@ -93,6 +93,11 @@ bool K2hdkcComSetAll::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_SET_ALL	pCom	= CVT_DKCCOM_SET_ALL(pRcvComAll);
+		if(!SAFE_DKCCOM_SET_ALL(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_SET_ALL data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 		const unsigned char*	pKey	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->key_offset, pCom->key_length);
 		const unsigned char*	pVal	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->val_offset, pCom->val_length);			// allow empty value
 		const unsigned char*	pSKeys	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->subkeys_offset, pCom->subkeys_length);	// allow empty value
@@ -147,6 +152,10 @@ bool K2hdkcComSetAll::CommandSend(const unsigned char* pkey, size_t keylength, c
 {
 	if(!pkey || 0 == keylength){
 		ERR_DKCPRN("Parameter are wrong.");
+		return false;
+	}
+	if(MAX_COM_DATA_LENGTH_SOCKET < (sizeof(DKCCOM_SET_ALL) + keylength + vallength + subkeyslength + attrslength)){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
 		return false;
 	}
 

@@ -93,6 +93,11 @@ bool K2hdkcComDelSubkeys::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_DEL_SUBKEYS	pCom	= CVT_DKCCOM_DEL_SUBKEYS(pRcvComAll);
+		if(!SAFE_DKCCOM_DEL_SUBKEYS(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_DEL_SUBKEYS data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 		const unsigned char*		pKey	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->key_offset, pCom->key_length);
 		const unsigned char*		pSubkey	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->subkey_offset, pCom->subkey_length);
 		if(!pKey || !pSubkey){
@@ -184,6 +189,10 @@ bool K2hdkcComDelSubkeys::CommandSend(const unsigned char* pkey, size_t keylengt
 {
 	if(!pkey || 0 == keylength || !psubkey || 0 == subkeylength){
 		ERR_DKCPRN("Parameter are wrong.");
+		return false;
+	}
+	if(MAX_COM_DATA_LENGTH_SOCKET < (sizeof(DKCCOM_DEL_SUBKEYS) + keylength + subkeylength)){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
 		return false;
 	}
 

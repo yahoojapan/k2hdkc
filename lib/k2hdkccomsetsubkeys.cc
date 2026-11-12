@@ -93,6 +93,11 @@ bool K2hdkcComSetSubkeys::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_SET_SUBKEYS	pCom	= CVT_DKCCOM_SET_SUBKEYS(pRcvComAll);
+		if(!SAFE_DKCCOM_SET_SUBKEYS(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_SET_SUBKEYS data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 		const unsigned char*		pKey	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->key_offset, pCom->key_length);
 		const unsigned char*		pSKeys	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->subkeys_offset, pCom->subkeys_length);		// allow empty subkeys
 		if(!pKey){
@@ -146,6 +151,10 @@ bool K2hdkcComSetSubkeys::CommandSend(const unsigned char* pkey, size_t keylengt
 {
 	if(!pkey || 0 == keylength){
 		ERR_DKCPRN("Parameter are wrong.");
+		return false;
+	}
+	if(MAX_COM_DATA_LENGTH_SOCKET < (sizeof(DKCCOM_SET_SUBKEYS) + keylength + subkeyslength)){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
 		return false;
 	}
 

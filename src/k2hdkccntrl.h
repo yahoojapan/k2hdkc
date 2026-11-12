@@ -79,7 +79,7 @@ class K2hdkcCntrl
 		static bool MergeSetCallback(chmpx_h handle, size_t length, const unsigned char* pdata, const struct timespec* pts);
 
 		static bool K2hdkcCommandReceiveWaitSetFunc(uint64_t comnum, K2hdkcCommand* pobj, void* pparam);
-		static bool K2hdkcCommandReceiveWaitUnsetFunc(uint64_t comnum, K2hdkcCommand* pobj, void* pparam);
+		static bool K2hdkcCommandReceiveWaitUnsetFunc(uint64_t comnum, const K2hdkcCommand* pobj, void* pparam);
 
 		static bool WorkerProc(void* pobj, bool* piswork);
 
@@ -90,7 +90,7 @@ class K2hdkcCntrl
 		bool Processing(PCOMPKT pComPkt, unsigned char* pbody, size_t length, bool& need_free);
 
 		bool SetWaitCommandObject(uint64_t comnum, K2hdkcCommand* pobj);
-		bool UnsetWaitCommandObject(uint64_t comnum, K2hdkcCommand* pobj);
+		bool UnsetWaitCommandObject(uint64_t comnum, const K2hdkcCommand* pobj);
 		K2hdkcCommand* FindWaitCommandObject(uint64_t comnum, dkccom_type_t comtype);
 
 	public:

@@ -132,6 +132,11 @@ bool K2hdkcComK2hState::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_K2HSTATE	pCom	= CVT_DKCCOM_K2HSTATE(pRcvComAll);
+		if(!SAFE_DKCCOM_K2HSTATE(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_K2HSTATE data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 
 		// check chmpxid and hash value
 		if(pCom->chmpxid != pSelfInfo->chmpxid){
@@ -177,6 +182,10 @@ bool K2hdkcComK2hState::CommandSend(chmpxid_t chmpxid, chmhash_t base_hash)
 {
 	if(IsServerNode){
 		ERR_DKCPRN("This get server node k2hash state command must be called from only slave node.");
+		return false;
+	}
+	if(MAX_COM_DATA_LENGTH_SOCKET < sizeof(DKCCOM_K2HSTATE)){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
 		return false;
 	}
 	if(CHM_INVALID_CHMPXID == chmpxid || CHM_INVALID_HASHVAL == base_hash){
@@ -239,7 +248,7 @@ bool K2hdkcComK2hState::GetResponseData(chmpxid_t* pchmpxid, const char** ppname
 		return false;
 	}
 	PDKCRES_K2HSTATE	pResK2hState = CVT_DKCRES_K2HSTATE(pcomall);
-	if(DKC_COM_K2HSTATE != pResK2hState->head.comtype || DKC_NORESTYPE == pResK2hState->head.restype || RcvComLength != pResK2hState->head.length){
+	if(DKC_COM_K2HSTATE != pResK2hState->head.comtype || DKC_NORESTYPE == pResK2hState->head.restype || !SAFE_DKCRES_K2HSTATE(pResK2hState, RcvComLength)){
 		ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 		return false;
 	}

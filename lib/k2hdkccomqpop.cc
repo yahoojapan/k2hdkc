@@ -136,6 +136,11 @@ bool K2hdkcComQPop::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_QPOP		pCom	= CVT_DKCCOM_QPOP(pRcvComAll);
+		if(!SAFE_DKCCOM_QPOP(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_QPOP data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 		const unsigned char*	pPrefix	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->prefix_offset, pCom->prefix_length);
 		char*					pEncPass= NULL;
 		if(0 < pCom->encpass_length){
@@ -428,6 +433,11 @@ bool K2hdkcComQPop::CommandProcessing(void)
 
 bool K2hdkcComQPop::CommandSend(const unsigned char* pprefix, size_t prefixlength, bool is_fifo, bool is_keyqueue, bool checkattr, const char* encpass)
 {
+	if(MAX_COM_DATA_LENGTH_SOCKET < (sizeof(DKCCOM_QPOP) + prefixlength + (encpass ? (strlen(encpass) + 1) : 0))){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
+		return false;
+	}
+
 	// do command
 	// 
 	// [NOTICE]
@@ -505,7 +515,7 @@ bool K2hdkcComQPop::GetResponseData(const unsigned char** ppkey, size_t* pkeylen
 		return false;
 	}
 	PDKCRES_QPOP	pResQPop = CVT_DKCRES_QPOP(pcomall);
-	if(DKC_COM_QPOP != pResQPop->head.comtype || DKC_NORESTYPE == pResQPop->head.restype || RcvComLength != pResQPop->head.length){
+	if(DKC_COM_QPOP != pResQPop->head.comtype || DKC_NORESTYPE == pResQPop->head.restype || !SAFE_DKCRES_QPOP(pResQPop, RcvComLength)){
 		ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 		return false;
 	}
@@ -545,8 +555,8 @@ void K2hdkcComQPop::RawDumpComAll(const PDKCCOM_ALL pComAll) const
 		RAW_DKCPRN("  DKCCOM_QPOP = {");
 		RAW_DKCPRN("    prefix_offset   = (%016" PRIx64 ") %s",	pCom->prefix_offset, bin_to_string(GET_BIN_DKC_COM_ALL(pComAll, pCom->prefix_offset, pCom->prefix_length), pCom->prefix_length).c_str());
 		RAW_DKCPRN("    prefix_length   = %zu",					pCom->prefix_length);
-		RAW_DKCPRN("    encpass_offset  = (%016" PRIx64 ") %s",	pCom->encpass_offset, bin_to_string(GET_BIN_DKC_COM_ALL(pComAll, pCom->encpass_offset, pCom->encpass_length), pCom->encpass_length).c_str());
-		RAW_DKCPRN("    encpass_length  = %zu",					pCom->encpass_length);
+		RAW_DKCPRN("    encpass_offset  = (%016" PRIx64 ") %s",	pCom->encpass_offset, "*********");
+		RAW_DKCPRN("    encpass_length  = XXXX");
 		RAW_DKCPRN("    fifo            = %s",					pCom->fifo ? "yes" : "no");
 		RAW_DKCPRN("    keyqueue        = %s",					pCom->keyqueue ? "yes" : "no");
 		RAW_DKCPRN("  }");

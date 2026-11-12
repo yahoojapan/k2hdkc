@@ -47,7 +47,7 @@ inline bool IS_SAFE_DKC_COM_OFFSET(const DKCCOM_ALL* pComAll, off_t offset, size
 
 inline bool IS_SAFE_DKC_COM_ALL(const DKCCOM_ALL* pComAll)
 {
-	return IS_SAFE_DKC_COM_OFFSET(pComAll, 0, 0);
+	return IS_SAFE_DKC_COM_OFFSET(pComAll, 0, sizeof(DKCCOM_HEAD));
 }
 
 inline const unsigned char* GET_BIN_DKC_COM_ALL(const DKCCOM_ALL* pComAll, off_t offset, size_t size)

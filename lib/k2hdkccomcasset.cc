@@ -93,6 +93,11 @@ bool K2hdkcComCasSet::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_CAS_SET	pCom	= CVT_DKCCOM_CAS_SET(pRcvComAll);
+		if(!SAFE_DKCCOM_CAS_SET(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_CAS_SET data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 		const unsigned char*	pKey	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->key_offset, pCom->key_length);
 		const unsigned char*	pOldVal	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->oldval_offset, pCom->oldval_length);
 		const unsigned char*	pNewVal	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->newval_offset, pCom->newval_length);
@@ -184,6 +189,10 @@ bool K2hdkcComCasSet::CommandSend(const unsigned char* pkey, size_t keylength, c
 {
 	if(!pkey || 0 == keylength || !poldval || 0 == oldvallength || !pnewval || 0 == newvallength){
 		ERR_DKCPRN("Parameter are wrong.");
+		return false;
+	}
+	if(MAX_COM_DATA_LENGTH_SOCKET < (sizeof(DKCCOM_CAS_SET) + keylength + oldvallength + newvallength + (encpass ? (strlen(encpass) + 1) : 0))){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
 		return false;
 	}
 
@@ -281,8 +290,8 @@ void K2hdkcComCasSet::RawDumpComAll(const PDKCCOM_ALL pComAll) const
 		RAW_DKCPRN("    oldval_length   = %zu",					pCom->oldval_length);
 		RAW_DKCPRN("    newval_offset   = (%016" PRIx64 ") %s",	pCom->newval_offset, bin_to_string(GET_BIN_DKC_COM_ALL(pComAll, pCom->newval_offset, pCom->newval_length), pCom->newval_length).c_str());
 		RAW_DKCPRN("    newval_length   = %zu",					pCom->newval_length);
-		RAW_DKCPRN("    encpass_offset  = (%016" PRIx64 ") %s",	pCom->encpass_offset, bin_to_string(GET_BIN_DKC_COM_ALL(pComAll, pCom->encpass_offset, pCom->encpass_length), pCom->encpass_length).c_str());
-		RAW_DKCPRN("    encpass_length  = %zu",					pCom->encpass_length);
+		RAW_DKCPRN("    encpass_offset  = (%016" PRIx64 ") %s",	pCom->encpass_offset, "*********");
+		RAW_DKCPRN("    encpass_length  = XXXX");
 		RAW_DKCPRN("    expire          = %zu",					pCom->expire);
 		RAW_DKCPRN("    enable_expire   = %s",					pCom->enable_expire ? "yes" : "no");
 		RAW_DKCPRN("    check_attr      = %s",					pCom->check_attr ? "yes" : "no");
