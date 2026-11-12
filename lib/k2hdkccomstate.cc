@@ -244,7 +244,7 @@ bool K2hdkcComState::GetResponseData(const DKC_NODESTATE** ppStates, size_t* pst
 		return false;
 	}
 	PDKCRES_STATE	pComRes = CVT_DKCRES_STATE(pcomall);
-	if(DKC_COM_STATE != pComRes->head.comtype || DKC_NORESTYPE == pComRes->head.restype || RcvComLength != pComRes->head.length){
+	if(DKC_COM_STATE != pComRes->head.comtype || DKC_NORESTYPE == pComRes->head.restype || !SAFE_DKCRES_STATE(pComRes, RcvComLength)){
 		ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 		return false;
 	}

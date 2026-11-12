@@ -93,6 +93,11 @@ bool K2hdkcComCasIncDec::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_CAS_INCDEC	pCom	= CVT_DKCCOM_CAS_INCDEC(pRcvComAll);
+		if(!SAFE_DKCCOM_CAS_INCDEC(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_CAS_INCDEC data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 		const unsigned char*		pKey	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->key_offset, pCom->key_length);
 		char*						pEncPass= NULL;
 		if(0 < pCom->encpass_length){
@@ -212,6 +217,10 @@ bool K2hdkcComCasIncDec::CommandSend(const unsigned char* pkey, size_t keylength
 		ERR_DKCPRN("Parameter are wrong.");
 		return false;
 	}
+	if(MAX_COM_DATA_LENGTH_SOCKET < (sizeof(DKCCOM_CAS_INCDEC) + keylength + (encpass ? (strlen(encpass) + 1) : 0))){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
+		return false;
+	}
 
 	// make send data
 	PDKCCOM_ALL	pComAll;
@@ -296,8 +305,8 @@ void K2hdkcComCasIncDec::RawDumpComAll(const PDKCCOM_ALL pComAll) const
 		RAW_DKCPRN("  DKCCOM_CAS_INCDEC = {");
 		RAW_DKCPRN("    key_offset      = (%016" PRIx64 ") %s",	pCom->key_offset, bin_to_string(GET_BIN_DKC_COM_ALL(pComAll, pCom->key_offset, pCom->key_length), pCom->key_length).c_str());
 		RAW_DKCPRN("    key_length      = %zu",					pCom->key_length);
-		RAW_DKCPRN("    encpass_offset  = (%016" PRIx64 ") %s",	pCom->encpass_offset, bin_to_string(GET_BIN_DKC_COM_ALL(pComAll, pCom->encpass_offset, pCom->encpass_length), pCom->encpass_length).c_str());
-		RAW_DKCPRN("    encpass_length  = %zu",					pCom->encpass_length);
+		RAW_DKCPRN("    encpass_offset  = (%016" PRIx64 ") %s",	pCom->encpass_offset, "*********");
+		RAW_DKCPRN("    encpass_length  = XXXX");
 		RAW_DKCPRN("    expire          = %zu",					pCom->expire);
 		RAW_DKCPRN("    enable_expire   = %s",					pCom->enable_expire ? "yes" : "no");
 		RAW_DKCPRN("    check_attr      = %s",					pCom->check_attr ? "yes" : "no");

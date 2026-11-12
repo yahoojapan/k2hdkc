@@ -175,6 +175,8 @@ int main(int argc, char** argv)
 			cout << "WARNING: Something error occured while dispatching debugging file(" << dbgfile << ")." << endl;
 		}
 	}
+	// cppcheck-suppress unmatchedSuppression
+	// cppcheck-suppress knownConditionTrueFalse
 	if(is_dbgopt){
 		SetK2hdkcDbgMode(dbgmode);
 	}

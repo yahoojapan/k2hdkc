@@ -126,6 +126,11 @@ bool K2hdkcComGetAttrs::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_GET_ATTRS	pCom = CVT_DKCCOM_GET_ATTRS(pRcvComAll);
+		if(!SAFE_DKCCOM_GET_ATTRS(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_GET_ATTRS data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 		const unsigned char*	pKey = GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->key_offset, pCom->key_length);
 		if(!pKey){
 			ERR_DKCPRN("Could not get safe key data(%zd offset, %zu byte) in DKCCOM_GET_ATTRS(%p).", pCom->key_offset, pCom->key_length, pRcvComAll);
@@ -173,6 +178,10 @@ bool K2hdkcComGetAttrs::CommandSend(const unsigned char* pkey, size_t keylength)
 {
 	if(!pkey || 0 == keylength){
 		ERR_DKCPRN("Parameter are wrong.");
+		return false;
+	}
+	if(MAX_COM_DATA_LENGTH_SOCKET < (sizeof(DKCCOM_GET_ATTRS) + keylength)){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
 		return false;
 	}
 
@@ -234,7 +243,7 @@ bool K2hdkcComGetAttrs::GetResponseData(K2HAttrs** ppAttrsObj, dkcres_type_t* pr
 		return false;
 	}
 	PDKCRES_GET_ATTRS	pResGetAttrs = CVT_DKCRES_GET_ATTRS(pcomall);
-	if(DKC_COM_GET_ATTRS != pResGetAttrs->head.comtype || DKC_NORESTYPE == pResGetAttrs->head.restype){
+	if(DKC_COM_GET_ATTRS != pResGetAttrs->head.comtype || DKC_NORESTYPE == pResGetAttrs->head.restype || !SAFE_DKCRES_GET_ATTRS(pResGetAttrs, RcvComLength)){
 		ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 		return false;
 	}

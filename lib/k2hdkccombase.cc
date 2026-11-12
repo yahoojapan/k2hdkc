@@ -360,7 +360,7 @@ K2hdkcCommand* K2hdkcCommand::GetCommandReceiveObject(K2HShm* pk2hash, ChmCntrl*
 
 	// set received data to command object
 	if(pObj){
-		if(!pObj->SetReceiveData(pComPkt, pComAll)){
+		if(!pObj->SetReceiveData(pComPkt, pComAll, length)){
 			ERR_DKCPRN("Could not set received data to command object( for DKCCOM_ALL command type(0x%016" PRIx64 ")).", pComAll->com_head.comtype);
 			DKC_DELETE(pObj);
 		}
@@ -845,9 +845,9 @@ bool K2hdkcCommand::SetPermanentSlave(K2hdkcSlave* pSlave)
 // [NOTICE]
 // pComPkt and pbody are freed in this class, so caller must not free these when returns success from this method.
 //
-bool K2hdkcCommand::SetReceiveData(PCOMPKT pComPkt, PDKCCOM_ALL pComAll)
+bool K2hdkcCommand::SetReceiveData(PCOMPKT pComPkt, PDKCCOM_ALL pComAll, size_t length)
 {
-	if(!pComPkt || !pComAll){
+	if(!pComPkt || !pComAll || length < sizeof(DKCCOM_HEAD)){
 		ERR_DKCPRN("Parameter are wrong.");
 		return false;
 	}
@@ -857,7 +857,7 @@ bool K2hdkcCommand::SetReceiveData(PCOMPKT pComPkt, PDKCCOM_ALL pComAll)
 
 	pRcvComPkt		= pComPkt;
 	pRcvComAll		= pComAll;
-	RcvComLength	= pComAll->com_head.length;
+	RcvComLength	= length;			// == pComAll->com_head.length
 
 	// wakeup thread when waiting response
 	if(IsServerNode && IsWaitResOnServer && K2hdkcCommand::WaitFp && K2hdkcCommand::UnWaitFp && !TriggerResponse){

@@ -30,6 +30,11 @@ DECL_EXTERN_C_START
 // Common command/response type
 //---------------------------------------------------------
 //
+// Maximum length
+//
+#define	MAX_COM_DATA_LENGTH_SOCKET		(1024 * 1024 * 256)		// 256MB
+
+//
 // Command types
 //
 // [NOTE]
@@ -898,6 +903,163 @@ typedef union k2hdkc_com_all{
 #define	CVT_DKCRES_K2HSTATE(pComAll)		(&(pComAll->res_k2hstate))
 #define	CVT_DKCRES_STATE(pComAll)			(&(pComAll->res_state))
 #define	CVT_DKCRES_REPL_DEL(pComAll)		(&(pComAll->res_repl_del))
+
+//
+// Macros for validating command length
+//
+// If the response contains data beyond the DKCCOM_HEAD structure, it is
+// necessary to verify that the response length matches the expected size
+// to prevent buffer overflow.
+// These macros are used for this validation.
+//
+
+#define	SAFE_DKCCOM_GET(pCom, RcvComLength)			(	(RcvComLength == pCom->head.length)												&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->encpass_length))	&& \
+														(RcvComLength == (pCom->encpass_offset + pCom->encpass_length))					&& \
+														(pCom->encpass_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length)))
+
+#define	SAFE_DKCCOM_GET_DIRECT(pCom, RcvComLength)	(	(RcvComLength == pCom->head.length)												&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length))							)
+
+#define	SAFE_DKCCOM_GET_SUBKEYS(pCom, RcvComLength)	(	(RcvComLength == pCom->head.length)												&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length))							)
+
+#define	SAFE_DKCCOM_GET_ATTRS(pCom, RcvComLength)	(	(RcvComLength == pCom->head.length)												&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length))							)
+
+#define	SAFE_DKCCOM_GET_ATTR(pCom, RcvComLength)	(	(RcvComLength == pCom->head.length)												&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->attr_length))		&& \
+														(RcvComLength == (pCom->attr_offset + pCom->attr_length))						&& \
+														(pCom->attr_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length))	)
+
+#define	SAFE_DKCCOM_SET(pCom, RcvComLength)			(	(RcvComLength == pCom->head.length)																						&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->val_length + pCom->attrs_length + pCom->encpass_length))	&& \
+														(RcvComLength == (pCom->val_offset + pCom->val_length + pCom->attrs_length + pCom->encpass_length))						&& \
+														(RcvComLength == (pCom->attrs_offset + pCom->attrs_length + pCom->encpass_length))										&& \
+														(RcvComLength == (pCom->encpass_offset + pCom->encpass_length))															&& \
+														(pCom->val_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length))											&& \
+														(pCom->attrs_offset == static_cast<off_t>(pCom->val_offset + pCom->val_length))											&& \
+														(pCom->encpass_offset == static_cast<off_t>(pCom->attrs_offset + pCom->attrs_length))									)
+
+#define	SAFE_DKCCOM_SET_DIRECT(pCom, RcvComLength)	(	(RcvComLength == pCom->head.length)												&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->val_length))		&& \
+														(RcvComLength == (pCom->val_offset + pCom->val_length))							&& \
+														(pCom->val_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length))	)
+
+#define	SAFE_DKCCOM_SET_SUBKEYS(pCom, RcvComLength)	(	(RcvComLength == pCom->head.length)												&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->subkeys_length))	&& \
+														(RcvComLength == (pCom->subkeys_offset + pCom->subkeys_length))					&& \
+														(pCom->subkeys_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length)))
+
+
+#define	SAFE_DKCCOM_SET_ALL(pCom, RcvComLength)	(		(RcvComLength == pCom->head.length)																						&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->val_length + pCom->subkeys_length + pCom->attrs_length))	&& \
+														(RcvComLength == (pCom->val_offset + pCom->val_length + pCom->subkeys_length + pCom->attrs_length))						&& \
+														(RcvComLength == (pCom->subkeys_offset + pCom->subkeys_length + pCom->attrs_length))									&& \
+														(RcvComLength == (pCom->attrs_offset + pCom->attrs_length))																&& \
+														(pCom->val_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length))											&& \
+														(pCom->subkeys_offset == static_cast<off_t>(pCom->val_offset + pCom->val_length))										&& \
+														(pCom->attrs_offset == static_cast<off_t>(pCom->subkeys_offset + pCom->subkeys_length))									)
+
+
+#define	SAFE_DKCCOM_ADD_SUBKEYS(pCom, RcvComLength)	(	(RcvComLength == pCom->head.length)												&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->subkey_length))	&& \
+														(RcvComLength == (pCom->subkey_offset + pCom->subkey_length))					&& \
+														(pCom->subkey_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length)))
+
+#define	SAFE_DKCCOM_DEL(pCom, RcvComLength)			(	(RcvComLength == pCom->head.length)												&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length))							)
+
+#define	SAFE_DKCCOM_DEL_SUBKEYS(pCom, RcvComLength)	(	(RcvComLength == pCom->head.length)												&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->subkey_length))	&& \
+														(RcvComLength == (pCom->subkey_offset + pCom->subkey_length))					&& \
+														(pCom->subkey_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length)))
+
+#define	SAFE_DKCCOM_REN(pCom, RcvComLength)			(	(RcvComLength == pCom->head.length)																			&& \
+														(RcvComLength == (pCom->oldkey_offset + pCom->oldkey_length + pCom->newkey_length + pCom->encpass_length))	&& \
+														(RcvComLength == (pCom->newkey_offset + pCom->newkey_length + pCom->encpass_length))						&& \
+														(RcvComLength == (pCom->encpass_offset + pCom->encpass_length))												&& \
+														(pCom->newkey_offset == static_cast<off_t>(pCom->oldkey_offset + pCom->oldkey_length))						&& \
+														(pCom->encpass_offset == static_cast<off_t>(pCom->newkey_offset + pCom->newkey_length))						)
+
+
+#define	SAFE_DKCCOM_QPUSH(pCom, RcvComLength)		(	(RcvComLength == pCom->head.length)																												&& \
+														(RcvComLength == (pCom->prefix_offset + pCom->prefix_length + pCom->key_length + pCom->val_length + pCom->attrs_length + pCom->encpass_length))	&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->val_length + pCom->attrs_length + pCom->encpass_length))							&& \
+														(RcvComLength == (pCom->val_offset + pCom->val_length + pCom->attrs_length + pCom->encpass_length))												&& \
+														(RcvComLength == (pCom->attrs_offset + pCom->attrs_length + pCom->encpass_length))																&& \
+														(RcvComLength == (pCom->encpass_offset + pCom->encpass_length))																					&& \
+														(pCom->key_offset == static_cast<off_t>(pCom->prefix_offset + pCom->prefix_length))																&& \
+														(pCom->val_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length))																	&& \
+														(pCom->attrs_offset == static_cast<off_t>(pCom->val_offset + pCom->val_length))																	&& \
+														(pCom->encpass_offset == static_cast<off_t>(pCom->attrs_offset + pCom->attrs_length))															)
+
+
+#define	SAFE_DKCCOM_QPOP(pCom, RcvComLength)		(	(RcvComLength == pCom->head.length)														&& \
+														(RcvComLength == (pCom->prefix_offset + pCom->prefix_length + pCom->encpass_length))	&& \
+														(RcvComLength == (pCom->encpass_offset + pCom->encpass_length))							&& \
+														(pCom->encpass_offset == static_cast<off_t>(pCom->prefix_offset + pCom->prefix_length))	)
+
+#define	SAFE_DKCCOM_CAS_INIT(pCom, RcvComLength)	(	(RcvComLength == pCom->head.length)																	&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->val_length + pCom->encpass_length))	&& \
+														(RcvComLength == (pCom->val_offset + pCom->val_length + pCom->encpass_length))						&& \
+														(RcvComLength == (pCom->encpass_offset + pCom->encpass_length))										&& \
+														(pCom->val_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length))						&& \
+														(pCom->encpass_offset == static_cast<off_t>(pCom->val_offset + pCom->val_length))					)
+
+#define	SAFE_DKCCOM_CAS_GET(pCom, RcvComLength)		(	(RcvComLength == pCom->head.length)													&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->encpass_length))		&& \
+														(RcvComLength == (pCom->encpass_offset + pCom->encpass_length))						&& \
+														(pCom->encpass_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length))	)
+
+#define	SAFE_DKCCOM_CAS_SET(pCom, RcvComLength)		(	(RcvComLength == pCom->head.length)																							&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->oldval_length + pCom->newval_length + pCom->encpass_length))	&& \
+														(RcvComLength == (pCom->oldval_offset + pCom->oldval_length + pCom->newval_length + pCom->encpass_length))					&& \
+														(RcvComLength == (pCom->newval_offset + pCom->newval_length + pCom->encpass_length))										&& \
+														(RcvComLength == (pCom->encpass_offset + pCom->encpass_length))																&& \
+														(pCom->oldval_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length))											&& \
+														(pCom->newval_offset == static_cast<off_t>(pCom->oldval_offset + pCom->oldval_length))										&& \
+														(pCom->encpass_offset == static_cast<off_t>(pCom->newval_offset + pCom->newval_length))										)
+
+
+#define	SAFE_DKCCOM_CAS_INCDEC(pCom, RcvComLength)	(	(RcvComLength == pCom->head.length)													&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->encpass_length))		&& \
+														(RcvComLength == (pCom->encpass_offset + pCom->encpass_length))						&& \
+														(pCom->encpass_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length))	)
+
+#define	SAFE_DKCCOM_REPL_KEY(pCom, RcvComLength)	(	(RcvComLength == pCom->head.length)																						&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length + pCom->val_length + pCom->subkeys_length + pCom->attrs_length))	&& \
+														(RcvComLength == (pCom->val_offset + pCom->val_length + pCom->subkeys_length + pCom->attrs_length))						&& \
+														(RcvComLength == (pCom->subkeys_offset + pCom->subkeys_length + pCom->attrs_length))									&& \
+														(RcvComLength == (pCom->attrs_offset + pCom->attrs_length))																&& \
+														(pCom->val_offset == static_cast<off_t>(pCom->key_offset + pCom->key_length))											&& \
+														(pCom->subkeys_offset == static_cast<off_t>(pCom->val_offset + pCom->val_length))										&& \
+														(pCom->attrs_offset == static_cast<off_t>(pCom->subkeys_offset + pCom->subkeys_length))									)
+
+#define	SAFE_DKCCOM_K2HSTATE(pCom, RcvComLength)	(	RcvComLength == pCom->head.length	)
+
+#define	SAFE_DKCCOM_REPL_DEL(pCom, RcvComLength)	(	(RcvComLength == pCom->head.length)						&& \
+														(RcvComLength == (pCom->key_offset + pCom->key_length))	)
+
+//
+// Macros for validating response length
+//
+// If the response contains data beyond the DKCCOM_HEAD structure, it is
+// necessary to verify that the response length matches the expected size
+// to prevent buffer over-reads.
+// These macros are used for this validation.
+//
+#define	SAFE_DKCRES_GET(pResGet, RcvComLength)					((RcvComLength == pResGet->head.length)			&& (RcvComLength == (pResGet->val_offset + pResGet->val_length))										)
+#define	SAFE_DKCRES_GET_DIRECT(pResGet, RcvComLength)			((RcvComLength == pResGet->head.length)			&& (RcvComLength == (pResGet->val_offset + pResGet->val_length))										)
+#define	SAFE_DKCRES_GET_SUBKEYS(pResGetSubkeys, RcvComLength)	((RcvComLength == pResGetSubkeys->head.length)	&& (RcvComLength == (pResGetSubkeys->subkeys_offset + pResGetSubkeys->subkeys_length))					)
+#define	SAFE_DKCRES_GET_ATTRS(pResGetAttrs, RcvComLength)		((RcvComLength == pResGetAttrs->head.length)	&& (RcvComLength == (pResGetAttrs->attrs_offset + (sizeof(unsigned char) * pResGetAttrs->attrs_length))))
+#define	SAFE_DKCRES_GET_ATTR(pResGetAttr, RcvComLength)			((RcvComLength == pResGetAttr->head.length)		&& (RcvComLength == (pResGetAttr->attrval_offset + pResGetAttr->attrval_length))						)
+#define	SAFE_DKCRES_QPOP(pResQPop, RcvComLength)				((RcvComLength == pResQPop->head.length)		&& (RcvComLength == (pResQPop->key_offset + pResQPop->key_length + pResQPop->val_length))				\
+																												&& (RcvComLength == (pResQPop->val_offset + pResQPop->val_length))										\
+																												&& (pResQPop->val_offset == static_cast<off_t>(pResQPop->key_offset + pResQPop->key_length))			)
+#define	SAFE_DKCRES_CAS_GET(pResGet, RcvComLength)				((RcvComLength == pResGet->head.length)			&& (RcvComLength == (pResGet->val_offset + pResGet->val_length))										)
+#define	SAFE_DKCRES_K2HSTATE(pResK2hState, RcvComLength)		(RcvComLength == pResK2hState->head.length																												)
+#define	SAFE_DKCRES_STATE(pComRes, RcvComLength)				((RcvComLength == pComRes->head.length)			&& (RcvComLength == (pComRes->states_offset + (sizeof(DKC_NODESTATE) * pComRes->states_count)))			)
 
 DECL_EXTERN_C_END
 

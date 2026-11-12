@@ -97,6 +97,11 @@ bool K2hdkcComRen::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_REN		pCom	= CVT_DKCCOM_REN(pRcvComAll);
+		if(!SAFE_DKCCOM_REN(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_REN data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 		const unsigned char*	pOldKey	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->oldkey_offset, pCom->oldkey_length);
 		const unsigned char*	pNewKey	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->newkey_offset, pCom->newkey_length);
 		char*					pEncPass= NULL;
@@ -271,6 +276,10 @@ bool K2hdkcComRen::CommandSend(const unsigned char* poldkey, size_t oldkeylength
 {
 	if(!poldkey || 0 == oldkeylength || !pnewkey || 0 == newkeylength){
 		ERR_DKCPRN("Parameter are wrong.");
+		return false;
+	}
+	if(MAX_COM_DATA_LENGTH_SOCKET < (sizeof(DKCCOM_REN) + oldkeylength + newkeylength + (encpass ? (strlen(encpass) + 1) : 0))){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
 		return false;
 	}
 

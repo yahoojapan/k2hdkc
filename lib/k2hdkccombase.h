@@ -37,7 +37,7 @@ class K2hdkcCommand;
 // Prototype function
 //---------------------------------------------------------
 typedef bool (*dkccom_setwait_fp)(uint64_t comnum, K2hdkcCommand* pobj, void* pparam);
-typedef bool (*dkccom_unsetwait_fp)(uint64_t comnum, K2hdkcCommand* pobj, void* pparam);
+typedef bool (*dkccom_unsetwait_fp)(uint64_t comnum, const K2hdkcCommand* pobj, void* pparam);
 
 //---------------------------------------------------------
 // K2hdkcCommand Class
@@ -135,7 +135,7 @@ class K2hdkcCommand
 		dkccom_type_t GetCommandType(void) const{ return MainCommandType; }
 
 		// do not use this method, allow only directly setting result
-		virtual bool SetReceiveData(PCOMPKT pComPkt, PDKCCOM_ALL pComAll);
+		virtual bool SetReceiveData(PCOMPKT pComPkt, PDKCCOM_ALL pComAll, size_t length);
 
 		// for receiving command and processing on server node
 		virtual bool CommandProcess(void);

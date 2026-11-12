@@ -100,6 +100,11 @@ bool K2hdkcComReplDel::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_REPL_DEL	pCom = CVT_DKCCOM_REPL_DEL(pRcvComAll);
+		if(!SAFE_DKCCOM_REPL_DEL(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_REPL_DEL data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 		const unsigned char*	pKey = GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->key_offset, pCom->key_length);
 		if(!pKey){
 			ERR_DKCPRN("Could not get safe key(%zd offset, %zu byte) in DKCCOM_REPL_DEL(%p).", pCom->key_offset, pCom->key_length, pRcvComAll);
@@ -165,6 +170,10 @@ bool K2hdkcComReplDel::CommandSend(k2h_hash_t hash, k2h_hash_t subhash, const un
 {
 	if(!pkey || 0 == keylength){
 		ERR_DKCPRN("Parameter are wrong.");
+		return false;
+	}
+	if(MAX_COM_DATA_LENGTH_SOCKET < (sizeof(DKCCOM_REPL_DEL) + keylength)){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
 		return false;
 	}
 	if(!IsServerNode){

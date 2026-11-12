@@ -224,7 +224,7 @@ bool K2hdkcCntrl::K2hdkcCommandReceiveWaitSetFunc(uint64_t comnum, K2hdkcCommand
 	return true;
 }
 
-bool K2hdkcCntrl::K2hdkcCommandReceiveWaitUnsetFunc(uint64_t comnum, K2hdkcCommand* pobj, void* pparam)
+bool K2hdkcCntrl::K2hdkcCommandReceiveWaitUnsetFunc(uint64_t comnum, const K2hdkcCommand* pobj, void* pparam)
 {
 	if(!pobj || !pparam){
 		ERR_DKCPRN("Parameters are wrong, probably failed to initialize.");
@@ -470,6 +470,8 @@ bool K2hdkcCntrl::Run(void)
 			uint64_t		dispnum	= K2hdkcComNumber::INIT_NUMBER;
 			if(!K2hdkcCommand::GetResponseCommandType(pbody, length, comtype, restype, comnum, dispnum)){
 				ERR_DKCPRN("Received response is not safe.");
+				CHM_Free(pComPkt);
+				CHM_Free(pbody);
 				continue;
 			}
 
@@ -483,7 +485,7 @@ bool K2hdkcCntrl::Run(void)
 				// found command object which is waiting response
 				const PDKCCOM_ALL	pComAll = reinterpret_cast<const PDKCCOM_ALL>(const_cast<unsigned char*>(pbody));
 
-				if(!pComObj->SetReceiveData(pComPkt, pComAll)){
+				if(!pComObj->SetReceiveData(pComPkt, pComAll, length)){
 					ERR_DKCPRN("Could not set received data to command object( for DKCCOM_ALL command type(0x%016" PRIx64 ")).", pComAll->com_head.comtype);
 					CHM_Free(pComPkt);
 					CHM_Free(pbody);
@@ -610,7 +612,7 @@ bool K2hdkcCntrl::SetWaitCommandObject(uint64_t comnum, K2hdkcCommand* pobj)
 	return true;
 }
 
-bool K2hdkcCntrl::UnsetWaitCommandObject(uint64_t comnum, K2hdkcCommand* pobj)
+bool K2hdkcCntrl::UnsetWaitCommandObject(uint64_t comnum, const K2hdkcCommand* pobj)
 {
 	if(!pobj){
 		ERR_DKCPRN("Parameter is wrong.");

@@ -93,6 +93,11 @@ bool K2hdkcComSet::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_SET		pCom	= CVT_DKCCOM_SET(pRcvComAll);
+		if(!SAFE_DKCCOM_SET(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_SET data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 		const unsigned char*	pKey	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->key_offset, pCom->key_length);
 		const unsigned char*	pVal	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->val_offset, pCom->val_length);		// allow empty value
 		const unsigned char*	pAttrs	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->attrs_offset, pCom->attrs_length);
@@ -178,6 +183,10 @@ bool K2hdkcComSet::CommandSendEx(const unsigned char* pkey, size_t keylength, co
 {
 	if(!pkey || 0 == keylength || !IS_SAFE_DKC_QUEUE_TYPE(queue_type)){
 		ERR_DKCPRN("Parameter are wrong.");
+		return false;
+	}
+	if(MAX_COM_DATA_LENGTH_SOCKET < (sizeof(DKCCOM_SET) + keylength + vallength + attrslength + (encpass ? (strlen(encpass) + 1) : 0))){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
 		return false;
 	}
 	if(DKC_QUEUE_TYPE_NOTQUEUE == queue_type && (pattrs || 0 < attrslength)){
@@ -285,8 +294,8 @@ void K2hdkcComSet::RawDumpComAll(const PDKCCOM_ALL pComAll) const
 		RAW_DKCPRN("    val_length      = %zu",					pCom->val_length);
 		RAW_DKCPRN("    attrs_offset    = (%016" PRIx64 ") %s",	pCom->attrs_offset, bin_to_string(GET_BIN_DKC_COM_ALL(pComAll, pCom->attrs_offset, pCom->attrs_length), pCom->attrs_length).c_str());
 		RAW_DKCPRN("    attrs_length    = %zu",					pCom->attrs_length);
-		RAW_DKCPRN("    encpass_offset  = (%016" PRIx64 ") %s",	pCom->encpass_offset, bin_to_string(GET_BIN_DKC_COM_ALL(pComAll, pCom->encpass_offset, pCom->encpass_length), pCom->encpass_length).c_str());
-		RAW_DKCPRN("    encpass_length  = %zu",					pCom->encpass_length);
+		RAW_DKCPRN("    encpass_offset  = (%016" PRIx64 ") %s",	pCom->encpass_offset, "*********");
+		RAW_DKCPRN("    encpass_length  = XXXX");
 		RAW_DKCPRN("    expire          = %zu",					pCom->expire);
 		RAW_DKCPRN("    enable_expire   = %s",					pCom->enable_expire ? "yes" : "no");
 		RAW_DKCPRN("    rm_subkeylist   = %s",					pCom->rm_subkeylist ? "yes" : "no");

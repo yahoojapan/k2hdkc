@@ -132,7 +132,7 @@ print_message()
 	shift
 	shift
 
-	if [ -n "${LOGDIR}" ] && [ -n "${SERVICE_LOGFILE}" ]; then
+	if [ -n "${LOGDIR}" ] && [ -n "${SERVICE_LOGFILE}" ] && [ ! -L "${LOGDIR}/${SERVICE_LOGFILE}" ] ; then
 		echo "${_PRINT_DATE} ${PRGNAME} [${_PRINT_LEVEL}] $*" >> "${LOGDIR}/${SERVICE_LOGFILE}"
 	else
 		if [ "${_PRINT_STDERR}" -eq 1 ]; then
@@ -527,7 +527,10 @@ start_process()
 		return 1
 	fi
 
-	if [ -f "${_STARTPROC_PIDFILE}" ]; then
+	if [ -L "${_STARTPROC_PIDFILE}" ]; then
+		log_err "The ${_STARTPROC_PIDFILE} pid file is a symbolic link."
+		return 1
+	elif [ -f "${_STARTPROC_PIDFILE}" ]; then
 		if _STARTPROC_PID=$(cat "${_STARTPROC_PIDFILE}"); then
 
 			# shellcheck disable=SC2009
@@ -568,6 +571,9 @@ start_process()
 		if [ -n "${_STARTPROC_REDIRECTFILE}" ] && [ "${_STARTPROC_REDIRECTFILE}" = "NO" ]; then
 			# shellcheck disable=SC2068
 			sudo -u "${_STARTPROC_OWNER}" $@ &
+		elif [ -L "${_STARTPROC_REDIRECTFILE}" ]; then
+			log_err "The ${_STARTPROC_REDIRECTFILE} file is a symbolic link."
+			return 1
 		else
 			# shellcheck disable=SC2068
 			sudo -u "${_STARTPROC_OWNER}" $@ 2>&1 | sudo tee "${_STARTPROC_REDIRECTFILE}" >/dev/null 2>&1 &
@@ -615,6 +621,9 @@ start_process()
 		if [ -n "${_STARTPROC_REDIRECTFILE}" ] && [ "${_STARTPROC_REDIRECTFILE}" = "NO" ]; then
 			# shellcheck disable=SC2068
 			$@ &
+		elif [ -L "${_STARTPROC_REDIRECTFILE}" ]; then
+			log_err "The ${_STARTPROC_REDIRECTFILE} file is a symbolic link."
+			return 1
 		else
 			# shellcheck disable=SC2068
 			$@ >"${_STARTPROC_REDIRECTFILE}" 2>&1 &
@@ -623,6 +632,11 @@ start_process()
 	fi
 	if [ -z "${_STARTPROC_PROCESS_ID}" ]; then
 		log_err "Could not start a new process, it was launched but exited soon."
+		return 1
+	fi
+
+	if [ -L "${_STARTPROC_PIDFILE}" ]; then
+		log_err "The ${_STARTPROC_PIDFILE} file is a symbolic link."
 		return 1
 	fi
 	echo "${_STARTPROC_PROCESS_ID}" > "${_STARTPROC_PIDFILE}"
@@ -697,7 +711,9 @@ stop_process()
 		#
 		if ! _STOPPROC_PID=$(tr -d '\n' < "${_STOPPROC_PID_FILE}"); then
 			echo "Could not read PID file(${_STOPPROC_PID_FILE}), it may be stopped."
-			rm -f "${_STOPPROC_PID_FILE}"
+			if [ -f "${_STOPPROC_PID_FILE}" ] && [ ! -L "${_STOPPROC_PID_FILE}" ]; then
+				rm -f "${_STOPPROC_PID_FILE}"
+			fi
 			return 0
 		fi
 
@@ -707,7 +723,9 @@ stop_process()
 		# shellcheck disable=SC2009
 		if ! ( ps -o pid,stat ax 2>/dev/null | grep -v 'PID' | awk '$2~/^[^Z]/ { print $1 }' | grep -q "^${_STOPPROC_PID}$" || exit 1 && exit 0 ); then
 			echo "Stopped PID(${_STOPPROC_PID}) process."
-			rm -f "${_STOPPROC_PID_FILE}"
+			if [ -f "${_STOPPROC_PID_FILE}" ] && [ ! -L "${_STOPPROC_PID_FILE}" ]; then
+				rm -f "${_STOPPROC_PID_FILE}"
+			fi
 			return 0
 		fi
 
@@ -725,7 +743,9 @@ stop_process()
 		# shellcheck disable=SC2009
 		if ! ( ps -o pid,stat ax 2>/dev/null | grep -v 'PID' | awk '$2~/^[^Z]/ { print $1 }' | grep -q "^${_STOPPROC_PID}$" || exit 1 && exit 0 ); then
 			echo "Stopped PID(${_STOPPROC_PID}) process."
-			rm -f "${_STOPPROC_PID_FILE}"
+			if [ -f "${_STOPPROC_PID_FILE}" ] && [ ! -L "${_STOPPROC_PID_FILE}" ]; then
+				rm -f "${_STOPPROC_PID_FILE}"
+			fi
 			return 0
 		fi
 		prn_info "Could not stop PID(${_STOPPROC_PID}) process by signal HUP."
@@ -744,7 +764,9 @@ stop_process()
 		# shellcheck disable=SC2009
 		if ! ( ps -o pid,stat ax 2>/dev/null | grep -v 'PID' | awk '$2~/^[^Z]/ { print $1 }' | grep -q "^${_STOPPROC_PID}$" || exit 1 && exit 0 ); then
 			echo "Stopped PID(${_STOPPROC_PID}) process."
-			rm -f "${_STOPPROC_PID_FILE}"
+			if [ -f "${_STOPPROC_PID_FILE}" ] && [ ! -L "${_STOPPROC_PID_FILE}" ]; then
+				rm -f "${_STOPPROC_PID_FILE}"
+			fi
 			return 0
 		fi
 		prn_info "Could not stop PID(${_STOPPROC_PID}) process by signal KILL."
@@ -784,7 +806,7 @@ exit_main()
 	#
 	# Remove pid file
 	#
-	if [ -f "${PIDDIR}/${SERVICE_PIDFILE}" ]; then
+	if [ -f "${PIDDIR}/${SERVICE_PIDFILE}" ] && [ ! -L "${PIDDIR}/${SERVICE_PIDFILE}" ]; then
 		rm -f "${PIDDIR}/${SERVICE_PIDFILE}"
 	fi
 
@@ -1037,6 +1059,26 @@ load_variables()
 		BEFORE_RUN_SUBPROCESS="${_TMP_VALUE}"
 	fi
 
+	#
+	# CHECK FILES EXSITED(SYMLINK)
+	#
+	if [ -L "${PIDDIR}/${SERVICE_PIDFILE}" ]; then
+		log_err "The ${PIDDIR}/${SERVICE_PIDFILE} file is a symbolic link. Symbolic link files cannot be specified."
+		return 1
+	fi
+	if [ -L "${PIDDIR}/${SUBPROCESS_PIDFILE}" ]; then
+		log_err "The ${PIDDIR}/${SUBPROCESS_PIDFILE} file is a symbolic link. Symbolic link files cannot be specified."
+		return 1
+	fi
+	if [ -L "${LOGDIR}/${SERVICE_LOGFILE}" ]; then
+		log_err "The ${LOGDIR}/${SERVICE_LOGFILE} file is a symbolic link. Symbolic link files cannot be specified."
+		return 1
+	fi
+	if [ -L "${LOGDIR}/${SUBPROCESS_LOGFILE}" ]; then
+		log_err "The ${LOGDIR}/${SUBPROCESS_LOGFILE} file is a symbolic link. Symbolic link files cannot be specified."
+		return 1
+	fi
+
 	return 0
 }
 
@@ -1246,7 +1288,9 @@ if [ "${SCRIPT_MODE}" = "STOP" ]; then
 	# shellcheck disable=SC2009
 	if ! ( ps -o pid,stat ax 2>/dev/null | grep -v 'PID' | awk '$2~/^[^Z]/ { print $1 }' | grep -q "^${OLD_PROCESS_PID}$" || exit 1 && exit 0 ); then
 		log_info "PID(${OLD_PROCESS_PID}) process is not exusted, then the process has stopped."
-		rm -f "${PIDDIR}/${SERVICE_PIDFILE}"
+		if [ -f "${PIDDIR}/${SERVICE_PIDFILE}" ] && [ ! -L "${PIDDIR}/${SERVICE_PIDFILE}" ]; then
+			rm -f "${PIDDIR}/${SERVICE_PIDFILE}"
+		fi
 		exit 0
 	fi
 
@@ -1299,13 +1343,18 @@ if [ "${SCRIPT_MODE}" = "STOP" ]; then
 	#
 	# Success
 	#
-	rm -f "${PIDDIR}/${SERVICE_PIDFILE}"
+	if [ -f "${PIDDIR}/${SERVICE_PIDFILE}" ] && [ ! -L "${PIDDIR}/${SERVICE_PIDFILE}" ]; then
+		rm -f "${PIDDIR}/${SERVICE_PIDFILE}"
+	fi
 
 else
 	#
 	# Check old process
 	#
-	if [ -f "${PIDDIR}/${SERVICE_PIDFILE}" ]; then
+	if [ -L "${PIDDIR}/${SERVICE_PIDFILE}" ]; then
+		log_err "The ${PIDDIR}/${SERVICE_PIDFILE} file is a symbolic link."
+		exit 1
+	elif [ -f "${PIDDIR}/${SERVICE_PIDFILE}" ]; then
 		OLD_PROCESS_PID=$(tr -d '\n' < "${PIDDIR}/${SERVICE_PIDFILE}")
 		if [ $$ -ne "${OLD_PROCESS_PID}" ]; then
 			# shellcheck disable=SC2009

@@ -121,6 +121,11 @@ bool K2hdkcComGetAttr::CommandProcessing(void)
 
 		// get command data
 		const PDKCCOM_GET_ATTR	pCom	= CVT_DKCCOM_GET_ATTR(pRcvComAll);
+		if(!SAFE_DKCCOM_GET_ATTR(pCom, RcvComLength)){
+			ERR_DKCPRN("DKCCOM_GET_ATTR data is something wrong(length is wrong).");
+			SetErrorResponseData(DKC_RES_SUBCODE_INTERNAL);
+			return false;
+		}
 		const unsigned char*	pKey	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->key_offset, pCom->key_length);
 		const unsigned char*	pAttr	= GET_BIN_DKC_COM_ALL(pRcvComAll, pCom->attr_offset, pCom->attr_length);
 		if(!pKey || !pAttr){
@@ -138,8 +143,8 @@ bool K2hdkcComGetAttr::CommandProcessing(void)
 		}
 
 		// find attribute
-		unsigned char*		byAttr		= NULL;
-		size_t				attr_length	= 0;
+		const unsigned char*	byAttr		= NULL;
+		size_t					attr_length	= 0;
 		K2HAttrs::iterator	iter		= pAttrsObj->find(pAttr, pCom->attr_length);
 		if(pAttrsObj->end() != iter){
 			byAttr		= iter->pval;
@@ -167,6 +172,10 @@ bool K2hdkcComGetAttr::CommandSend(const unsigned char* pkey, size_t keylength, 
 {
 	if(!pkey || 0 == keylength || !pattr || 0 == attrlength){
 		ERR_DKCPRN("Parameter are wrong.");
+		return false;
+	}
+	if(MAX_COM_DATA_LENGTH_SOCKET < (sizeof(DKCCOM_GET_ATTR) + keylength + attrlength)){
+		ERR_DKCPRN("Communication data is over maximum size(%zu)", static_cast<size_t>(MAX_COM_DATA_LENGTH_SOCKET));
 		return false;
 	}
 
@@ -232,7 +241,7 @@ bool K2hdkcComGetAttr::GetResponseData(const unsigned char** ppattrval, size_t* 
 		return false;
 	}
 	PDKCRES_GET_ATTR	pResGetAttr = CVT_DKCRES_GET_ATTR(pcomall);
-	if(DKC_COM_GET_ATTR != pResGetAttr->head.comtype || DKC_NORESTYPE == pResGetAttr->head.restype){
+	if(DKC_COM_GET_ATTR != pResGetAttr->head.comtype || DKC_NORESTYPE == pResGetAttr->head.restype || !SAFE_DKCRES_GET_ATTR(pResGetAttr, RcvComLength)){
 		ERR_DKCPRN("Response(received) data is something wrong(internal error: data is invalid).");
 		return false;
 	}
