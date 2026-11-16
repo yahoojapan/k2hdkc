@@ -1,3 +1,9 @@
+k2hdkc (1.0.21) unstable; urgency=low
+
+  * Add strict variable checks in alpine_build.sh - #106
+
+ -- Takeshi Nakatani <ggtakec@gmail.com>  Mon, 16 Nov 2026 18:56:13 +0900
+
 k2hdkc (1.0.20) unstable; urgency=low
 
   * Strengthened variable checks and fixed bugs - #104
